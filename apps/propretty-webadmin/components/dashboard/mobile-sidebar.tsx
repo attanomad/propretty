@@ -15,7 +15,7 @@ import Nav from "../nav";
 
 const menuItemList = [...topMenuItemList, ...bottomMenuItemList];
 
-export default function NavHamburger() {
+export default function MobileSidebar() {
   return (
     <Sheet>
       <SheetTrigger asChild>
