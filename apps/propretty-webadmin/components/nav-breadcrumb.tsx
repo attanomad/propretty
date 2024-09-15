@@ -1,32 +1,46 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 
+const breadcrumbLabelByPath: Record<string, string> = {
+  "": "Home",
+  properties: "Properties",
+  settings: "Settings",
+};
+
 export default function NavBreadcrumb() {
+  const pathname = usePathname();
+  const pathList = pathname === "/" ? [""] : pathname.split("/");
+
   return (
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="#">Dashboard</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="#">Orders</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Recent Orders</BreadcrumbPage>
-        </BreadcrumbItem>
+        {pathList.map((p, idx) => {
+          if (!breadcrumbLabelByPath[p]) {
+            breadcrumbLabelByPath[p] = p[0].toUpperCase() + p.slice(1);
+          }
+
+          const label = breadcrumbLabelByPath[p];
+
+          return (
+            <>
+              <BreadcrumbItem key={p}>
+                <BreadcrumbLink asChild>
+                  <Link href={p}>{label}</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {idx < pathList.length - 1 && <BreadcrumbSeparator />}
+            </>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );

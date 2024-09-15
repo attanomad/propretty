@@ -1,10 +1,17 @@
 import { NavItemProps } from "@/components/nav-item";
-import { House, LayoutDashboard, Settings, ShoppingCart } from "lucide-react";
+import {
+  CircleUser,
+  Contact,
+  House,
+  LayoutDashboard,
+  Settings,
+} from "lucide-react";
 
 export const topMenuItemList: NavItemProps[] = [
   { children: "Dashboard", icon: LayoutDashboard, path: "/" },
   { children: "Properties", icon: House, path: "/properties" },
-  { children: "Orders", icon: ShoppingCart, path: "/orders" },
+  { children: "Contacts", icon: Contact, path: "/contacts" },
+  { children: "Agents", icon: CircleUser, path: "/agents" },
 ];
 
 export const bottomMenuItemList: NavItemProps[] = [
