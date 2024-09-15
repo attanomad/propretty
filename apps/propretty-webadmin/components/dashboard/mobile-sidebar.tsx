@@ -11,13 +11,19 @@ import {
 import { bottomMenuItemList, topMenuItemList } from "@/config/nav-menu";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { PanelLeft } from "lucide-react";
-import Nav from "../nav";
+import { useState } from "react";
+import NavItem from "../nav-item";
 
 const menuItemList = [...topMenuItemList, ...bottomMenuItemList];
 
 export default function MobileSidebar() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Sheet>
+    <Sheet
+      open={open}
+      onOpenChange={setOpen}
+    >
       <SheetTrigger asChild>
         <Button
           size="icon"
@@ -39,10 +45,20 @@ export default function MobileSidebar() {
           <SheetDescription>Application main navigation menu</SheetDescription>
         </VisuallyHidden>
 
-        <Nav
-          items={menuItemList.map((m) => ({ ...m, show: "both" }))}
-          className="grid gap-6 text-lg font-medium"
-        />
+        <nav className="grid gap-6 text-lg font-medium">
+          {menuItemList.map((m) => (
+            <NavItem
+              onClick={() => setOpen(false)}
+              key={m.path}
+              path={m.path}
+              icon={m.icon}
+              show={m.show}
+              tooltip={m.tooltip}
+            >
+              {m.children}
+            </NavItem>
+          ))}
+        </nav>
       </SheetContent>
     </Sheet>
   );
