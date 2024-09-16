@@ -12,3 +12,39 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id             String @id @default(uuid())
+  // email String @unique
+  username       String @unique
+  // emailVerified Boolean @default(false)
+  hashedPassword String
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  typeId String
+  type   PropertyType @relation(fields: [typeId], references: [id])
+
+  amenities PropertyAmenitiy[]
+}
+
+model PropertyType {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  Property    Property[]
+}
+
+model PropertyAmenitiy {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  properties Property[]
+}
