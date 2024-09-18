@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
+import { PropertiesModule } from './properties/properties.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    PropertiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
