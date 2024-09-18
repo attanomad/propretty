@@ -6,6 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -24,7 +25,18 @@ export class AuthController {
   async signUp(
     @Body() { username, password }: { username: string; password: string },
   ) {
-    return this.authService.signUp(username, password);
+    try {
+      return await this.authService.signUp(username, password);
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError) {
+        if (e.code === 'P2002') {
+          return {
+            code: 409,
+            message: `User already exists`,
+          };
+        }
+      }
+    }
   }
 
   @UseGuards(JwtAuthGuard)
