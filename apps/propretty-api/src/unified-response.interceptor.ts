@@ -4,6 +4,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { GqlContextType } from '@nestjs/graphql';
 import { map, Observable } from 'rxjs';
 
 @Injectable()
@@ -13,12 +14,18 @@ export class UnifiedResponseInterceptor<T = unknown>
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<BaseResponseBody<T>> {
+  ): Observable<BaseResponseBody<T> | any> {
+    if (context.getType<GqlContextType>() === 'graphql') {
+      return next.handle(); // Bypass for GraphQL requests
+    }
+
     return next.handle().pipe(
       map((data: any) => {
+        let body: BaseResponseBody<T>;
+
         // If `data` contains `code` or `message`, treat it as a full response object
         if (data?.code !== undefined || data?.message !== undefined) {
-          return {
+          body = {
             code: data?.code ?? 0,
             message: data?.message ?? 'success',
             data: data?.data, // If `data.data` exists, include it
@@ -27,12 +34,14 @@ export class UnifiedResponseInterceptor<T = unknown>
         }
 
         // Otherwise, treat `data` as the actual response data
-        return {
+        body = {
           code: 0, // Default code
           message: 'success', // Default message
           data, // Use `data` as the actual data field
           request_id: 'change-me',
         };
+
+        return body;
       }),
     );
   }
