@@ -1,26 +1,6 @@
 import { Suspense } from "react";
-
-interface BaseResponse<T = unknown> {
-  code: number;
-  message: string;
-  data?: T;
-  request_id: string;
-}
-
-interface Property {
-  id: string;
-  name: string;
-  uniqueCode: string;
-  type: PropertyType;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface PropertyType {
-  id: string;
-  name: string;
-  description: string | null;
-}
+import PropertyListTable from "./property-list-table";
+import { BaseResponse, Property } from "./types";
 
 export async function findProperties() {
   const data = await fetch(`${process.env.PROPRETTY_API_URL}/properties`).then<
@@ -37,18 +17,12 @@ export async function findProperties() {
 async function PropertyList() {
   const properties = await findProperties();
 
-  return (
-    <ul>
-      {properties.map((p) => (
-        <li key={p.id}>{p.name}</li>
-      ))}
-    </ul>
-  );
+  return <PropertyListTable properties={properties} />;
 }
 
 export default async function PropertiesPage() {
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <h1>Properties</h1>
       <Suspense
         fallback={<p className="font-bold p-4 m-4">Loading property list...</p>}
