@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { CreatePropertyDto } from './dto/create-property.dto';
 import { PropertiesService } from './properties.service';
 
 @Controller('properties')
@@ -15,13 +16,37 @@ export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
 
   @Post()
-  create(@Body() body: Omit<Prisma.PropertyCreateInput, 'id'>) {
-    return this.propertiesService.create({ data: body });
+  create(
+    @Body()
+    body: CreatePropertyDto,
+  ) {
+    let type: Prisma.PropertyTypeCreateNestedOneWithoutPropertyInput;
+
+    if ('id' in body.type && body.type.id) {
+      type = { connect: { id: body.type.id } };
+    } else if ('name' in body.type && body.type.name) {
+      type = {
+        create: { name: body.type.name, description: body.type.description },
+      };
+    }
+
+    return this.propertiesService.create({
+      data: { ...body, type },
+      include: { type: true },
+    });
+  }
+
+  @Get()
+  find() {
+    return this.propertiesService.find({
+      omit: { typeId: true },
+      include: { type: true },
+    });
   }
 
   // @Get()
-  // findAll() {
-  //   return this.propertiesService.findAll();
+  // find(@Param('where') where: Prisma.PropertyWhereInput) {
+  //   return this.propertiesService.find({ where });
   // }
 
   @Get(':id')

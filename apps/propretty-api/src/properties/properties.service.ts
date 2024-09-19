@@ -10,9 +10,9 @@ export class PropertiesService {
     return this.prismaService.property.create(args);
   }
 
-  // findAll() {
-  //   return `This action returns all properties`;
-  // }
+  find(args?: Prisma.PropertyFindManyArgs) {
+    return this.prismaService.property.findMany(args);
+  }
 
   findOne(args: Prisma.PropertyFindUniqueArgs) {
     return this.prismaService.property.findUnique(args);
