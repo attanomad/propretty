@@ -23,7 +23,7 @@ interface PropertyType {
 }
 
 export async function findProperties() {
-  const data = await fetch(`http://localhost:3002/properties`).then<
+  const data = await fetch(`${process.env.PROPRETTY_API_URL}/properties`).then<
     BaseResponse<Property[]>
   >((res) => res.json());
 
