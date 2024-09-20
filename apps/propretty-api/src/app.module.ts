@@ -13,6 +13,7 @@ import { PropertiesModule } from './properties/properties.module';
 import { PropertyTypesModule } from './property-types/property-types.module';
 import { UnifiedResponseInterceptor } from './unified-response.interceptor';
 import { UsersModule } from './users/users.module';
+import { AmenitiesModule } from './amenities/amenities.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     PropertiesModule,
     PropertyTypesModule,
+    AmenitiesModule,
   ],
   controllers: [AppController],
   providers: [

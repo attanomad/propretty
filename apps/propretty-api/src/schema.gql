@@ -29,14 +29,22 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Amenity {
+  id: String!
+  name: String!
+  description: String
+}
+
 type Query {
   properties(id: String, name: String, typeId: String): [Property!]!
   propertyTypes(id: String, name: String): [PropertyType!]!
+  amenities(id: String, name: String): [Amenity!]!
 }
 
 type Mutation {
   createProperty(createPropertyData: CreatePropertyInput!): Property!
   createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
+  createAmenity(createAmenityData: CreateAmenityInput!): Amenity!
 }
 
 input CreatePropertyInput {
@@ -46,6 +54,11 @@ input CreatePropertyInput {
 }
 
 input CreatePropertyTypeInput {
+  name: String!
+  description: String
+}
+
+input CreateAmenityInput {
   name: String!
   description: String
 }
