@@ -12,15 +12,26 @@ export class PropertiesResolver {
 
   @Mutation((returns) => Property)
   async createProperty(@Args('createPropertyData') args: CreatePropertyInput) {
+    console.log('args: ', args);
     try {
+      const data: Prisma.PropertyCreateArgs['data'] = {
+        name: args.name,
+        type: { connect: { id: args.typeId } },
+        uniqueCode: args.uniqueCode,
+      };
+      const amenities =
+        args.amenityIds?.map<Prisma.PropertyAmenitiyWhereUniqueInput>((id) => ({
+          id,
+        }));
+
+      if (amenities && amenities.length > 0) {
+        data.amenities = { connect: amenities };
+      }
+
       const result = await this.prismaService.property.create({
         omit: { typeId: true },
-        data: {
-          name: args.name,
-          type: { connect: { id: args.typeId } },
-          uniqueCode: args.uniqueCode,
-        },
-        include: { type: true, mediaList: true },
+        data,
+        include: { type: true, mediaList: true, amenities: true },
       });
 
       console.log('result: ', result);
@@ -42,7 +53,7 @@ export class PropertiesResolver {
   properties(@Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
       omit: { typeId: true },
-      include: { type: true, mediaList: true },
+      include: { type: true, mediaList: true, amenities: true },
     };
 
     if (args.id) {

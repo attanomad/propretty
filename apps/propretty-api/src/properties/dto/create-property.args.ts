@@ -6,8 +6,11 @@ export class CreatePropertyInput {
   name: string;
 
   @Field({ nullable: true })
-  uniqueCode: string;
+  uniqueCode?: string;
 
   @Field()
   typeId: string;
+
+  @Field((type) => [String], { nullable: 'itemsAndList' })
+  amenityIds?: string[];
 }

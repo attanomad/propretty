@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Amenity {
+  id: String!
+  name: String!
+  description: String
+}
+
 type PropertyType {
   id: String!
   name: String!
@@ -20,6 +26,7 @@ type Property {
   uniqueCode: String
   type: PropertyType!
   mediaList: [File]!
+  amenities: [Amenity]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -28,12 +35,6 @@ type Property {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type Amenity {
-  id: String!
-  name: String!
-  description: String
-}
 
 type Query {
   properties(id: String, name: String, typeId: String): [Property!]!
@@ -51,6 +52,7 @@ input CreatePropertyInput {
   name: String!
   uniqueCode: String
   typeId: String!
+  amenityIds: [String]
 }
 
 input CreatePropertyTypeInput {
