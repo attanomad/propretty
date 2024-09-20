@@ -8,11 +8,18 @@ type PropertyType {
   description: String
 }
 
+type File {
+  id: String!
+  name: String!
+  url: String!
+}
+
 type Property {
   id: String!
   name: String!
   uniqueCode: String
   type: PropertyType!
+  mediaList: [File]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -24,4 +31,21 @@ scalar DateTime
 
 type Query {
   properties(id: String, name: String, typeId: String): [Property!]!
+  propertyTypes(id: String, name: String): [PropertyType!]!
+}
+
+type Mutation {
+  createProperty(createPropertyData: CreatePropertyInput!): Property!
+  createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
+}
+
+input CreatePropertyInput {
+  name: String!
+  uniqueCode: String
+  typeId: String!
+}
+
+input CreatePropertyTypeInput {
+  name: String!
+  description: String
 }
