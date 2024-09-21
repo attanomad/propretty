@@ -53,7 +53,7 @@ export class FilesController {
           mimetype: mimetype,
           size: BigInt(size),
         },
-        select: { id: true },
+        omit: { size: true },
       });
 
       return result;
