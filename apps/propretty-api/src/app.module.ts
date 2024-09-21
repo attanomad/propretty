@@ -15,6 +15,7 @@ import { PropertiesModule } from './properties/properties.module';
 import { PropertyTypesModule } from './property-types/property-types.module';
 import { UnifiedResponseInterceptor } from './unified-response.interceptor';
 import { UsersModule } from './users/users.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { UsersModule } from './users/users.module';
     PropertyTypesModule,
     AmenitiesModule,
     FilesModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [

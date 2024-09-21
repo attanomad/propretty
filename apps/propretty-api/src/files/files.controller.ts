@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   Param,
   Post,
   StreamableFile,
@@ -10,6 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectS3, S3 } from 'nestjs-s3';
+import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('files')
@@ -17,7 +19,7 @@ export class FilesController {
   constructor(
     private configService: ConfigService,
     @InjectS3() private s3: S3,
-    private prismaService: PrismaService,
+    @Inject(EXTENDED_PRISMA_SERVICE) private prismaService: PrismaService,
   ) {}
 
   @Post('upload')
@@ -68,13 +70,10 @@ export class FilesController {
   async getFile(@Param('id') id: string) {
     const file = await this.prismaService.file.findUnique({
       where: { id },
-      select: { id: true },
+      select: { id: true, url: true } as any, // TODO: Make it type-safety!!!
     });
-    const url = new URL(`http://${this.configService.getOrThrow('host')}`);
 
-    url.pathname = `files/static/${file.id}`;
-
-    return { ...file, url };
+    return file;
   }
 
   @Get('static/:id')
