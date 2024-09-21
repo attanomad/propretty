@@ -10,6 +10,7 @@ export interface Property {
   name: string;
   uniqueCode: string;
   type: PropertyType;
+  mediaList: PropertyMedia[];
   createdAt: string;
   updatedAt: string;
 }
@@ -18,4 +19,10 @@ export interface PropertyType {
   id: string;
   name: string;
   description: string | null;
+}
+
+export interface PropertyMedia {
+  id: string;
+  url: string;
+  mimetype: string;
 }
