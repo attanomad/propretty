@@ -21,9 +21,10 @@ import {
 } from "@/components/ui/select";
 import { saveMediaFile } from "@/lib/media/server-actions";
 import { findPropertyTypes } from "@/lib/property-type/server-actions";
-import { createProperty } from "@/lib/property/server-actions";
+import { createProperty, updateProperty } from "@/lib/property/server-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import {
   ControllerRenderProps,
@@ -31,11 +32,12 @@ import {
   useForm,
   UseFormReturn,
 } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
-  uniqueCode: z.string().min(1).max(50).optional(),
+  uniqueCode: z.string().max(50).optional(),
   typeId: z.string().uuid(),
   mediaList: z
     .array(
@@ -72,21 +74,33 @@ const propertyToForm = ({
 
 export default function PropertyForm({ property }: { property?: Property }) {
   //   console.log("property: ", property);
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: property ? propertyToForm(property) : defaultFormValues,
     mode: "onChange",
   });
+  const isUpdate = !!property;
   const { control } = form;
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    const result = await createProperty({
+    const data = {
       ...values,
       mediaList: values.mediaList.map((m) => m.id),
-    });
+    };
+    let result: Property | undefined;
 
-    console.log("result: ", result);
+    if (isUpdate) {
+      result = await updateProperty(property.id, data);
+      toast(`Product Updated`, { position: "top-center" });
+    } else {
+      result = await createProperty(data);
+
+      if (result) {
+        router.push(`/properties/${result.id}`);
+      }
+    }
   }
 
   function onInvalid(errors: any) {
@@ -185,7 +199,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
         />
         {/* ))} */}
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
       </form>
     </Form>
   );

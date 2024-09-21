@@ -10,7 +10,7 @@ export async function createProperty(variables: {
   uniqueCode?: string;
   mediaList?: string[];
 }) {
-  const { data } = await getClient().mutate({
+  const { data } = await getClient().mutate<{ createProperty: Property }>({
     variables,
     mutation: gql`
       mutation CreateProperty(
@@ -38,7 +38,49 @@ export async function createProperty(variables: {
     `,
   });
 
-  return data;
+  return data?.createProperty;
+}
+
+export async function updateProperty(
+  id: string,
+  variables: {
+    name: string;
+    typeId: string;
+    uniqueCode?: string;
+    mediaList?: string[];
+  }
+) {
+  const { data } = await getClient().mutate<{ updateProperty: Property }>({
+    variables: { ...variables, id },
+    mutation: gql`
+      mutation UpdateProperty(
+        $id: String!
+        $name: String
+        $typeId: String
+        $uniqueCode: String
+        $mediaList: [String!]
+      ) {
+        updateProperty(
+          id: $id
+          updatePropertyData: {
+            name: $name
+            typeId: $typeId
+            uniqueCode: $uniqueCode
+            mediaList: $mediaList
+          }
+        ) {
+          id
+          name
+          type {
+            id
+            name
+          }
+        }
+      }
+    `,
+  });
+
+  return data?.updateProperty;
 }
 
 export async function saveProperty(fd: FormData) {
