@@ -53,6 +53,7 @@ type Query {
 
 type Mutation {
   createProperty(createPropertyData: CreatePropertyInput!): Property!
+  updateProperty(id: String!, updatePropertyData: UpdatePropertyInput!): Property!
   createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
   createAmenity(createAmenityData: CreateAmenityInput!): Amenity!
   generateSignedUrl(name: String!, mimeType: String!): String!
@@ -64,6 +65,14 @@ input CreatePropertyInput {
   typeId: String!
   amenityIds: [String]
   mediaList: [String]
+}
+
+input UpdatePropertyInput {
+  name: String
+  uniqueCode: String
+  typeId: String
+  amenityIds: [String!]
+  mediaList: [String!]
 }
 
 input CreatePropertyTypeInput {

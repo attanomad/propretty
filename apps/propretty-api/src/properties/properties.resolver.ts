@@ -6,6 +6,7 @@ import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePropertyInput } from './dto/create-property.args';
 import { FindPropertiesArgs } from './dto/find-properties.args';
+import { UpdatePropertyInput } from './dto/update-property.args';
 import { Property } from './models/property.model';
 
 @Resolver()
@@ -52,6 +53,50 @@ export class PropertiesResolver {
         if (e.code === 'P2002') {
           throw new Error(`Property already exists`);
         }
+      }
+
+      throw e;
+    }
+  }
+
+  @Mutation((returns) => Property)
+  async updateProperty(
+    @Args('id') id: string,
+    @Args('updatePropertyData') args: UpdatePropertyInput,
+  ) {
+    console.log('args: ', args);
+    try {
+      const data: Prisma.PropertyUpdateArgs['data'] = {
+        name: args.name,
+        uniqueCode: args.uniqueCode,
+      };
+
+      if (args.typeId) {
+        data.type = { connect: { id: args.typeId } };
+      }
+
+      if (args.amenityIds && args.amenityIds.length > 0) {
+        data.amenities = { connect: args.amenityIds.map((id) => ({ id })) };
+      }
+
+      if (Array.isArray(args.mediaList) && args.mediaList.length > 0) {
+        data.mediaList = { connect: args.mediaList.map((id) => ({ id })) };
+      }
+
+      const result = await this.prismaService.property.update({
+        where: { id },
+        omit: { typeId: true },
+        data,
+        include: { type: true, mediaList: true, amenities: true },
+      });
+
+      console.log('result: ', result);
+
+      return result;
+    } catch (e) {
+      console.log('e: ', e);
+      if (e instanceof Error) {
+        throw new Error(`Failed to update property: ${e.message}`);
       }
 
       throw e;
