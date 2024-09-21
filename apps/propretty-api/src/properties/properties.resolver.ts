@@ -58,6 +58,23 @@ export class PropertiesResolver {
     }
   }
 
+  @Query((returns) => Property)
+  async findProperty(@Args('id') id: string) {
+    if (!id) throw new Error("'id' could not be empty");
+
+    const property = await this.prismaService.property.findUnique({
+      where: { id },
+      omit: { typeId: true },
+      include: {
+        type: true,
+        mediaList: true,
+        amenities: true,
+      },
+    });
+
+    return property;
+  }
+
   @Query((returns) => [Property])
   async properties(@Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
