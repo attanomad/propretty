@@ -68,11 +68,11 @@ export class FilesController {
   async getFile(@Param('id') id: string) {
     const file = await this.prismaService.file.findUnique({
       where: { id },
-      select: { id: true, path: true },
+      select: { id: true },
     });
-    const url = new URL(this.configService.getOrThrow('storage.endpoint'));
+    const url = new URL(`http://${this.configService.getOrThrow('host')}`);
 
-    url.pathname = file.path;
+    url.pathname = `files/static/${file.id}`;
 
     return { ...file, url };
   }
