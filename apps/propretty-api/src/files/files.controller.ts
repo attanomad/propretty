@@ -1,6 +1,9 @@
 import {
   Controller,
+  Get,
+  Param,
   Post,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -55,6 +58,48 @@ export class FilesController {
     } catch (e) {
       if (e instanceof Error) {
         throw new Error(`Failed to store file info in database: ${e.message}`);
+      }
+
+      throw e;
+    }
+  }
+
+  @Get(':id')
+  async getFile(@Param('id') id: string) {
+    const file = await this.prismaService.file.findUnique({
+      where: { id },
+      select: { id: true, path: true },
+    });
+    const url = new URL(this.configService.getOrThrow('storage.endpoint'));
+
+    url.pathname = file.path;
+
+    return { ...file, url };
+  }
+
+  @Get('static/:id')
+  async getStaticFile(@Param('id') id: string) {
+    const fileInfo = await this.prismaService.file.findUnique({
+      where: { id },
+      select: { id: true, path: true, mimetype: true },
+    });
+    const [bucketName, ...keys] = fileInfo.path.split('/');
+
+    try {
+      const fileObj = await this.s3.getObject({
+        Bucket: bucketName,
+        Key: keys.join('/'),
+      });
+      const file = await fileObj.Body.transformToByteArray();
+
+      return new StreamableFile(file, {
+        type: fileInfo.mimetype,
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new Error(
+          `Failed to get the file from object storage: ${e.message}`,
+        );
       }
 
       throw e;

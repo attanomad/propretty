@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  StreamableFile,
 } from '@nestjs/common';
 import { GqlContextType } from '@nestjs/graphql';
 import { map, Observable } from 'rxjs';
@@ -21,6 +22,10 @@ export class UnifiedResponseInterceptor<T = unknown>
 
     return next.handle().pipe(
       map((data: any) => {
+        if (data instanceof StreamableFile) {
+          return data;
+        }
+
         let body: BaseResponseBody<T>;
 
         // If `data` contains `code` or `message`, treat it as a full response object
