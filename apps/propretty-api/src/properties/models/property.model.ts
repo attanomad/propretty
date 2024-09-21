@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Amenity } from 'src/amenities/models/amenity.model';
+import { File } from '../../files/models/file.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
-import { File } from './file.model';
 
 @ObjectType()
 export class Property {

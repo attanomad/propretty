@@ -5,15 +5,16 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { S3Module } from 'nestjs-s3';
 import { join } from 'path';
+import { AmenitiesModule } from './amenities/amenities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
+import { FilesModule } from './files/files.module';
 import { PropertiesModule } from './properties/properties.module';
 import { PropertyTypesModule } from './property-types/property-types.module';
 import { UnifiedResponseInterceptor } from './unified-response.interceptor';
 import { UsersModule } from './users/users.module';
-import { AmenitiesModule } from './amenities/amenities.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { AmenitiesModule } from './amenities/amenities.module';
           config: {
             credentials: configService.getOrThrow('storage.credentials'),
             endpoint: configService.getOrThrow('storage.endpoint'),
+            region: configService.getOrThrow('storage.region'),
+            forcePathStyle: true,
           },
         };
       },
@@ -42,6 +45,7 @@ import { AmenitiesModule } from './amenities/amenities.module';
     PropertiesModule,
     PropertyTypesModule,
     AmenitiesModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [

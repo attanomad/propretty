@@ -8,16 +8,16 @@ type Amenity {
   description: String
 }
 
-type PropertyType {
-  id: String!
-  name: String!
-  description: String
-}
-
 type File {
   id: String!
   name: String!
   url: String!
+}
+
+type PropertyType {
+  id: String!
+  name: String!
+  description: String
 }
 
 type Property {
@@ -46,6 +46,7 @@ type Mutation {
   createProperty(createPropertyData: CreatePropertyInput!): Property!
   createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
   createAmenity(createAmenityData: CreateAmenityInput!): Amenity!
+  generateSignedUrl(name: String!, mimeType: String!): String!
 }
 
 input CreatePropertyInput {
