@@ -1,6 +1,8 @@
+import { Inject } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePropertyInput } from './dto/create-property.args';
 import { FindPropertiesArgs } from './dto/find-properties.args';
@@ -8,7 +10,9 @@ import { Property } from './models/property.model';
 
 @Resolver()
 export class PropertiesResolver {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    @Inject(EXTENDED_PRISMA_SERVICE) private prismaService: PrismaService,
+  ) {}
 
   @Mutation((returns) => Property)
   async createProperty(@Args('createPropertyData') args: CreatePropertyInput) {
@@ -23,9 +27,14 @@ export class PropertiesResolver {
         args.amenityIds?.map<Prisma.PropertyAmenitiyWhereUniqueInput>((id) => ({
           id,
         }));
+      const mediaList = args.mediaList?.map((id) => ({ id }));
 
       if (amenities && amenities.length > 0) {
         data.amenities = { connect: amenities };
+      }
+
+      if (mediaList && mediaList.length > 0) {
+        data.mediaList = { connect: mediaList };
       }
 
       const result = await this.prismaService.property.create({
@@ -50,10 +59,14 @@ export class PropertiesResolver {
   }
 
   @Query((returns) => [Property])
-  properties(@Args() args: FindPropertiesArgs) {
+  async properties(@Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
       omit: { typeId: true },
-      include: { type: true, mediaList: true, amenities: true },
+      include: {
+        type: true,
+        mediaList: true,
+        amenities: true,
+      },
     };
 
     if (args.id) {
@@ -74,6 +87,8 @@ export class PropertiesResolver {
       };
     }
 
-    return this.prismaService.property.findMany(prismaArgs);
+    const result = await this.prismaService.property.findMany(prismaArgs);
+
+    return result;
   }
 }

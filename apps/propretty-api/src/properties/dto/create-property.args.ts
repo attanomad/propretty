@@ -13,4 +13,7 @@ export class CreatePropertyInput {
 
   @Field((type) => [String], { nullable: 'itemsAndList' })
   amenityIds?: string[];
+
+  @Field((type) => [String], { nullable: 'itemsAndList' })
+  mediaList?: string[];
 }

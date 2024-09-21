@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Amenity } from 'src/amenities/models/amenity.model';
-import { File } from '../../files/models/file.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
+import { PropertyMedia } from './property-media.model';
 
 @ObjectType()
 export class Property {
@@ -17,8 +17,8 @@ export class Property {
   @Field((type) => PropertyType)
   type: PropertyType;
 
-  @Field((type) => [File], { nullable: 'items' })
-  mediaList: File[];
+  @Field((type) => [PropertyMedia], { nullable: 'items' })
+  mediaList: PropertyMedia[];
 
   @Field((type) => [Amenity], { nullable: 'items' })
   amenities: Amenity[];

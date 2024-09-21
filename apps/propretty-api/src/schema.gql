@@ -8,16 +8,15 @@ type Amenity {
   description: String
 }
 
-type File {
-  id: String!
-  name: String!
-  url: String!
-}
-
 type PropertyType {
   id: String!
   name: String!
   description: String
+}
+
+type PropertyMedia {
+  id: String!
+  url: String!
 }
 
 type Property {
@@ -25,7 +24,7 @@ type Property {
   name: String!
   uniqueCode: String
   type: PropertyType!
-  mediaList: [File]!
+  mediaList: [PropertyMedia]!
   amenities: [Amenity]!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -54,6 +53,7 @@ input CreatePropertyInput {
   uniqueCode: String
   typeId: String!
   amenityIds: [String]
+  mediaList: [String]
 }
 
 input CreatePropertyTypeInput {
