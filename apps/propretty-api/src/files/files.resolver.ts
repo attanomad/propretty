@@ -1,15 +1,27 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { InjectS3, S3 } from 'nestjs-s3';
+import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { File } from './models/file.model';
 
 @Resolver()
 export class FilesResolver {
   constructor(
     private configService: ConfigService,
     @InjectS3() private s3: S3,
+    @Inject(EXTENDED_PRISMA_SERVICE) private prismaService: PrismaService,
   ) {}
+
+  @Query((returns) => [File])
+  async files() {
+    const files = await this.prismaService.file.findMany();
+
+    return files;
+  }
 
   @Mutation((returns) => String)
   async generateSignedUrl(

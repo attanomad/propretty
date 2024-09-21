@@ -8,6 +8,13 @@ type Amenity {
   description: String
 }
 
+type File {
+  id: String!
+  name: String!
+  mimetype: String!
+  url: String!
+}
+
 type PropertyType {
   id: String!
   name: String!
@@ -39,6 +46,7 @@ type Query {
   properties(id: String, name: String, typeId: String): [Property!]!
   propertyTypes(id: String, name: String): [PropertyType!]!
   amenities(id: String, name: String): [Amenity!]!
+  files: [File!]!
 }
 
 type Mutation {

@@ -9,5 +9,8 @@ export class File {
   name: string;
 
   @Field()
+  mimetype: string;
+
+  @Field()
   url: string;
 }
