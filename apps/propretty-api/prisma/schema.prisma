@@ -56,6 +56,8 @@ model PropertyAmenitiy {
 model File {
   id       String     @id @default(uuid())
   name     String
-  url      String
+  path     String
+  mimetype String
+  size     BigInt
   Property Property[]
 }
