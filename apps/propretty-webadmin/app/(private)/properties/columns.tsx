@@ -62,7 +62,6 @@ export const columns: ColumnDef<Property>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      console.log("row: ", row.original);
       const { id } = row.original;
 
       return (
