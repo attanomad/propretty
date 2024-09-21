@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { findPropertyById } from "../actions";
+import PropertyForm from "@/components/property/form/form";
+import { findPropertyById } from "@/lib/property/server-actions";
 
 export default async function ViewProperty({
   params: { id },
@@ -16,7 +16,8 @@ export default async function ViewProperty({
 
   return (
     <>
-      <h1>{name}</h1>
+      <PropertyForm property={property} />
+      {/* <h1>{name}</h1>
       {mediaList.length > 0
         ? mediaList.map((f) => {
             if (!f.mimetype.startsWith("image")) return null;
@@ -30,7 +31,7 @@ export default async function ViewProperty({
               />
             );
           })
-        : null}
+        : null} */}
     </>
   );
 }

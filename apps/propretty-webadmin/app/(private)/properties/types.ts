@@ -1,3 +1,5 @@
+import { Amenity } from "../amenities/actions";
+
 export interface BaseResponse<T = unknown> {
   code: number;
   message: string;
@@ -11,6 +13,7 @@ export interface Property {
   uniqueCode: string;
   type: PropertyType;
   mediaList: PropertyMedia[];
+  amenities: Amenity[];
   createdAt: string;
   updatedAt: string;
 }

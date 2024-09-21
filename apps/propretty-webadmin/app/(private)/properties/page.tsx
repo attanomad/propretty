@@ -1,7 +1,7 @@
+import { findProperties } from "@/lib/property/server-actions";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { findProperties } from "./actions";
 import PropertyListTable from "./property-list-table";
 
 async function PropertyList() {
