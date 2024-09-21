@@ -21,6 +21,8 @@ export default function NavBreadcrumb() {
   const pathname = usePathname();
   const pathList = pathname === "/" ? [""] : pathname.split("/");
 
+  console.log("pathList: ", pathList);
+
   return (
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>
@@ -30,12 +32,15 @@ export default function NavBreadcrumb() {
           }
 
           const label = breadcrumbLabelByPath[p];
+          const sliced = pathList.slice(0, idx + 1).join("/");
+
+          console.log("sliced: ", sliced);
 
           return (
             <Fragment key={p}>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={p}>{label}</Link>
+                  <Link href={sliced || "/"}>{label}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {idx < pathList.length - 1 && <BreadcrumbSeparator />}
