@@ -1,11 +1,10 @@
-import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
 import { JwtPayload } from 'src/auth/jwt.payload';
-import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from 'src/roles/role.enum';
 import { User } from 'src/user/user.decorator';
 import { CreatePropertyInput } from './dto/create-property.args';
 import { FindPropertiesArgs } from './dto/find-properties.args';
@@ -13,13 +12,11 @@ import { UpdatePropertyInput } from './dto/update-property.args';
 import { Property } from './models/property.model';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
 export class PropertiesResolver {
-  constructor(
-    @Inject(EXTENDED_PRISMA_SERVICE) private prismaService: PrismaService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   @Mutation((returns) => Property)
+  @Auth(Role.Admin, Role.Agent)
   async createProperty(
     @User() user: JwtPayload,
     @Args('createPropertyData') args: CreatePropertyInput,
@@ -46,7 +43,7 @@ export class PropertiesResolver {
         data.mediaList = { connect: mediaList };
       }
 
-      const result = await this.prismaService.property.create({
+      const result = await this.prismaService.client.property.create({
         omit: { typeId: true },
         data,
         include: { type: true, mediaList: true, amenities: true },
@@ -66,6 +63,7 @@ export class PropertiesResolver {
   }
 
   @Mutation((returns) => Property)
+  @Auth(Role.Admin, Role.Agent)
   async updateProperty(
     @Args('id') id: string,
     @Args('updatePropertyData') args: UpdatePropertyInput,
@@ -88,7 +86,7 @@ export class PropertiesResolver {
         data.mediaList = { connect: args.mediaList.map((id) => ({ id })) };
       }
 
-      const result = await this.prismaService.property.update({
+      const result = await this.prismaService.client.property.update({
         where: { id },
         omit: { typeId: true },
         data,
@@ -107,10 +105,11 @@ export class PropertiesResolver {
   }
 
   @Query((returns) => Property)
+  @Auth()
   async findProperty(@Args('id') id: string) {
     if (!id) throw new Error("'id' could not be empty");
 
-    const property = await this.prismaService.property.findUnique({
+    const property = await this.prismaService.client.property.findUnique({
       where: { id },
       omit: { typeId: true },
       include: {
@@ -124,6 +123,7 @@ export class PropertiesResolver {
   }
 
   @Query((returns) => [Property])
+  @Auth()
   async properties(@User() user: JwtPayload, @Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
       omit: { typeId: true },
@@ -152,7 +152,8 @@ export class PropertiesResolver {
       };
     }
 
-    const result = await this.prismaService.property.findMany(prismaArgs);
+    const result =
+      await this.prismaService.client.property.findMany(prismaArgs);
 
     return result;
   }

@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Auth } from 'src/auth/auth.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from 'src/roles/role.enum';
 import { CreateAmenityInput } from './dto/create-amenity.args';
 import { FindAmenitiesArgs } from './dto/find-amenities.args';
 import { Amenity } from './models/amenity.model';
@@ -10,9 +12,10 @@ export class AmenitiesResolver {
   constructor(private prismaService: PrismaService) {}
 
   @Mutation((returns) => Amenity)
+  @Auth(Role.Admin)
   async createAmenity(@Args('createAmenityData') args: CreateAmenityInput) {
     try {
-      const result = await this.prismaService.propertyAmenitiy.create({
+      const result = await this.prismaService.client.propertyAmenitiy.create({
         data: args,
       });
 
@@ -30,9 +33,15 @@ export class AmenitiesResolver {
   }
 
   @Query((returns) => [Amenity])
+  @Auth()
   amenities(@Args() args: FindAmenitiesArgs) {
-    return this.prismaService.propertyAmenitiy.findMany({
-      where: { id: args.id, name: args.name },
+    return this.prismaService.client.propertyAmenitiy.findMany({
+      where: {
+        id: args.id,
+        name: args.name
+          ? { contains: args.name, mode: 'insensitive' }
+          : undefined,
+      },
     });
   }
 }

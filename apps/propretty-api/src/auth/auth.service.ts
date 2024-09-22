@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
+import { Role } from 'src/roles/role.enum';
 import { User } from 'src/users/models/user.model';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './jwt.payload';
@@ -16,7 +17,10 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<Omit<User, 'hashedPassword'>> {
-    const user = await this.usersService.findOneByUsername(username, true);
+    const user = (await this.usersService.findOneByUsername(
+      username,
+      true,
+    )) as User;
 
     if (!user)
       throw new HttpException(
@@ -38,7 +42,7 @@ export class AuthService {
   async login(user: Omit<User, 'hashedPassword'>) {
     const payload: JwtPayload = {
       userId: user.id,
-      userRoles: user.roles.map((r) => r.name),
+      userRoles: user.roles,
       username: user.username,
     };
 
@@ -48,6 +52,6 @@ export class AuthService {
   }
 
   async signUp(username: string, pass: string) {
-    return this.usersService.create(username, pass);
+    return this.usersService.create(username, pass, [Role.Viewer]);
   }
 }

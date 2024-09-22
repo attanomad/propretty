@@ -11,20 +11,20 @@ export class UsersService {
   ) {}
 
   findOneByUsername(username: string, withHashedPassword: boolean = false) {
-    return this.prismaService.user.findUnique({
+    return this.prismaService.client.user.findUnique({
+      omit: !withHashedPassword ? { hashedPassword: true } : undefined,
       where: { username },
-      include: { roles: true },
     });
   }
 
-  async create(username: string, password: string) {
+  async create(username: string, password: string, roles?: string[]) {
     const hashedPassword = await hash(
       password,
       this.configService.get<number>('security.password.saltRounds'),
     );
 
-    return this.prismaService.user.create({
-      data: { hashedPassword, username },
+    return this.prismaService.client.user.create({
+      data: { hashedPassword, username, roles },
       select: { id: true, username: true },
     });
   }

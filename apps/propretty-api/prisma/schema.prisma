@@ -21,15 +21,8 @@ model User {
   // emailVerified Boolean @default(false)
   hashedPassword String
 
-  roles      Role[]
+  roles      String[]
   properties Property[]
-}
-
-model Role {
-  id   String @id @default(cuid())
-  name String @unique
-
-  user User[]
 }
 
 enum PropertyStatus {
@@ -64,7 +57,7 @@ model PropertyType {
 
 model PropertyAmenitiy {
   id          String   @id @default(cuid())
-  name        String
+  name        String   @unique
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

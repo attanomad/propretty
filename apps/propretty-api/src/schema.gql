@@ -15,16 +15,17 @@ type File {
   url: String!
 }
 
-type Role {
-  id: String!
-  name: String!
-}
-
 type User {
   id: String!
   username: String!
   hashedPassword: String!
   roles: [Role!]!
+}
+
+enum Role {
+  Viewer
+  Agent
+  Admin
 }
 
 type PropertyType {

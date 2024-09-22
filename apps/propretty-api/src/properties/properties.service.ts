@@ -7,22 +7,22 @@ export class PropertiesService {
   constructor(private prismaService: PrismaService) {}
 
   create(args: Prisma.PropertyCreateArgs) {
-    return this.prismaService.property.create(args);
+    return this.prismaService.client.property.create(args);
   }
 
   find(args?: Prisma.PropertyFindManyArgs) {
-    return this.prismaService.property.findMany(args);
+    return this.prismaService.client.property.findMany(args);
   }
 
   findOne(args: Prisma.PropertyFindUniqueArgs) {
-    return this.prismaService.property.findUnique(args);
+    return this.prismaService.client.property.findUnique(args);
   }
 
   update(args: Prisma.PropertyUpdateArgs) {
-    return this.prismaService.property.update(args);
+    return this.prismaService.client.property.update(args);
   }
 
   remove(args: Prisma.PropertyDeleteArgs) {
-    return this.prismaService.property.delete(args);
+    return this.prismaService.client.property.delete(args);
   }
 }
