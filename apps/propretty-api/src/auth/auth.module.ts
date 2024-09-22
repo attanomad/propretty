@@ -18,7 +18,11 @@ import { LocalStrategy } from './local.strategy';
 
         return {
           secret,
-          signOptions: { expiresIn: '60s' },
+          signOptions: {
+            expiresIn: configService.getOrThrow<string>(
+              'security.jwt.lifespan',
+            ),
+          },
         };
       },
       inject: [ConfigService],

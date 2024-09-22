@@ -15,6 +15,18 @@ type File {
   url: String!
 }
 
+type Role {
+  id: String!
+  name: String!
+}
+
+type User {
+  id: String!
+  username: String!
+  hashedPassword: String!
+  roles: [Role!]!
+}
+
 type PropertyType {
   id: String!
   name: String!
@@ -34,6 +46,8 @@ type Property {
   type: PropertyType!
   mediaList: [PropertyMedia]!
   amenities: [Amenity]!
+  userId: String!
+  user: User!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -61,14 +75,21 @@ type Mutation {
 
 input CreatePropertyInput {
   name: String!
+  status: Status!
   uniqueCode: String
   typeId: String!
   amenityIds: [String]
   mediaList: [String]
 }
 
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
 input UpdatePropertyInput {
   name: String
+  status: Status
   uniqueCode: String
   typeId: String
   amenityIds: [String!]

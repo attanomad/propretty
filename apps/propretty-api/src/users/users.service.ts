@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -11,10 +10,10 @@ export class UsersService {
     private prismaService: PrismaService,
   ) {}
 
-  findOne(where: Prisma.UserWhereUniqueInput, select?: Prisma.UserSelect) {
+  findOneByUsername(username: string, withHashedPassword: boolean = false) {
     return this.prismaService.user.findUnique({
-      where,
-      select: select ? select : { id: true, username: true },
+      where: { username },
+      include: { roles: true },
     });
   }
 

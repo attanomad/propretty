@@ -6,17 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtPayload } from 'src/auth/jwt.payload';
+import { User } from 'src/user/user.decorator';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { PropertiesService } from './properties.service';
 
 @Controller('properties')
+@UseGuards(JwtAuthGuard)
 export class PropertiesController {
   constructor(private readonly propertiesService: PropertiesService) {}
 
   @Post()
   create(
+    @User() user: JwtPayload,
     @Body()
     body: CreatePropertyDto,
   ) {
@@ -31,23 +37,23 @@ export class PropertiesController {
     }
 
     return this.propertiesService.create({
-      data: { ...body, type },
+      data: {
+        ...body,
+        type,
+        user: { connect: { id: user.userId } },
+      },
       include: { type: true },
     });
   }
 
   @Get()
+  // @Roles(Role.Admin)
   find() {
     return this.propertiesService.find({
       omit: { typeId: true },
       include: { type: true },
     });
   }
-
-  // @Get()
-  // find(@Param('where') where: Prisma.PropertyWhereInput) {
-  //   return this.propertiesService.find({ where });
-  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

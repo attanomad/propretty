@@ -1,11 +1,14 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePropertyTypeInput } from './dto/create-property-type.args';
 import { FindPropertyTypesArgs } from './dto/find-property-types.args';
 import { PropertyType } from './models/property-type.model';
 
 @Resolver()
+@UseGuards(JwtAuthGuard)
 export class PropertyTypesResolver {
   constructor(private prismaService: PrismaService) {}
 

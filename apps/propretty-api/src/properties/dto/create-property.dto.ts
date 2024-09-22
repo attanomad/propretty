@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 export interface CreatePropertyDto
-  extends Pick<Prisma.PropertyCreateInput, 'name' | 'uniqueCode'> {
+  extends Pick<Prisma.PropertyCreateInput, 'name' | 'uniqueCode' | 'status'> {
   type: {
     id?: string;
     name?: string;

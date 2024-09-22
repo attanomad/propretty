@@ -15,36 +15,55 @@ datasource db {
 }
 
 model User {
-  id             String @id @default(uuid())
+  id             String @id @default(cuid())
   // email String @unique
   username       String @unique
   // emailVerified Boolean @default(false)
   hashedPassword String
+
+  roles      Role[]
+  properties Property[]
+}
+
+model Role {
+  id   String @id @default(cuid())
+  name String @unique
+
+  user User[]
+}
+
+enum PropertyStatus {
+  ACTIVE
+  INACTIVE
 }
 
 model Property {
-  id         String   @id @default(uuid())
+  id         String         @id @default(cuid())
   name       String
-  uniqueCode String?  @unique
+  status     PropertyStatus
+  uniqueCode String?        @unique
   mediaList  File[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   typeId String
   type   PropertyType @relation(fields: [typeId], references: [id])
 
   amenities PropertyAmenitiy[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model PropertyType {
-  id          String     @id @default(uuid())
+  id          String     @id @default(cuid())
   name        String     @unique
   description String?
   Property    Property[]
 }
 
 model PropertyAmenitiy {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
   createdAt   DateTime @default(now())
@@ -54,7 +73,7 @@ model PropertyAmenitiy {
 }
 
 model File {
-  id       String     @id @default(uuid())
+  id       String     @id @default(cuid())
   name     String
   path     String
   mimetype String
@@ -63,7 +82,7 @@ model File {
 }
 
 model Contact {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   name        String
   description String
   createdAt   DateTime @default(now())

@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
+import { User } from 'src/users/models/user.model';
 import { UsersService } from '../users/users.service';
+import { JwtPayload } from './jwt.payload';
 
 @Injectable()
 export class AuthService {
@@ -11,11 +12,11 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(
-      { username },
-      { id: true, username: true, hashedPassword: true },
-    );
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<Omit<User, 'hashedPassword'>> {
+    const user = await this.usersService.findOneByUsername(username, true);
 
     if (!user)
       throw new HttpException(
@@ -34,8 +35,12 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
-    const payload = { username: user.username, sub: user.id };
+  async login(user: Omit<User, 'hashedPassword'>) {
+    const payload: JwtPayload = {
+      userId: user.id,
+      userRoles: user.roles.map((r) => r.name),
+      username: user.username,
+    };
 
     return {
       access_token: this.jwtService.sign(payload),

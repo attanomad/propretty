@@ -1,28 +1,36 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtPayload } from 'src/auth/jwt.payload';
 import { EXTENDED_PRISMA_SERVICE } from 'src/prisma/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from 'src/user/user.decorator';
 import { CreatePropertyInput } from './dto/create-property.args';
 import { FindPropertiesArgs } from './dto/find-properties.args';
 import { UpdatePropertyInput } from './dto/update-property.args';
 import { Property } from './models/property.model';
 
 @Resolver()
+@UseGuards(JwtAuthGuard)
 export class PropertiesResolver {
   constructor(
     @Inject(EXTENDED_PRISMA_SERVICE) private prismaService: PrismaService,
   ) {}
 
   @Mutation((returns) => Property)
-  async createProperty(@Args('createPropertyData') args: CreatePropertyInput) {
-    console.log('args: ', args);
+  async createProperty(
+    @User() user: JwtPayload,
+    @Args('createPropertyData') args: CreatePropertyInput,
+  ) {
     try {
       const data: Prisma.PropertyCreateArgs['data'] = {
         name: args.name,
+        status: args.status,
         type: { connect: { id: args.typeId } },
         uniqueCode: args.uniqueCode,
+        user: { connect: { id: user.userId } },
       };
       const amenities =
         args.amenityIds?.map<Prisma.PropertyAmenitiyWhereUniqueInput>((id) => ({
@@ -44,8 +52,6 @@ export class PropertiesResolver {
         include: { type: true, mediaList: true, amenities: true },
       });
 
-      console.log('result: ', result);
-
       return result;
     } catch (e) {
       console.log('e: ', e);
@@ -64,7 +70,6 @@ export class PropertiesResolver {
     @Args('id') id: string,
     @Args('updatePropertyData') args: UpdatePropertyInput,
   ) {
-    console.log('args: ', args);
     try {
       const data: Prisma.PropertyUpdateArgs['data'] = {
         name: args.name,
@@ -89,8 +94,6 @@ export class PropertiesResolver {
         data,
         include: { type: true, mediaList: true, amenities: true },
       });
-
-      console.log('result: ', result);
 
       return result;
     } catch (e) {
@@ -121,7 +124,7 @@ export class PropertiesResolver {
   }
 
   @Query((returns) => [Property])
-  async properties(@Args() args: FindPropertiesArgs) {
+  async properties(@User() user: JwtPayload, @Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
       omit: { typeId: true },
       include: {

@@ -1,9 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { Status } from '../enums/status.enum';
 
 @InputType()
 export class CreatePropertyInput {
   @Field()
   name: string;
+
+  @Field((type) => Status)
+  status: Status;
 
   @Field({ nullable: true })
   uniqueCode?: string;

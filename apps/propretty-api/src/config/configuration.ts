@@ -19,6 +19,7 @@ export default () => ({
     },
     jwt: {
       secret: process.env.SECURITY_JWT_SECRET,
+      lifespan: process.env.SECURITY_JWT_LIFESPAN || '4h',
     },
   },
 });
