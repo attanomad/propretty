@@ -38,11 +38,11 @@ import { z } from "zod";
 const formSchema = z.object({
   name: z.string().min(2).max(50),
   uniqueCode: z.string().max(50).optional(),
-  typeId: z.string().uuid(),
+  typeId: z.string().cuid(),
   mediaList: z
     .array(
       z.object({
-        id: z.string().uuid(),
+        id: z.string().cuid(),
         url: z.string().url(),
       })
     )
