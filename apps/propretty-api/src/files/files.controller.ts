@@ -23,8 +23,6 @@ export class FilesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log('file: ', file);
-
     const bucketName = this.configService.getOrThrow('storage.bucketName');
     const { originalname: filename, mimetype, size } = file;
 

@@ -8,6 +8,10 @@ type Amenity {
   description: String
 }
 
+type Token {
+  accessToken: String!
+}
+
 type File {
   id: String!
   name: String!
@@ -67,11 +71,17 @@ type Query {
 }
 
 type Mutation {
+  login(credentials: LoginInput!): Token!
   createProperty(createPropertyData: CreatePropertyInput!): Property!
   updateProperty(id: String!, updatePropertyData: UpdatePropertyInput!): Property!
   createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
   createAmenity(createAmenityData: CreateAmenityInput!): Amenity!
   generateSignedUrl(name: String!, mimeType: String!): String!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
 }
 
 input CreatePropertyInput {

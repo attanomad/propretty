@@ -4,7 +4,6 @@ import { Request } from 'express';
 
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    console.log('ctx: ', ctx);
     let request: Request;
 
     if (ctx.getType<GqlContextType>() === 'graphql') {

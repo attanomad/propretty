@@ -5,6 +5,7 @@ import { Role } from 'src/roles/role.enum';
 import { User } from 'src/users/models/user.model';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './jwt.payload';
+import { Token } from './models/token.model';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +40,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: Omit<User, 'hashedPassword'>) {
+  async login(user: Omit<User, 'hashedPassword'>): Promise<Token> {
     const payload: JwtPayload = {
       userId: user.id,
       userRoles: user.roles,
@@ -47,7 +48,7 @@ export class AuthService {
     };
 
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
