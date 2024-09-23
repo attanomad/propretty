@@ -9,7 +9,6 @@ import { AmenitiesModule } from './amenities/amenities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { CaslModule } from './casl/casl.module';
 import configuration from './config/configuration';
 import { FilesModule } from './files/files.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -49,7 +48,6 @@ import { UsersModule } from './users/users.module';
     AmenitiesModule,
     FilesModule,
     PrismaModule,
-    CaslModule,
   ],
   controllers: [AppController],
   providers: [
