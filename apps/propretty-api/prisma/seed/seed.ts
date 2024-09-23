@@ -14,8 +14,11 @@ const prisma = extendPrismaClient(new PrismaClient(), {
 });
 const users: Omit<User, 'id'>[] = [
   { username: 'admin1', roles: [Role.Admin], hashedPassword: 'changeme' },
+  { username: 'admin2', roles: [Role.Admin], hashedPassword: 'changeme' },
   { username: 'agent1', roles: [Role.Agent], hashedPassword: 'changeme' },
+  { username: 'agent2', roles: [Role.Agent], hashedPassword: 'changeme' },
   { username: 'viewer1', roles: [Role.Viewer], hashedPassword: 'changeme' },
+  { username: 'viewer2', roles: [Role.Viewer], hashedPassword: 'changeme' },
 ];
 // prettier-ignore
 const propertyTypes = [
