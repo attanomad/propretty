@@ -1,3 +1,3 @@
 export default function SignIn() {
-  return "sign in, please";
+  return "log in, please";
 }
