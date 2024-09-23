@@ -11,9 +11,19 @@ export default async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   // 3. Decrypt the session from the cookie
-  const token = cookies().get("session")?.value;
+  const cookie = cookies().get("session");
 
-  console.log("path: ", path, token, isPublicRoute);
+  //   console.log(
+  //     `path=${path}; isPublic=${isPublicRoute}; cookie=${JSON.stringify(cookie)};`
+  //   );
+
+  if (!cookie) {
+    return isPublicRoute
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
+
+  const token = cookie.value;
 
   if (!token)
     return isPublicRoute
@@ -27,9 +37,9 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  // 6. Redirect to /dashboard if the user is authenticated
+  // 6. Redirect to / if the user is authenticated
   if (isPublicRoute && payload.userId) {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+    return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
   return NextResponse.next();

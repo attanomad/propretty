@@ -1,9 +1,8 @@
-import { JWTPayload, SignJWT, importSPKI, jwtVerify } from "jose";
+"use server";
+import { JWTPayload, importSPKI, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import "server-only";
 
-const secretKey = process.env.SESSION_SECRET;
-const encodedKey = new TextEncoder().encode(secretKey);
 const publicKey = process.env.PROPRETTY_API_JWT_PUBLIC_KEY_CONTENT!;
 const publicKeyAlgo = process.env.PROPRETTY_API_JWT_ALGO || "RS256";
 
@@ -20,34 +19,19 @@ export async function getJwtPayload(jwt: string) {
   return payload;
 }
 
-export async function encrypt(payload: SessionPayload) {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(encodedKey);
-}
-
-export async function decrypt(session: string | undefined = "") {
-  try {
-    const { payload } = await jwtVerify(session, encodedKey, {
-      algorithms: ["HS256"],
-    });
-    return payload;
-  } catch (error) {
-    console.log("Failed to verify session");
-  }
-}
-
 export async function createSession(jwt: string) {
-  const { payload } = await jwtVerify(jwt, encodedKey);
+  const payload = await getJwtPayload(jwt);
   //   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   //   const session = await encrypt({ userId, expiresAt });
+  if (!payload.exp) throw new Error(`JWT payload does not have 'exp' field`);
+
+  const expiresInMilliseconds = payload.exp * 1000;
 
   cookies().set("session", jwt, {
     httpOnly: true,
-    secure: true,
-    expires: payload.exp,
+    // TODO handle this for production
+    // secure: true,
+    expires: expiresInMilliseconds,
     sameSite: "lax",
     path: "/",
   });
