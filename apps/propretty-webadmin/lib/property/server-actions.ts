@@ -1,44 +1,74 @@
 "use server";
 
 import { Property } from "@/app/(private)/properties/types";
-import { gql } from "@apollo/client";
+import { ApolloError, gql } from "@apollo/client";
 import { getClient } from "../apollo-client";
+import { ServerActionBaseResponse } from "../server-actions.types";
 
 export async function createProperty(variables: {
   name: string;
   typeId: string;
   uniqueCode?: string;
   mediaList?: string[];
-}) {
-  const { data } = await getClient().mutate<{ createProperty: Property }>({
-    variables,
-    mutation: gql`
-      mutation CreateProperty(
-        $name: String!
-        $typeId: String!
-        $uniqueCode: String
-        $mediaList: [String]
-      ) {
-        createProperty(
-          createPropertyData: {
-            name: $name
-            typeId: $typeId
-            uniqueCode: $uniqueCode
-            mediaList: $mediaList
-          }
+}): Promise<ServerActionBaseResponse<Property>> {
+  try {
+    const { data, errors, extensions } = await getClient().mutate<{
+      createProperty: Property;
+    }>({
+      variables,
+      mutation: gql`
+        mutation CreateProperty(
+          $name: String!
+          $status: Status!
+          $typeId: String!
+          $uniqueCode: String
+          $mediaList: [String]
         ) {
-          id
-          name
-          type {
+          createProperty(
+            createPropertyData: {
+              name: $name
+              status: $status
+              typeId: $typeId
+              uniqueCode: $uniqueCode
+              mediaList: $mediaList
+            }
+          ) {
             id
             name
+            status
+            type {
+              id
+              name
+            }
           }
         }
-      }
-    `,
-  });
+      `,
+    });
 
-  return data?.createProperty;
+    return { code: 0, message: "success", data: data?.createProperty };
+  } catch (e) {
+    console.log(`Failed to create property: `, JSON.stringify(e));
+
+    let code: number | null = null;
+    let message: string = "";
+
+    if (e instanceof ApolloError) {
+      if (e.graphQLErrors.length > 0) {
+        message = e.graphQLErrors[0].message || "GraphQL error occurred";
+      }
+
+      // Handle network error
+      if (e.networkError) {
+        message = "Network error occurred";
+      }
+    } else {
+      // If it's not an ApolloError, handle it as a generic error
+      console.log("Unexpected Error: ", e);
+      message = "Unexpected error occurred";
+    }
+
+    return { code: code ?? 500, message: message || "something went wrong" };
+  }
 }
 
 export async function updateProperty(
@@ -49,7 +79,7 @@ export async function updateProperty(
     uniqueCode?: string;
     mediaList?: string[];
   }
-) {
+): Promise<ServerActionBaseResponse<Property>> {
   const { data } = await getClient().mutate<{ updateProperty: Property }>({
     variables: { ...variables, id },
     mutation: gql`
@@ -80,7 +110,7 @@ export async function updateProperty(
     `,
   });
 
-  return data?.updateProperty;
+  return { code: 0, message: "success", data: data?.updateProperty };
 }
 
 export async function saveProperty(fd: FormData) {

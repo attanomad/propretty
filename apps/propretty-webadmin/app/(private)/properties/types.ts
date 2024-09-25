@@ -1,3 +1,4 @@
+import { PropertyStatus } from "@/lib/property/types";
 import { Amenity } from "../amenities/actions";
 
 export interface BaseResponse<T = unknown> {
@@ -10,6 +11,7 @@ export interface BaseResponse<T = unknown> {
 export interface Property {
   id: string;
   name: string;
+  status: PropertyStatus;
   uniqueCode: string;
   type: PropertyType;
   mediaList: PropertyMedia[];

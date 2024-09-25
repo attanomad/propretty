@@ -22,6 +22,8 @@ import {
 import { saveMediaFile } from "@/lib/media/server-actions";
 import { findPropertyTypes } from "@/lib/property-type/server-actions";
 import { createProperty, updateProperty } from "@/lib/property/server-actions";
+import { PropertyStatus } from "@/lib/property/types";
+import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -37,6 +39,7 @@ import { z } from "zod";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
+  status: z.nativeEnum(PropertyStatus),
   uniqueCode: z.string().max(50).optional(),
   typeId: z.string().cuid(),
   mediaList: z
@@ -53,6 +56,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 const defaultFormValues: z.infer<typeof formSchema> = {
   name: "",
+  status: PropertyStatus.Active,
   typeId: "",
   uniqueCode: "",
   mediaList: [],
@@ -60,12 +64,14 @@ const defaultFormValues: z.infer<typeof formSchema> = {
 
 const propertyToForm = ({
   name,
+  status,
   uniqueCode,
   type,
   mediaList,
 }: Property): z.infer<typeof formSchema> => {
   return {
     name,
+    status,
     uniqueCode,
     typeId: type.id,
     mediaList,
@@ -81,7 +87,6 @@ export default function PropertyForm({ property }: { property?: Property }) {
     mode: "onChange",
   });
   const isUpdate = !!property;
-  const { control } = form;
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -89,17 +94,33 @@ export default function PropertyForm({ property }: { property?: Property }) {
       ...values,
       mediaList: values.mediaList.map((m) => m.id),
     };
-    let result: Property | undefined;
+    let res: ServerActionBaseResponse<Property>;
 
     if (isUpdate) {
-      result = await updateProperty(property.id, data);
-      toast(`Product Updated`, { position: "top-center" });
-    } else {
-      result = await createProperty(data);
+      res = await updateProperty(property.id, data);
 
-      if (result) {
-        router.push(`/properties/${result.id}`);
+      if (res.code === 0) {
+        toast.success(`Product Updated`, {
+          position: "top-center",
+          richColors: true,
+        });
       }
+
+      toast.error(`Failed to update property: ${res.message}`, {
+        richColors: true,
+      });
+    } else {
+      res = await createProperty(data);
+
+      if (res.code === 0 && res.data) {
+        router.push(`/properties/${res.data.id}`);
+
+        return;
+      }
+
+      toast.error(`Failed to create property: ${res.message}`, {
+        richColors: true,
+      });
     }
   }
 
@@ -116,6 +137,26 @@ export default function PropertyForm({ property }: { property?: Property }) {
         onSubmit={form.handleSubmit(onSubmit, onInvalid)}
         className="space-y-8"
       >
+        <FormField
+          control={form.control}
+          name={`mediaList`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Picture</FormLabel>
+              <FormControl>
+                <MediaInput
+                  form={form}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Images and/or videos of the property
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="typeId"
@@ -135,6 +176,36 @@ export default function PropertyForm({ property }: { property?: Property }) {
               </Select>
               <FormDescription>The property type</FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name={`status`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select property status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.values(PropertyStatus).map((s) => (
+                    <SelectItem
+                      key={s}
+                      value={s}
+                    >
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormItem>
           )}
         />
@@ -174,30 +245,6 @@ export default function PropertyForm({ property }: { property?: Property }) {
             </FormItem>
           )}
         />
-
-        {/* {mediaList.map((f, index) => ( */}
-        <FormField
-          // key={f.id}
-          control={form.control}
-          // name="file"
-          name={`mediaList`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Picture</FormLabel>
-              <FormControl>
-                <MediaInput
-                  form={form}
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                Images and/or videos of the property
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* ))} */}
 
         <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
       </form>
