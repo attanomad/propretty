@@ -12,6 +12,9 @@ export class Property {
   @Field()
   name: string;
 
+  @Field()
+  status: string;
+
   @Field((type) => String, { nullable: true })
   uniqueCode: string;
 

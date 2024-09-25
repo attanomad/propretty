@@ -47,6 +47,7 @@ type PropertyMedia {
 type Property {
   id: String!
   name: String!
+  status: String!
   uniqueCode: String
   type: PropertyType!
   mediaList: [PropertyMedia]!
