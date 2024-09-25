@@ -35,6 +35,7 @@ export async function createProperty(variables: {
           ) {
             id
             name
+            uniqueCode
             status
             type {
               id
@@ -101,6 +102,8 @@ export async function updateProperty(
         ) {
           id
           name
+          status
+          uniqueCode
           type {
             id
             name
@@ -127,6 +130,8 @@ export async function findPropertyById(id: string) {
         query FindProperty($id: String!) {
           findProperty(id: $id) {
             name
+            status
+            uniqueCode
             id
             type {
               id
