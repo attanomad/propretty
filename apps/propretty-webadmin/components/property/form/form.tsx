@@ -25,6 +25,8 @@ import { createProperty, updateProperty } from "@/lib/property/server-actions";
 import { PropertyStatus } from "@/lib/property/types";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SelectProps } from "@radix-ui/react-select";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -163,17 +165,10 @@ export default function PropertyForm({ property }: { property?: Property }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Property Type</FormLabel>
-              <Select
+              <PropertyTypeSelector
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a property type" />
-                  </SelectTrigger>
-                </FormControl>
-                <PropertyTypeOptions />
-              </Select>
+              />
               <FormDescription>The property type</FormDescription>
               <FormMessage />
             </FormItem>
@@ -252,31 +247,105 @@ export default function PropertyForm({ property }: { property?: Property }) {
   );
 }
 
-const PropertyTypeOptions = () => {
+const PropertyTypeSelector = ({ onValueChange, value }: SelectProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
 
   useEffect(() => {
     const fetchPropTypes = async () => {
-      const foundPropTypes = await findPropertyTypes();
-      setPropertyTypes(foundPropTypes);
+      setIsLoading(true);
+      console.log("finding property types...");
+
+      const { code, message, data } = await findPropertyTypes();
+
+      if (code !== 0) {
+        toast.error(message, { richColors: true });
+        setIsLoading(false);
+
+        return;
+      }
+
+      if (data) {
+        setPropertyTypes(data);
+      }
+
+      console.log("finished finding property types...");
+      setIsLoading(false);
     };
 
     fetchPropTypes();
-  }, []);
+  }, [setIsLoading]);
 
-  return (
-    <SelectContent>
-      {propertyTypes.map((p) => (
-        <SelectItem
-          key={p.id}
-          value={p.id}
-        >
-          {p.name}
-        </SelectItem>
-      ))}
-    </SelectContent>
+  console.log(`isLoading = ${isLoading}`);
+
+  return isLoading ? (
+    <Loader2 />
+  ) : (
+    <Select
+      onValueChange={onValueChange}
+      defaultValue={value}
+    >
+      <FormControl>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a property type" />
+        </SelectTrigger>
+      </FormControl>
+      <SelectContent>
+        {propertyTypes.map((p) => (
+          <SelectItem
+            key={p.id}
+            value={p.id}
+          >
+            {p.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
+
+// const PropertyTypeOptions = () => {
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
+
+//   useEffect(() => {
+//     const fetchPropTypes = async () => {
+//       setIsLoading(true);
+
+//       const { code, message, data } = await findPropertyTypes();
+
+//       if (code !== 0) {
+//         toast.error(message, { richColors: true });
+//         setIsLoading(false);
+
+//         return;
+//       }
+
+//       if (data) {
+//         setPropertyTypes(data);
+//       }
+
+//       setIsLoading(false);
+//     };
+
+//     fetchPropTypes();
+//   }, []);
+
+//   return isLoading ? (
+//     <Loader2 />
+//   ) : (
+//     <SelectContent>
+//       {propertyTypes.map((p) => (
+//         <SelectItem
+//           key={p.id}
+//           value={p.id}
+//         >
+//           {p.name}
+//         </SelectItem>
+//       ))}
+//     </SelectContent>
+//   );
+// };
 
 const MediaInput = ({
   form,
