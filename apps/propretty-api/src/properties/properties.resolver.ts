@@ -43,10 +43,22 @@ export class PropertiesResolver {
         data.mediaList = { connect: mediaList };
       }
 
+      if (args.priceList && args.priceList.length > 0) {
+        console.log('priceList: ', args.priceList);
+        data.priceList = {
+          createMany: { data: args.priceList, skipDuplicates: true },
+        };
+      }
+
       const result = await this.prismaService.client.property.create({
         omit: { typeId: true },
         data,
-        include: { type: true, mediaList: true, amenities: true },
+        include: {
+          type: true,
+          mediaList: true,
+          amenities: true,
+          priceList: true,
+        },
       });
 
       return result;
