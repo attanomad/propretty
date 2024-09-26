@@ -79,6 +79,7 @@ export async function updateProperty(
     typeId: string;
     uniqueCode?: string;
     mediaList?: string[];
+    priceList?: { currency: string; price: number }[];
   }
 ): Promise<ServerActionBaseResponse<Property>> {
   const { data } = await getClient().mutate<{ updateProperty: Property }>({
@@ -90,6 +91,7 @@ export async function updateProperty(
         $typeId: String
         $uniqueCode: String
         $mediaList: [String!]
+        $priceList: [CreatePriceInput!]
       ) {
         updateProperty(
           id: $id
@@ -98,12 +100,17 @@ export async function updateProperty(
             typeId: $typeId
             uniqueCode: $uniqueCode
             mediaList: $mediaList
+            priceList: $priceList
           }
         ) {
           id
           name
           status
           uniqueCode
+          priceList {
+            currency
+            price
+          }
           type {
             id
             name
@@ -130,9 +137,19 @@ export async function findPropertyById(id: string) {
         query FindProperty($id: String!) {
           findProperty(id: $id) {
             name
+            description
             status
             uniqueCode
             id
+            commercialStatus
+            furnishing
+            floorSize
+            landSize
+            priceList {
+              id
+              price
+              currency
+            }
             type {
               id
               name
@@ -153,7 +170,7 @@ export async function findPropertyById(id: string) {
 
     return data.findProperty;
   } catch (e) {
-    console.log("error: ", e);
+    console.log("error: ", JSON.stringify(e));
     if (e instanceof Error) {
       throw new Error(`Failed to query property by ID: ${e.message}`);
     }
@@ -169,6 +186,7 @@ export async function findProperties() {
         properties {
           id
           name
+          uniqueCode
           type {
             id
             name

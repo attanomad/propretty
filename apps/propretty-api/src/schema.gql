@@ -38,6 +38,12 @@ type PropertyType {
   description: String
 }
 
+type Price {
+  id: String!
+  currency: String!
+  price: Float!
+}
+
 type PropertyMedia {
   id: String!
   mimetype: String!
@@ -82,11 +88,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Price {
-  currency: String!
-  price: Float!
-}
-
 type Query {
   findProperty(id: String!): Property!
   properties(id: String, name: String, typeId: String): [Property!]!
@@ -112,8 +113,14 @@ input LoginInput {
 input CreatePropertyInput {
   name: String!
   status: Status!
+  description: String
   uniqueCode: String
   typeId: String!
+  commercialStatus: PropertyCommercialStatus
+  floorSize: Float
+  landSize: Float
+  furnishing: PropertyFurnishing
+  priceList: [CreatePriceInput!]
   amenityIds: [String]
   mediaList: [String]
 }
@@ -123,11 +130,22 @@ enum Status {
   INACTIVE
 }
 
+input CreatePriceInput {
+  currency: String!
+  price: Float!
+}
+
 input UpdatePropertyInput {
   name: String
   status: Status
+  description: String
   uniqueCode: String
   typeId: String
+  commercialStatus: PropertyCommercialStatus
+  floorSize: Float
+  landSize: Float
+  furnishing: PropertyFurnishing
+  priceList: [CreatePriceInput!]
   amenityIds: [String!]
   mediaList: [String!]
 }

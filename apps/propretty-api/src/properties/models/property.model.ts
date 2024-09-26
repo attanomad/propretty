@@ -4,6 +4,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { Amenity } from 'src/amenities/models/amenity.model';
 import { User } from 'src/users/models/user.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
+import { Price } from './price.model';
 import { PropertyMedia } from './property-media.model';
 
 @ObjectType()
@@ -58,15 +59,6 @@ export class Property {
 
   @Field()
   updatedAt: Date;
-}
-
-@ObjectType()
-export class Price {
-  @Field()
-  currency: string;
-
-  @Field((type) => Float)
-  price: Decimal;
 }
 
 registerEnumType(PropertyCommercialStatus, {
