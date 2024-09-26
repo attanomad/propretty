@@ -4,13 +4,14 @@ import {
   Contact,
   File,
   House,
+  LandPlot,
   LayoutDashboard,
   Settings,
 } from "lucide-react";
 
 export const topMenuItemList: NavItemProps[] = [
   { children: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { children: "Properties", icon: House, path: "/properties" },
+  { children: "Properties", icon: LandPlot, path: "/properties" },
   { children: "Amenities", icon: House, path: "/amenities" },
   { children: "Media", icon: File, path: "/media" },
   { children: "Contacts", icon: Contact, path: "/contacts" },
