@@ -47,21 +47,45 @@ type PropertyMedia {
 type Property {
   id: String!
   name: String!
+  description: String
   status: String!
+  priceList: [Price!]!
+  commercialStatus: PropertyCommercialStatus
   uniqueCode: String
+  floorSize: Float
+  landSize: Float
+  furnishing: PropertyFurnishing
   type: PropertyType!
   mediaList: [PropertyMedia]!
   amenities: [Amenity]!
-  userId: String!
-  user: User!
+  authorId: String!
+  author: User!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum PropertyCommercialStatus {
+  AVAILABLE
+  RENTED
+  SOLD
+  PENDING
+}
+
+enum PropertyFurnishing {
+  FULLY_FURNISHED
+  SEMI_FURNISHED
+  UNFURNISHED
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Price {
+  currency: String!
+  price: Float!
+}
 
 type Query {
   findProperty(id: String!): Property!

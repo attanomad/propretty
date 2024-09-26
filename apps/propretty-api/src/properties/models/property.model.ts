@@ -1,4 +1,6 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { PropertyCommercialStatus, PropertyFurnishing } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 import { Amenity } from 'src/amenities/models/amenity.model';
 import { User } from 'src/users/models/user.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
@@ -12,11 +14,29 @@ export class Property {
   @Field()
   name: string;
 
+  @Field({ nullable: true })
+  description: string;
+
   @Field()
   status: string;
 
+  @Field((type) => [Price])
+  priceList: Price[];
+
+  @Field((type) => PropertyCommercialStatus, { nullable: true })
+  commercialStatus: PropertyCommercialStatus;
+
   @Field((type) => String, { nullable: true })
   uniqueCode: string;
+
+  @Field((type) => Float, { nullable: true })
+  floorSize: Decimal;
+
+  @Field((type) => Float, { nullable: true })
+  landSize: Decimal;
+
+  @Field((type) => PropertyFurnishing, { nullable: true })
+  furnishing: PropertyFurnishing;
 
   @Field((type) => PropertyType)
   type: PropertyType;
@@ -28,10 +48,10 @@ export class Property {
   amenities: Amenity[];
 
   @Field()
-  userId: string;
+  authorId: string;
 
   @Field((type) => User)
-  user: User;
+  author: User;
 
   @Field()
   createdAt: Date;
@@ -39,3 +59,17 @@ export class Property {
   @Field()
   updatedAt: Date;
 }
+
+@ObjectType()
+export class Price {
+  @Field()
+  currency: string;
+
+  @Field((type) => Float)
+  price: Decimal;
+}
+
+registerEnumType(PropertyCommercialStatus, {
+  name: 'PropertyCommercialStatus',
+});
+registerEnumType(PropertyFurnishing, { name: 'PropertyFurnishing' });

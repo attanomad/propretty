@@ -27,10 +27,10 @@ export class PropertiesResolver {
         status: args.status,
         type: { connect: { id: args.typeId } },
         uniqueCode: args.uniqueCode,
-        user: { connect: { id: user.userId } },
+        author: { connect: { id: user.userId } },
       };
       const amenities =
-        args.amenityIds?.map<Prisma.PropertyAmenitiyWhereUniqueInput>((id) => ({
+        args.amenityIds?.map<Prisma.PropertyAmenityWhereUniqueInput>((id) => ({
           id,
         }));
       const mediaList = args.mediaList?.map((id) => ({ id }));
@@ -111,11 +111,21 @@ export class PropertiesResolver {
 
     const property = await this.prismaService.client.property.findUnique({
       where: { id },
-      omit: { typeId: true },
+      omit: {
+        typeId: true,
+        authorId: true,
+        propertyOwnerId: true,
+        locationId: true,
+      },
       include: {
         type: true,
         mediaList: true,
         amenities: true,
+        author: true,
+        location: true,
+        priceList: true,
+        PropertyListing: true,
+        PropertyOwner: true,
       },
     });
 
@@ -126,11 +136,21 @@ export class PropertiesResolver {
   @Auth()
   async properties(@User() user: JwtPayload, @Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
-      omit: { typeId: true },
+      omit: {
+        typeId: true,
+        authorId: true,
+        propertyOwnerId: true,
+        locationId: true,
+      },
       include: {
         type: true,
         mediaList: true,
         amenities: true,
+        author: true,
+        location: true,
+        priceList: true,
+        PropertyListing: true,
+        PropertyOwner: true,
       },
     };
 

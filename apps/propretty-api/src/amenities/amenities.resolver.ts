@@ -15,7 +15,7 @@ export class AmenitiesResolver {
   @Auth(Role.Admin)
   async createAmenity(@Args('createAmenityData') args: CreateAmenityInput) {
     try {
-      const result = await this.prismaService.client.propertyAmenitiy.create({
+      const result = await this.prismaService.client.propertyAmenity.create({
         data: args,
       });
 
@@ -35,7 +35,7 @@ export class AmenitiesResolver {
   @Query((returns) => [Amenity])
   @Auth()
   amenities(@Args() args: FindAmenitiesArgs) {
-    return this.prismaService.client.propertyAmenitiy.findMany({
+    return this.prismaService.client.propertyAmenity.findMany({
       where: {
         id: args.id,
         name: args.name

@@ -30,22 +30,106 @@ enum PropertyStatus {
   INACTIVE
 }
 
+enum PropertyListingType {
+  FOR_SALE
+  FOR_RENT
+}
+
+enum PropertyListingStatus {
+  LISTED
+  UNLISTED
+}
+
+enum PropertyFurnishing {
+  FULLY_FURNISHED
+  SEMI_FURNISHED
+  UNFURNISHED
+}
+
+enum PropertyCommercialStatus {
+  AVAILABLE
+  RENTED
+  SOLD
+  PENDING
+}
+
 model Property {
-  id         String         @id @default(cuid())
-  name       String
-  status     PropertyStatus
-  uniqueCode String?        @unique
-  mediaList  File[]
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id               String                   @id @default(cuid())
+  name             String
+  description      String?
+  status           PropertyStatus
+  commercialStatus PropertyCommercialStatus @default(AVAILABLE)
+  uniqueCode       String?                  @unique
+  // sq.m.
+  floorSize        Decimal?                 @db.Decimal(10, 2)
+  // sq.m.
+  landSize         Decimal?                 @db.Decimal(10, 2)
+  furnishing       PropertyFurnishing?
+
+  // Images, Videos, Floor plan, 3D, legal documents, etc.
+  mediaList File[]
+  priceList Price[]
+  location  Location? @relation(fields: [locationId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   typeId String
   type   PropertyType @relation(fields: [typeId], references: [id])
 
-  amenities PropertyAmenitiy[]
+  amenities PropertyAmenity[]
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  authorId        String
+  author          User              @relation(fields: [authorId], references: [id])
+  locationId      String?
+  PropertyOwner   PropertyOwner?    @relation(fields: [propertyOwnerId], references: [id])
+  propertyOwnerId String?
+  PropertyListing PropertyListing[]
+}
+
+model PropertyListing {
+  id     String                @id @default(cuid())
+  status PropertyListingStatus
+  type   PropertyListingType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+}
+
+model PropertyOwner {
+  id                String     @id @default(cuid())
+  firstName         String
+  lastName          String
+  profilePictureUrl String?
+  dob               DateTime?
+  properties        Property[]
+}
+
+model Price {
+  id       String  @id @default(cuid())
+  currency String
+  price    Decimal @db.Decimal(10, 2)
+
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+
+  @@unique([currency, propertyId])
+}
+
+// TODO: Use PostGis Postgres extension for lat/long
+model Location {
+  id          String     @id @default(cuid())
+  address     String
+  subdistrict String
+  district    String
+  province    String
+  country     String
+  postalCode  String
+  latitude    Float?
+  longitude   Float?
+  Property    Property[]
 }
 
 model PropertyType {
@@ -55,7 +139,7 @@ model PropertyType {
   Property    Property[]
 }
 
-model PropertyAmenitiy {
+model PropertyAmenity {
   id          String   @id @default(cuid())
   name        String   @unique
   description String?
