@@ -44,7 +44,6 @@ export class PropertiesResolver {
       }
 
       if (args.priceList && args.priceList.length > 0) {
-        console.log('priceList: ', args.priceList);
         data.priceList = {
           createMany: { data: args.priceList, skipDuplicates: true },
         };
@@ -91,7 +90,10 @@ export class PropertiesResolver {
       }
 
       if (args.amenityIds && args.amenityIds.length > 0) {
-        data.amenities = { connect: args.amenityIds.map((id) => ({ id })) };
+        data.amenities = {
+          set: [],
+          connect: args.amenityIds.map((id) => ({ id })),
+        };
       }
 
       if (Array.isArray(args.mediaList) && args.mediaList.length > 0) {
@@ -99,8 +101,8 @@ export class PropertiesResolver {
       }
 
       if (args.priceList && args.priceList.length > 0) {
-        console.log('priceList: ', args.priceList);
         data.priceList = {
+          deleteMany: {},
           createMany: { data: args.priceList, skipDuplicates: true },
         };
       }
