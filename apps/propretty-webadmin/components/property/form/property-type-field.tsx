@@ -56,7 +56,6 @@ const PropertyTypeSelector = ({ onValueChange, defaultValue }: SelectProps) => {
   useEffect(() => {
     const fetchPropTypes = async () => {
       setIsLoading(true);
-      console.log("finding property types...");
 
       const { code, message, data } = await findPropertyTypes();
 
@@ -71,7 +70,6 @@ const PropertyTypeSelector = ({ onValueChange, defaultValue }: SelectProps) => {
         setPropertyTypes(data);
       }
 
-      console.log("finished finding property types...");
       setIsLoading(false);
     };
 

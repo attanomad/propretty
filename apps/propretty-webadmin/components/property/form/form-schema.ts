@@ -1,10 +1,15 @@
 import { Property } from "@/app/(private)/properties/types";
 import {
+  CreatePropertyVariables,
+  UpdatePropertyVariables,
+} from "@/lib/property/server-actions";
+import {
   CommercialStatus,
   PropertyStatus,
   SupportedCurrenciesCount,
 } from "@/lib/property/types";
 import { z } from "zod";
+import { amenitiesFieldValidation } from "./amenities-field/validation";
 import { pictureFieldValidation } from "./picture-field/validation";
 
 export const formSchema = z.object({
@@ -23,6 +28,7 @@ export const formSchema = z.object({
   uniqueCode: z.string().max(50).optional(),
   typeId: z.string().cuid(),
   mediaList: pictureFieldValidation.schema,
+  amenityIdList: amenitiesFieldValidation.schema,
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
@@ -36,6 +42,7 @@ export const defaultFormValues: FormSchema = {
   typeId: "",
   uniqueCode: "",
   mediaList: pictureFieldValidation.defaultValue,
+  amenityIdList: amenitiesFieldValidation.defaultValue,
 };
 
 export const convertPropertyToForm = (property: Property): FormSchema => {
@@ -58,5 +65,34 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     uniqueCode,
     typeId: type.id,
     mediaList: pictureFieldValidation.convert(property),
+    amenityIdList: amenitiesFieldValidation.dataToForm(property),
+  };
+};
+
+export const convertFormToCreateVariables = (
+  form: FormSchema
+): CreatePropertyVariables => {
+  return {
+    ...form,
+    mediaList: form.mediaList
+      ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
+      : undefined,
+    amenityIdList: form.amenityIdList
+      ? amenitiesFieldValidation.formToUpdateVariables(form.amenityIdList)
+      : undefined,
+  };
+};
+
+export const convertFormToUpdateVariables = (
+  form: FormSchema
+): UpdatePropertyVariables => {
+  return {
+    ...form,
+    mediaList: form.mediaList
+      ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
+      : undefined,
+    amenityIdList: form.amenityIdList
+      ? amenitiesFieldValidation.formToUpdateVariables(form.amenityIdList)
+      : undefined,
   };
 };

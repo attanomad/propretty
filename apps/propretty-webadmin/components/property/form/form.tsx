@@ -16,9 +16,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import PropertyAmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
 import {
+  convertFormToCreateVariables,
+  convertFormToUpdateVariables,
   convertPropertyToForm,
   defaultFormValues,
   formSchema,
@@ -27,6 +30,7 @@ import {
 import NameField from "./name-field";
 import PictureField from "./picture-field/picture-field";
 import PriceListField from "./price-list-field";
+import { PropertyProvider } from "./property-provider";
 import PropertyTypeField from "./property-type-field";
 import StatusField from "./status-field";
 import UniqueCodeField from "./unique-code-field";
@@ -44,14 +48,13 @@ export default function PropertyForm({ property }: { property?: Property }) {
   const isUpdate = !!property;
   async function onSubmit(values: FormSchema) {
     console.log(values);
-    const data = {
-      ...values,
-      mediaList: values.mediaList.map((m) => m.id),
-    };
     let res: ServerActionBaseResponse<Property>;
 
     if (isUpdate) {
-      res = await updateProperty(property.id, data);
+      res = await updateProperty(
+        property.id,
+        convertFormToUpdateVariables(values)
+      );
 
       if (res.code === 0) {
         toast.success(`Product Updated`, {
@@ -66,7 +69,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
         richColors: true,
       });
     } else {
-      res = await createProperty(data);
+      res = await createProperty(convertFormToCreateVariables(values));
 
       if (res.code === 0 && res.data) {
         router.push(`/properties/${res.data.id}`);
@@ -85,60 +88,74 @@ export default function PropertyForm({ property }: { property?: Property }) {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
-        className="space-y-8"
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Media Files</CardTitle>
-            <CardDescription>
-              Images and/or videos of the property up to 50 files
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PictureField control={form.control} />
-          </CardContent>
-        </Card>
+    <PropertyProvider property={property}>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onInvalid)}
+          className="space-y-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Media Files</CardTitle>
+              <CardDescription>
+                Images and/or videos of the property up to 50 files
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PictureField control={form.control} />
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>General Information</CardTitle>
-            {/* <CardDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>General Information</CardTitle>
+              {/* <CardDescription>
               Property prices in different currencies
             </CardDescription> */}
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <NameField
-              control={form.control}
-              className="col-span-2"
-            />
-            <DescriptionField
-              control={form.control}
-              className="col-span-2"
-            />
-            <UniqueCodeField control={form.control} />
-            <PropertyTypeField control={form.control} />
-            <CommercialStatusField control={form.control} />
-            <StatusField control={form.control} />
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <NameField
+                control={form.control}
+                className="col-span-2"
+              />
+              <DescriptionField
+                control={form.control}
+                className="col-span-2"
+              />
+              <UniqueCodeField control={form.control} />
+              <PropertyTypeField control={form.control} />
+              <CommercialStatusField control={form.control} />
+              <StatusField control={form.control} />
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Prices</CardTitle>
-            <CardDescription>
-              Property prices in different currencies
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PriceListField control={form.control} />
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Prices</CardTitle>
+              <CardDescription>
+                Property prices in different currencies
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PriceListField control={form.control} />
+            </CardContent>
+          </Card>
 
-        <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
-      </form>
-    </Form>
+          <Card>
+            <CardHeader>
+              <CardTitle>Amenities</CardTitle>
+              <CardDescription>
+                Amenities or features of the property
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PropertyAmenitiesField control={form.control} />
+            </CardContent>
+          </Card>
+
+          <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
+        </form>
+      </Form>
+    </PropertyProvider>
   );
 }

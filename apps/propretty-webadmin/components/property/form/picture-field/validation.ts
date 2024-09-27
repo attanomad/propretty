@@ -13,10 +13,21 @@ const schema = z
   .min(MIN_MEDIA_COUNT)
   .max(MAX_MEDIA_COUNT);
 
+type Schema = z.infer<typeof schema>;
+
 export const pictureFieldValidation = {
   schema,
   defaultValue: [],
-  convert(property: Property): z.infer<typeof schema> {
+  convert(property: Property): Schema {
     return property.mediaList.map((m) => ({ ...m, _isReady: true }));
+  },
+  dataToForm(property: Property): Schema {
+    return property.mediaList.map((m) => ({ ...m, _isReady: true }));
+  },
+  formToCreateVariables(field: Schema): string[] {
+    return field ? field.filter((a) => a._isReady).map((a) => a.id) : [];
+  },
+  formToUpdateVariables(field: Schema): string[] {
+    return field ? field.filter((a) => a._isReady).map((a) => a.id) : [];
   },
 };

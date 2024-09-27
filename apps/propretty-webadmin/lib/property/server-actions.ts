@@ -5,12 +5,18 @@ import { ApolloError, gql } from "@apollo/client";
 import { getClient } from "../apollo-client";
 import { ServerActionBaseResponse } from "../server-actions.types";
 
-export async function createProperty(variables: {
+export interface CreatePropertyVariables {
   name: string;
   typeId: string;
   uniqueCode?: string;
   mediaList?: string[];
-}): Promise<ServerActionBaseResponse<Property>> {
+  priceList?: { currency: string; price: number }[];
+  amenityIdList?: string[];
+}
+
+export async function createProperty(
+  variables: CreatePropertyVariables
+): Promise<ServerActionBaseResponse<Property>> {
   try {
     const { data, errors, extensions } = await getClient().mutate<{
       createProperty: Property;
@@ -23,6 +29,8 @@ export async function createProperty(variables: {
           $typeId: String!
           $uniqueCode: String
           $mediaList: [String]
+          $priceList: [CreatePriceInput!]
+          $amenityIdList: [String!]
         ) {
           createProperty(
             createPropertyData: {
@@ -31,13 +39,23 @@ export async function createProperty(variables: {
               typeId: $typeId
               uniqueCode: $uniqueCode
               mediaList: $mediaList
+              priceList: $priceList
+              amenityIds: $amenityIdList
             }
           ) {
             id
             name
             uniqueCode
             status
+            priceList {
+              currency
+              price
+            }
             type {
+              id
+              name
+            }
+            amenities {
               id
               name
             }
@@ -72,15 +90,18 @@ export async function createProperty(variables: {
   }
 }
 
+export interface UpdatePropertyVariables {
+  name: string;
+  typeId: string;
+  uniqueCode?: string;
+  mediaList?: string[];
+  priceList?: { currency: string; price: number }[];
+  amenityIdList?: string[];
+}
+
 export async function updateProperty(
   id: string,
-  variables: {
-    name: string;
-    typeId: string;
-    uniqueCode?: string;
-    mediaList?: string[];
-    priceList?: { currency: string; price: number }[];
-  }
+  variables: UpdatePropertyVariables
 ): Promise<ServerActionBaseResponse<Property>> {
   const { data } = await getClient().mutate<{ updateProperty: Property }>({
     variables: { ...variables, id },
@@ -92,6 +113,7 @@ export async function updateProperty(
         $uniqueCode: String
         $mediaList: [String!]
         $priceList: [CreatePriceInput!]
+        $amenityIdList: [String!]
       ) {
         updateProperty(
           id: $id
@@ -101,6 +123,7 @@ export async function updateProperty(
             uniqueCode: $uniqueCode
             mediaList: $mediaList
             priceList: $priceList
+            amenityIds: $amenityIdList
           }
         ) {
           id
@@ -112,6 +135,10 @@ export async function updateProperty(
             price
           }
           type {
+            id
+            name
+          }
+          amenities {
             id
             name
           }
