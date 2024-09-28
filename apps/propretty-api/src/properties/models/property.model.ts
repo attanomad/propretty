@@ -1,6 +1,11 @@
-import { Field, Float, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { PropertyCommercialStatus, PropertyFurnishing } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Transform } from 'class-transformer';
+import {
+  GraphQLDecimal,
+  transformToDecimal,
+} from 'prisma-graphql-type-decimal';
 import { Amenity } from 'src/amenities/models/amenity.model';
 import { User } from 'src/users/models/user.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
@@ -30,10 +35,12 @@ export class Property {
   @Field((type) => String, { nullable: true })
   uniqueCode: string;
 
-  @Field((type) => Float, { nullable: true })
+  @Field((type) => GraphQLDecimal, { nullable: true })
+  @Transform(transformToDecimal)
   floorSize: Decimal;
 
-  @Field((type) => Float, { nullable: true })
+  @Field((type) => GraphQLDecimal, { nullable: true })
+  @Transform(transformToDecimal)
   landSize: Decimal;
 
   @Field((type) => PropertyFurnishing, { nullable: true })

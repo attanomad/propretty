@@ -1,5 +1,10 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Decimal } from '@prisma/client/runtime/library';
+import { Transform } from 'class-transformer';
+import {
+  GraphQLDecimal,
+  transformToDecimal,
+} from 'prisma-graphql-type-decimal';
 
 @ObjectType()
 export class Price {
@@ -9,6 +14,7 @@ export class Price {
   @Field()
   currency: string;
 
-  @Field((type) => Float)
+  @Field((type) => GraphQLDecimal)
+  @Transform(transformToDecimal)
   price: Decimal;
 }
