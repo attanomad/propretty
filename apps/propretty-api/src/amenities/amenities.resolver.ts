@@ -42,6 +42,7 @@ export class AmenitiesResolver {
           ? { contains: args.name, mode: 'insensitive' }
           : undefined,
       },
+      orderBy: { name: 'asc' },
     });
   }
 }
