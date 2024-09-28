@@ -148,7 +148,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
                 Amenities or features of the property
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <PropertyAmenitiesField control={form.control} />
             </CardContent>
           </Card>

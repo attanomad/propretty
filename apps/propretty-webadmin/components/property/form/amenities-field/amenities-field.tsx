@@ -2,7 +2,6 @@ import { Amenity } from "@/app/(private)/amenities/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -45,6 +44,7 @@ export default function PropertyAmenitiesField({
       ) : (
         amenities.map((item) => (
           <Field
+            key={item.id}
             control={control}
             item={item}
           />
@@ -61,7 +61,6 @@ const Field = ({
   item: Amenity;
   control: Control<FormSchema>;
 }) => {
-  console.warn("Rendering form field...");
   const renderProp = useCallback(
     ({ field }: { field: ControllerRenderProps<FormSchema> }) => (
       <FieldCheckbox
@@ -144,7 +143,6 @@ const FieldCheckbox = ({
   if (!countMap[item.id]) {
     countMap[item.id] = 0;
   }
-  console.log("onChange: ", item.id, countMap[item.id]++);
   const { index, setIndexById } = useAmenityCheckedIndex();
   const isChecked = index[item.id] ?? false;
   const handleCheckedChange = () => {
@@ -153,17 +151,17 @@ const FieldCheckbox = ({
   };
 
   return (
-    <FormItem>
+    <FormItem className="flex items-center gap-4">
       <FormControl>
         <Checkbox
           checked={isChecked}
           onCheckedChange={handleCheckedChange}
         />
       </FormControl>
-      <FormLabel className="text-sm font-normal">{item.name}</FormLabel>
-      {item.description && (
+      <FormLabel className="text-sm font-normal !m-0">{item.name}</FormLabel>
+      {/* {item.description && (
         <FormDescription>{item.description}</FormDescription>
-      )}
+      )} */}
       <FormMessage />
     </FormItem>
   );
