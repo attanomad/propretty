@@ -1,20 +1,30 @@
 import { Property } from "@/app/(private)/properties/types";
 import { z } from "zod";
 
-const schema = z.array(z.string().cuid()).optional();
+const schema = z.record(z.string().cuid(), z.boolean());
 
-type Schema = z.infer<typeof schema>;
+export type Schema = z.infer<typeof schema>;
 
 export const amenitiesFieldValidation = {
+  formKey: "amenityIndex" as const,
+  gqlKey: "amenityIds" as const,
   schema,
-  defaultValue: [],
-  dataToForm(property: Property): Schema {
-    return property.amenities.map(({ id }) => id);
+  defaultValue: {},
+  propertyToSchema(property: Property): Schema {
+    return property.amenities.reduce<Schema>((obj, a) => {
+      obj[a.id] = true;
+
+      return obj;
+    }, {});
   },
   formToCreateVariables(field: Schema): string[] {
-    return field ?? [];
+    return Object.entries(field)
+      .filter(([k, v]) => v)
+      .map(([k]) => k);
   },
   formToUpdateVariables(field: Schema): string[] {
-    return field ?? [];
+    return Object.entries(field)
+      .filter(([k, v]) => v)
+      .map(([k]) => k);
   },
 };

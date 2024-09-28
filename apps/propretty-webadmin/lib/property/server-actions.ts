@@ -1,6 +1,7 @@
 "use server";
 
 import { Property } from "@/app/(private)/properties/types";
+import { amenitiesFieldValidation } from "@/components/property/form/amenities-field/validation";
 import { ApolloError, gql } from "@apollo/client";
 import { getClient } from "../apollo-client";
 import { ServerActionBaseResponse } from "../server-actions.types";
@@ -11,7 +12,7 @@ export interface CreatePropertyVariables {
   uniqueCode?: string;
   mediaList?: string[];
   priceList?: { currency: string; price: number }[];
-  amenityIdList?: string[];
+  [amenitiesFieldValidation.gqlKey]?: string[];
 }
 
 export async function createProperty(
@@ -96,13 +97,15 @@ export interface UpdatePropertyVariables {
   uniqueCode?: string;
   mediaList?: string[];
   priceList?: { currency: string; price: number }[];
-  amenityIdList?: string[];
+  [amenitiesFieldValidation.gqlKey]?: string[];
 }
 
 export async function updateProperty(
   id: string,
   variables: UpdatePropertyVariables
 ): Promise<ServerActionBaseResponse<Property>> {
+  console.log(`updateProperty()`, variables);
+
   const { data } = await getClient().mutate<{ updateProperty: Property }>({
     variables: { ...variables, id },
     mutation: gql`
@@ -113,7 +116,7 @@ export async function updateProperty(
         $uniqueCode: String
         $mediaList: [String!]
         $priceList: [CreatePriceInput!]
-        $amenityIdList: [String!]
+        $${amenitiesFieldValidation.gqlKey}: [String!]
       ) {
         updateProperty(
           id: $id
@@ -123,7 +126,7 @@ export async function updateProperty(
             uniqueCode: $uniqueCode
             mediaList: $mediaList
             priceList: $priceList
-            amenityIds: $amenityIdList
+            amenityIds: $${amenitiesFieldValidation.gqlKey}
           }
         ) {
           id

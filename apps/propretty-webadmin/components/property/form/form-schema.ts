@@ -28,7 +28,7 @@ export const formSchema = z.object({
   uniqueCode: z.string().max(50).optional(),
   typeId: z.string().cuid(),
   mediaList: pictureFieldValidation.schema,
-  amenityIdList: amenitiesFieldValidation.schema,
+  [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.schema,
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
@@ -42,7 +42,7 @@ export const defaultFormValues: FormSchema = {
   typeId: "",
   uniqueCode: "",
   mediaList: pictureFieldValidation.defaultValue,
-  amenityIdList: amenitiesFieldValidation.defaultValue,
+  [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.defaultValue,
 };
 
 export const convertPropertyToForm = (property: Property): FormSchema => {
@@ -65,7 +65,8 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     uniqueCode,
     typeId: type.id,
     mediaList: pictureFieldValidation.convert(property),
-    amenityIdList: amenitiesFieldValidation.dataToForm(property),
+    [amenitiesFieldValidation.formKey]:
+      amenitiesFieldValidation.propertyToSchema(property),
   };
 };
 
@@ -77,8 +78,10 @@ export const convertFormToCreateVariables = (
     mediaList: form.mediaList
       ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
       : undefined,
-    amenityIdList: form.amenityIdList
-      ? amenitiesFieldValidation.formToUpdateVariables(form.amenityIdList)
+    [amenitiesFieldValidation.gqlKey]: form[amenitiesFieldValidation.formKey]
+      ? amenitiesFieldValidation.formToUpdateVariables(
+          form[amenitiesFieldValidation.formKey]
+        )
       : undefined,
   };
 };
@@ -91,8 +94,10 @@ export const convertFormToUpdateVariables = (
     mediaList: form.mediaList
       ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
       : undefined,
-    amenityIdList: form.amenityIdList
-      ? amenitiesFieldValidation.formToUpdateVariables(form.amenityIdList)
+    [amenitiesFieldValidation.gqlKey]: form[amenitiesFieldValidation.formKey]
+      ? amenitiesFieldValidation.formToUpdateVariables(
+          form[amenitiesFieldValidation.formKey]
+        )
       : undefined,
   };
 };

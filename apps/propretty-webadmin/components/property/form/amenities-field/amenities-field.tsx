@@ -10,186 +10,73 @@ import {
 import { findAmenities } from "@/lib/amenity/server-actions";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import {
-  Control,
-  ControllerRenderProps,
-  useFormContext,
-} from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Control, useFormContext } from "react-hook-form";
 import { toast } from "sonner";
 import { FormSchema } from "../form-schema";
-import { useProperty } from "../property-provider";
+import { amenitiesFieldValidation, Schema } from "./validation";
 
-export default function PropertyAmenitiesField({
+export default function AmenitiesField({
   control,
 }: {
   control: Control<FormSchema>;
 }) {
-  const property = useProperty();
   const { amenities, isLoading } = useInitAmenities();
 
-  return (
-    <AmenityCheckedIndexProvider amenities={property?.amenities}>
-      {isLoading || !amenities ? (
-        <Loader2 className={cn("animate-spin")} />
-      ) : amenities && amenities.length === 0 ? (
-        <p>No anemities</p>
-      ) : (
-        amenities.map((item) => (
-          <Field
-            key={item.id}
-            control={control}
-            item={item}
-          />
-        ))
-      )}
-    </AmenityCheckedIndexProvider>
-  );
-}
-
-const Field = ({
-  item,
-  control,
-}: {
-  item: Amenity;
-  control: Control<FormSchema>;
-}) => {
-  const renderProp = useCallback(
-    ({ field }: { field: ControllerRenderProps<FormSchema> }) => (
-      <FieldCheckbox
-        onChange={field.onChange}
-        item={item}
-      />
-    ),
-    [item]
-  );
-
-  return (
-    <FormField
-      key={item.id}
-      control={control}
-      name="amenityIdList"
-      render={renderProp}
-    />
-  );
-};
-
-interface AmenityCheckedIndexContextData {
-  index: AmenityCheckedIndex;
-  setIndexById: (id: string, isChecked: boolean) => void;
-}
-const AmenityCheckedIndexContext =
-  createContext<AmenityCheckedIndexContextData>({
-    index: {},
-    setIndexById() {},
-  });
-
-const AmenityCheckedIndexProvider = ({
-  children,
-  amenities,
-}: {
-  children: ReactNode;
-  amenities?: Amenity[];
-}) => {
-  const [amenityCheckedIndexById, setAmenityCheckedIndexById] =
-    useState<AmenityCheckedIndex>({});
-
-  useEffect(() => {
-    if (!amenities) {
-      setAmenityCheckedIndexById({});
-      return;
-    }
-
-    setAmenityCheckedIndexById(
-      amenities.reduce<AmenityCheckedIndex>((obj, a) => {
-        obj[a.id] = true;
-
-        return obj;
-      }, {})
-    );
-  }, [amenities]);
-
-  return (
-    <AmenityCheckedIndexContext.Provider
-      value={{
-        index: amenityCheckedIndexById,
-        setIndexById: (id, checked) =>
-          setAmenityCheckedIndexById((prevState) => ({
-            ...prevState,
-            [id]: checked,
-          })),
-      }}
-    >
-      {children}
-    </AmenityCheckedIndexContext.Provider>
-  );
-};
-
-const countMap: Record<string, number> = {};
-const FieldCheckbox = ({
-  onChange,
-  item,
-}: {
-  onChange: ControllerRenderProps<FormSchema>["onChange"];
-  item: Amenity;
-}) => {
-  if (!countMap[item.id]) {
-    countMap[item.id] = 0;
-  }
-  const { index, setIndexById } = useAmenityCheckedIndex();
-  const isChecked = index[item.id] ?? false;
-  const handleCheckedChange = () => {
-    setIndexById(item.id, !isChecked);
-    onChange(Object.keys(index).filter((id) => index[id]));
-  };
-
-  return (
-    <FormItem className="flex items-center gap-4">
-      <FormControl>
-        <Checkbox
-          checked={isChecked}
-          onCheckedChange={handleCheckedChange}
-        />
-      </FormControl>
-      <FormLabel className="text-sm font-normal !m-0">{item.name}</FormLabel>
-      {/* {item.description && (
+  return isLoading || !amenities ? (
+    <Loader2 className={cn("animate-spin")} />
+  ) : amenities && amenities.length === 0 ? (
+    <p>No anemities</p>
+  ) : (
+    amenities?.map((item) => (
+      <FormField
+        key={item.id}
+        control={control}
+        name={`amenityIndex.${item.id}`}
+        render={({ field }) => (
+          <FormItem className="flex items-center gap-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <FormLabel className="text-sm font-normal !m-0">
+              {item.name}
+            </FormLabel>
+            {/* {item.description && (
         <FormDescription>{item.description}</FormDescription>
       )} */}
-      <FormMessage />
-    </FormItem>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    ))
   );
-};
+}
 
 const useInitAmenities = () => {
   const { amenities, isLoading } = useAmenities();
-  const { setValue } = useFormContext<FormSchema>();
+  const { setValue, getValues } = useFormContext<FormSchema>();
+  const existingIndex = getValues(amenitiesFieldValidation.formKey);
 
   useEffect(() => {
     if (!amenities) return;
 
     setValue(
-      "amenityIdList",
-      amenities.map((a) => a.id)
+      amenitiesFieldValidation.formKey,
+      amenities.reduce<Schema>((obj, a) => {
+        obj[a.id] = existingIndex[a.id] ?? false;
+
+        return obj;
+      }, {})
     );
-  }, [amenities]);
+  }, [amenities, existingIndex]);
 
   return {
     amenities,
     isLoading,
   };
-};
-
-export type AmenityCheckedIndex = Record<string, boolean>;
-
-const useAmenityCheckedIndex = () => {
-  return useContext(AmenityCheckedIndexContext);
 };
 
 const useAmenities = () => {

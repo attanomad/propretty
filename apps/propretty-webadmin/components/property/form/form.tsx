@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import PropertyAmenitiesField from "./amenities-field/amenities-field";
+import AmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
 import {
@@ -47,7 +47,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
   });
   const isUpdate = !!property;
   async function onSubmit(values: FormSchema) {
-    console.log(values);
+    console.log("submitted form data: ", values);
     let res: ServerActionBaseResponse<Property>;
 
     if (isUpdate) {
@@ -149,7 +149,8 @@ export default function PropertyForm({ property }: { property?: Property }) {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <PropertyAmenitiesField control={form.control} />
+              {/* <PropertyAmenitiesField control={form.control} /> */}
+              <AmenitiesField control={form.control} />
             </CardContent>
           </Card>
 
