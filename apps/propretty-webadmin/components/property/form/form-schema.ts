@@ -7,6 +7,7 @@ import {
   CommercialStatus,
   PropertyStatus,
   SupportedCurrenciesCount,
+  SupportedCurrency,
 } from "@/lib/property/types";
 import { z } from "zod";
 import { amenitiesFieldValidation } from "./amenities-field/validation";
@@ -20,7 +21,7 @@ export const formSchema = z.object({
   priceList: z
     .array(
       z.object({
-        currency: z.string(),
+        currency: z.nativeEnum(SupportedCurrency),
         price: z.coerce.number().multipleOf(0.01).nonnegative().min(0),
       })
     )

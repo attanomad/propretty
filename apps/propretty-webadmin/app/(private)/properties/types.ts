@@ -1,4 +1,8 @@
-import { CommercialStatus, PropertyStatus } from "@/lib/property/types";
+import {
+  CommercialStatus,
+  PropertyStatus,
+  SupportedCurrency,
+} from "@/lib/property/types";
 import { Amenity } from "../amenities/actions";
 
 export interface BaseResponse<T = unknown> {
@@ -12,7 +16,7 @@ export interface Property {
   id: string;
   name: string;
   description?: string;
-  priceList: { currency: string; price: number }[];
+  priceList: { currency: SupportedCurrency; price: number }[];
   commercialStatus?: CommercialStatus;
   status: PropertyStatus;
   uniqueCode: string;

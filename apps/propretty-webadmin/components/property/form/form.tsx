@@ -137,7 +137,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <PriceListField control={form.control} />
+              <PriceListField />
             </CardContent>
           </Card>
 
