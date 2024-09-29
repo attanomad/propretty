@@ -25,6 +25,8 @@ export class PropertiesResolver {
       const data: Prisma.PropertyCreateArgs['data'] = {
         name: args.name,
         status: args.status,
+        landSize: args.landSize,
+        floorSize: args.floorSize,
         type: { connect: { id: args.typeId } },
         uniqueCode: args.uniqueCode,
         author: { connect: { id: user.userId } },
@@ -83,6 +85,8 @@ export class PropertiesResolver {
       const data: Prisma.PropertyUpdateArgs['data'] = {
         name: args.name,
         uniqueCode: args.uniqueCode,
+        landSize: args.landSize,
+        floorSize: args.floorSize,
       };
 
       if (args.typeId) {

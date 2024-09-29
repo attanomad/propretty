@@ -16,6 +16,8 @@ export interface Property {
   id: string;
   name: string;
   description?: string;
+  landSize?: number;
+  floorSize?: number;
   priceList: { currency: SupportedCurrency; price: number }[];
   commercialStatus?: CommercialStatus;
   status: PropertyStatus;

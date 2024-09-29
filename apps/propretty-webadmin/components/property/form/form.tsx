@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import AmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
+import FloorSizeField from "./floor-size-field";
 import {
   convertFormToCreateVariables,
   convertFormToUpdateVariables,
@@ -27,6 +28,7 @@ import {
   formSchema,
   FormSchema,
 } from "./form-schema";
+import LandSizeField from "./land-size-field";
 import NameField from "./name-field";
 import PictureField from "./picture-field/picture-field";
 import PriceListField from "./price-list-field";
@@ -126,6 +128,17 @@ export default function PropertyForm({ property }: { property?: Property }) {
               <PropertyTypeField control={form.control} />
               <CommercialStatusField control={form.control} />
               <StatusField control={form.control} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Sizing</CardTitle>
+              <CardDescription>Property sizing</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <LandSizeField />
+              <FloorSizeField />
             </CardContent>
           </Card>
 

@@ -12,6 +12,8 @@ export interface CreatePropertyVariables {
   uniqueCode?: string;
   mediaList?: string[];
   priceList?: { currency: string; price: number }[];
+  landSize?: number;
+  floorSize?: number;
   [amenitiesFieldValidation.gqlKey]?: string[];
 }
 
@@ -19,7 +21,7 @@ export async function createProperty(
   variables: CreatePropertyVariables
 ): Promise<ServerActionBaseResponse<Property>> {
   try {
-    const { data, errors, extensions } = await getClient().mutate<{
+    const { data } = await getClient().mutate<{
       createProperty: Property;
     }>({
       variables,
@@ -97,6 +99,8 @@ export interface UpdatePropertyVariables {
   uniqueCode?: string;
   mediaList?: string[];
   priceList?: { currency: string; price: number }[];
+  landSize?: number;
+  floorSize?: number;
   [amenitiesFieldValidation.gqlKey]?: string[];
 }
 
@@ -114,6 +118,8 @@ export async function updateProperty(
         $name: String
         $typeId: String
         $uniqueCode: String
+        $landSize: Decimal
+        $floorSize: Decimal
         $mediaList: [String!]
         $priceList: [CreatePriceInput!]
         $${amenitiesFieldValidation.gqlKey}: [String!]
@@ -124,6 +130,8 @@ export async function updateProperty(
             name: $name
             typeId: $typeId
             uniqueCode: $uniqueCode
+            landSize: $landSize
+            floorSize: $floorSize
             mediaList: $mediaList
             priceList: $priceList
             amenityIds: $${amenitiesFieldValidation.gqlKey}
@@ -133,6 +141,8 @@ export async function updateProperty(
           name
           status
           uniqueCode
+          landSize
+          floorSize
           priceList {
             currency
             price

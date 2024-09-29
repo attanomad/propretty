@@ -5,7 +5,9 @@ import {
 } from "@/lib/property/server-actions";
 import {
   CommercialStatus,
+  convertAreaMeasurementUnit,
   PropertyStatus,
+  SupportedAreaMeasurementUnit,
   SupportedCurrenciesCount,
   SupportedCurrency,
 } from "@/lib/property/types";
@@ -21,7 +23,9 @@ export const formSchema = z.object({
   priceList: z
     .array(
       z.object({
-        currency: z.nativeEnum(SupportedCurrency),
+        currency: z
+          .nativeEnum(SupportedCurrency)
+          .default(SupportedCurrency.USD),
         price: z.coerce.number().multipleOf(0.01).nonnegative().min(0),
       })
     )
@@ -30,6 +34,22 @@ export const formSchema = z.object({
   typeId: z.string().cuid(),
   mediaList: pictureFieldValidation.schema,
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.schema,
+  landSize: z
+    .object({
+      value: z.number(),
+      unit: z
+        .nativeEnum(SupportedAreaMeasurementUnit)
+        .default(SupportedAreaMeasurementUnit.SQM),
+    })
+    .optional(),
+  floorSize: z
+    .object({
+      value: z.number(),
+      unit: z
+        .nativeEnum(SupportedAreaMeasurementUnit)
+        .default(SupportedAreaMeasurementUnit.SQM),
+    })
+    .optional(),
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
@@ -44,6 +64,8 @@ export const defaultFormValues: FormSchema = {
   uniqueCode: "",
   mediaList: pictureFieldValidation.defaultValue,
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.defaultValue,
+  landSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
+  floorSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
 };
 
 export const convertPropertyToForm = (property: Property): FormSchema => {
@@ -55,6 +77,8 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     status,
     uniqueCode,
     type,
+    landSize,
+    floorSize,
   } = property;
 
   return {
@@ -64,6 +88,11 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     priceList,
     status,
     uniqueCode,
+    landSize: { value: landSize || 0, unit: SupportedAreaMeasurementUnit.SQM },
+    floorSize: {
+      value: floorSize || 0,
+      unit: SupportedAreaMeasurementUnit.SQM,
+    },
     typeId: type.id,
     mediaList: pictureFieldValidation.convert(property),
     [amenitiesFieldValidation.formKey]:
@@ -74,8 +103,25 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
 export const convertFormToCreateVariables = (
   form: FormSchema
 ): CreatePropertyVariables => {
+  const { landSize, floorSize, ...rest } = form;
   return {
-    ...form,
+    ...rest,
+    landSize:
+      landSize && landSize.value > 0
+        ? convertAreaMeasurementUnit(
+            landSize.value,
+            landSize.unit,
+            SupportedAreaMeasurementUnit.SQM
+          )
+        : undefined,
+    floorSize:
+      floorSize && floorSize.value > 0
+        ? convertAreaMeasurementUnit(
+            floorSize.value,
+            floorSize.unit,
+            SupportedAreaMeasurementUnit.SQM
+          )
+        : undefined,
     mediaList: form.mediaList
       ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
       : undefined,
@@ -90,8 +136,26 @@ export const convertFormToCreateVariables = (
 export const convertFormToUpdateVariables = (
   form: FormSchema
 ): UpdatePropertyVariables => {
+  const { landSize, floorSize, ...rest } = form;
+
   return {
-    ...form,
+    ...rest,
+    landSize:
+      landSize && landSize.value > 0
+        ? convertAreaMeasurementUnit(
+            landSize.value,
+            landSize.unit,
+            SupportedAreaMeasurementUnit.SQM
+          )
+        : undefined,
+    floorSize:
+      floorSize && floorSize.value > 0
+        ? convertAreaMeasurementUnit(
+            floorSize.value,
+            floorSize.unit,
+            SupportedAreaMeasurementUnit.SQM
+          )
+        : undefined,
     mediaList: form.mediaList
       ? pictureFieldValidation.formToUpdateVariables(form.mediaList)
       : undefined,
