@@ -36,7 +36,7 @@ export const formSchema = z.object({
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.schema,
   landSize: z
     .object({
-      value: z.number(),
+      value: z.number({ coerce: true }),
       unit: z
         .nativeEnum(SupportedAreaMeasurementUnit)
         .default(SupportedAreaMeasurementUnit.SQM),
@@ -44,7 +44,7 @@ export const formSchema = z.object({
     .optional(),
   floorSize: z
     .object({
-      value: z.number(),
+      value: z.number({ coerce: true }),
       unit: z
         .nativeEnum(SupportedAreaMeasurementUnit)
         .default(SupportedAreaMeasurementUnit.SQM),
