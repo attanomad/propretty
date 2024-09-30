@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { MapProvider } from "../map/map-provider";
 import AmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
@@ -29,6 +30,7 @@ import {
   FormSchema,
 } from "./form-schema";
 import LandSizeField from "./land-size-field";
+import LocationField from "./location-field";
 import NameField from "./name-field";
 import PictureField from "./picture-field/picture-field";
 import PriceListField from "./price-list-field";
@@ -139,6 +141,9 @@ export default function PropertyForm({ property }: { property?: Property }) {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <LandSizeField />
               <FloorSizeField />
+              <MapProvider>
+                <LocationField />
+              </MapProvider>
             </CardContent>
           </Card>
 
