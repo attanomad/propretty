@@ -6,8 +6,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+
 import { Textarea } from "@/components/ui/textarea";
-import { GoogleMap } from "@react-google-maps/api";
 import { HTMLProps } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormSchema } from "./form-schema";
@@ -19,8 +20,8 @@ export const defaultMapContainerStyle = {
 };
 
 const defaultMapCenter = {
-  lat: 35.8799866,
-  lng: 76.5048004,
+  lat: 12.727345,
+  lng: 100.890256,
 };
 const defaultMapZoom = 18;
 const defaultMapOptions = {
@@ -31,18 +32,33 @@ const defaultMapOptions = {
 };
 
 export default function LocationField(props: HTMLProps<HTMLDivElement>) {
-  const { control } = useFormContext<FormSchema>();
+  const { control, setValue } = useFormContext<FormSchema>();
 
   return (
     <>
-      <div className="w-full">
-        <GoogleMap
-          mapContainerStyle={defaultMapContainerStyle}
-          center={defaultMapCenter}
-          zoom={defaultMapZoom}
-          options={defaultMapOptions}
-        ></GoogleMap>
-      </div>
+      <APIProvider
+        apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY as string}
+      >
+        <div className="w-full">
+          <Map
+            {...defaultMapOptions}
+            defaultZoom={defaultMapZoom}
+            defaultCenter={defaultMapCenter}
+            style={defaultMapContainerStyle}
+          >
+            <Marker
+              position={defaultMapCenter}
+              draggable
+              onDragEnd={(e) => {
+                if (e.latLng) {
+                  setValue("location.lat", e.latLng?.lat());
+                  setValue("location.lng", e.latLng?.lng());
+                }
+              }}
+            />
+          </Map>
+        </div>
+      </APIProvider>
       <FormField
         control={control}
         name="description"

@@ -50,6 +50,12 @@ export const formSchema = z.object({
         .default(SupportedAreaMeasurementUnit.SQM),
     })
     .optional(),
+  location: z
+    .object({
+      lat: z.number().optional(),
+      lng: z.number().optional(),
+    })
+    .optional(),
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
@@ -66,6 +72,7 @@ export const defaultFormValues: FormSchema = {
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.defaultValue,
   landSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
   floorSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
+  location: { lat: 12.727345, lng: 100.890256 },
 };
 
 export const convertPropertyToForm = (property: Property): FormSchema => {
