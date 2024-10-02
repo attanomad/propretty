@@ -6,12 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  APIProvider,
-  Map,
-  Marker,
-  useMarkerRef,
-} from "@vis.gl/react-google-maps";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 
 import { Input } from "@/components/ui/input";
 import { HTMLProps, useCallback, useEffect, useState } from "react";
@@ -37,11 +32,8 @@ const defaultMapOptions = {
 };
 
 export default function LocationField(props: HTMLProps<HTMLDivElement>) {
-  const [markerRef, marker] = useMarkerRef();
-  const [initialMarkerPosition, setInitialMarkerPosition] = useState<Record<
-    "lat" | "lng",
-    number
-  > | null>(null);
+  const [initialMarkerPosition, setInitialMarkerPosition] =
+    useState<Record<"lat" | "lng", number>>(defaultMapCenter);
   const { control, setValue, getValues } = useFormContext<FormSchema>();
   const lat = getValues("location.latitude");
   const lng = getValues("location.longitude");
@@ -72,7 +64,6 @@ export default function LocationField(props: HTMLProps<HTMLDivElement>) {
             style={defaultMapContainerStyle}
           >
             <Marker
-              ref={markerRef}
               position={initialMarkerPosition}
               draggable
               onDragEnd={(e) => {
