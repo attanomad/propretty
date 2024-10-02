@@ -52,8 +52,15 @@ export const formSchema = z.object({
     .optional(),
   location: z
     .object({
-      lat: z.number().optional(),
-      lng: z.number().optional(),
+      id: z.string().cuid().optional().default(""),
+      address: z.string().optional().default(""),
+      subdistrict: z.string().optional().default(""),
+      district: z.string().optional().default(""),
+      province: z.string().optional().default(""),
+      country: z.string().optional().default(""),
+      postalCode: z.string().length(5).optional().default(""),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
     })
     .optional(),
 });
@@ -72,7 +79,7 @@ export const defaultFormValues: FormSchema = {
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.defaultValue,
   landSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
   floorSize: { value: 0, unit: SupportedAreaMeasurementUnit.SQM },
-  location: { lat: 12.727345, lng: 100.890256 },
+  // location: { latitude: 12.727345, longitude: 100.890256 },
 };
 
 export const convertPropertyToForm = (property: Property): FormSchema => {
@@ -86,6 +93,7 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     type,
     landSize,
     floorSize,
+    location,
   } = property;
 
   return {
@@ -95,6 +103,19 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
     priceList,
     status,
     uniqueCode,
+    location: location
+      ? {
+          ...(Object.fromEntries(
+            Object.entries(location).map(([key, value]) => [key, value ?? ""])
+          ) as NonNullable<FormSchema["location"]>),
+          latitude: location.latitude
+            ? parseFloat(location.latitude)
+            : undefined,
+          longitude: location.longitude
+            ? parseFloat(location.longitude)
+            : undefined,
+        }
+      : undefined,
     landSize: { value: landSize || 0, unit: SupportedAreaMeasurementUnit.SQM },
     floorSize: {
       value: floorSize || 0,
@@ -110,7 +131,7 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
 export const convertFormToCreateVariables = (
   form: FormSchema
 ): CreatePropertyVariables => {
-  const { landSize, floorSize, ...rest } = form;
+  const { landSize, floorSize, location, ...rest } = form;
   return {
     ...rest,
     landSize:

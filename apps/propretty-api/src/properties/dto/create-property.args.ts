@@ -6,6 +6,7 @@ import {
   GraphQLDecimal,
   transformToDecimal,
 } from 'prisma-graphql-type-decimal';
+import { UpsertLocationInput } from 'src/location/dto/upsert-location.args';
 import { Status } from '../enums/status.enum';
 import { CreatePriceInput } from './create-price.args';
 
@@ -48,4 +49,7 @@ export class CreatePropertyInput {
 
   @Field((type) => [String], { nullable: 'itemsAndList' })
   mediaList?: string[];
+
+  @Field((type) => UpsertLocationInput, { nullable: true })
+  location?: UpsertLocationInput;
 }

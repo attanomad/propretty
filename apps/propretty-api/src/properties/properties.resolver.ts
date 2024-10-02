@@ -51,6 +51,21 @@ export class PropertiesResolver {
         };
       }
 
+      if (args.location) {
+        if (args.location.id) {
+          const { id, ...rest } = args.location;
+
+          data.location = {
+            connectOrCreate: {
+              where: { id },
+              create: rest,
+            },
+          };
+        } else {
+          data.location = { create: { ...args.location } };
+        }
+      }
+
       const result = await this.prismaService.client.property.create({
         omit: { typeId: true },
         data,
@@ -108,6 +123,14 @@ export class PropertiesResolver {
         data.priceList = {
           deleteMany: {},
           createMany: { data: args.priceList, skipDuplicates: true },
+        };
+      }
+
+      if (args.location) {
+        const { id, ...rest } = args.location;
+
+        data.location = {
+          upsert: { where: { id }, create: rest, update: rest },
         };
       }
 

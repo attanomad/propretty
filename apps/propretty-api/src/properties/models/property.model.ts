@@ -7,6 +7,7 @@ import {
   transformToDecimal,
 } from 'prisma-graphql-type-decimal';
 import { Amenity } from 'src/amenities/models/amenity.model';
+import { Location } from 'src/location/models/location.model';
 import { User } from 'src/users/models/user.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
 import { Price } from './price.model';
@@ -60,6 +61,9 @@ export class Property {
 
   @Field((type) => User)
   author: User;
+
+  @Field((type) => Location)
+  location: Location;
 
   @Field()
   createdAt: Date;

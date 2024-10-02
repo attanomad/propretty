@@ -50,7 +50,6 @@ export default function PropertyForm({ property }: { property?: Property }) {
   });
   const isUpdate = !!property;
   async function onSubmit(values: FormSchema) {
-    console.log("submitted form data: ", values);
     let res: ServerActionBaseResponse<Property>;
 
     if (isUpdate) {
@@ -140,6 +139,15 @@ export default function PropertyForm({ property }: { property?: Property }) {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <LandSizeField />
               <FloorSizeField />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Location</CardTitle>
+              <CardDescription>Property location and address</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <LocationField />
             </CardContent>
           </Card>

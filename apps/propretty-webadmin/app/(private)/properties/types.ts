@@ -25,8 +25,21 @@ export interface Property {
   type: PropertyType;
   mediaList: PropertyMedia[];
   amenities: Amenity[];
+  location?: Location;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Location {
+  id: string;
+  address?: string | null;
+  subdistrict?: string | null;
+  district?: string | null;
+  province?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+  latitude?: string | null; // Decimal string
+  longitude?: string | null; // Decimal string
 }
 
 export interface PropertyType {

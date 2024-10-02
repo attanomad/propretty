@@ -19,6 +19,21 @@ type File {
   url: String!
 }
 
+type Location {
+  id: String!
+  address: String
+  subdistrict: String
+  district: String
+  province: String
+  country: String
+  postalCode: String
+  latitude: Decimal
+  longitude: Decimal
+}
+
+"""An arbitrary-precision Decimal type"""
+scalar Decimal
+
 type User {
   id: String!
   username: String!
@@ -44,9 +59,6 @@ type Price {
   price: Decimal!
 }
 
-"""An arbitrary-precision Decimal type"""
-scalar Decimal
-
 type PropertyMedia {
   id: String!
   mimetype: String!
@@ -69,6 +81,7 @@ type Property {
   amenities: [Amenity]!
   authorId: String!
   author: User!
+  location: Location!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -126,6 +139,7 @@ input CreatePropertyInput {
   priceList: [CreatePriceInput!]
   amenityIds: [String]
   mediaList: [String]
+  location: UpsertLocationInput
 }
 
 enum Status {
@@ -136,6 +150,18 @@ enum Status {
 input CreatePriceInput {
   currency: String!
   price: Decimal!
+}
+
+input UpsertLocationInput {
+  id: String
+  address: String
+  subdistrict: String
+  district: String
+  province: String
+  country: String
+  postalCode: String
+  latitude: Decimal
+  longitude: Decimal
 }
 
 input UpdatePropertyInput {
@@ -151,6 +177,7 @@ input UpdatePropertyInput {
   priceList: [CreatePriceInput!]
   amenityIds: [String!]
   mediaList: [String!]
+  location: UpsertLocationInput
 }
 
 input CreatePropertyTypeInput {

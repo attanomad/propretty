@@ -121,14 +121,14 @@ model Price {
 // TODO: Use PostGis Postgres extension for lat/long
 model Location {
   id          String     @id @default(cuid())
-  address     String
-  subdistrict String
-  district    String
-  province    String
-  country     String
-  postalCode  String
-  latitude    Float?
-  longitude   Float?
+  address     String?
+  subdistrict String?
+  district    String?
+  province    String?
+  country     String?
+  postalCode  String?
+  latitude    Decimal?   @db.Decimal(9, 6)
+  longitude   Decimal?   @db.Decimal(9, 6)
   Property    Property[]
 }
 
