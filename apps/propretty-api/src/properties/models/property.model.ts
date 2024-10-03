@@ -62,7 +62,7 @@ export class Property {
   @Field((type) => User)
   author: User;
 
-  @Field((type) => Location)
+  @Field((type) => Location, { nullable: true })
   location: Location;
 
   @Field()

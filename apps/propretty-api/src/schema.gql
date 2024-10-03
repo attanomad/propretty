@@ -81,7 +81,7 @@ type Property {
   amenities: [Amenity]!
   authorId: String!
   author: User!
-  location: Location!
+  location: Location
   createdAt: DateTime!
   updatedAt: DateTime!
 }
