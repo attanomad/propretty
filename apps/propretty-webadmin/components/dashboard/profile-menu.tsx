@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,10 +8,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logout } from "@/lib/auth/actions";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function ProfileMenu() {
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -36,7 +42,12 @@ export default function ProfileMenu() {
         </DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <Button
+          className="w-full"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
       </DropdownMenuContent>
     </DropdownMenu>
   );

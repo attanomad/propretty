@@ -3,6 +3,7 @@
 import { login } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -25,8 +26,8 @@ import {
 import { Input } from "../ui/input";
 
 const formSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(1),
+  password: z.string().min(1),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -35,9 +36,10 @@ export default function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { username: "", password: "" },
+    mode: "onSubmit",
   });
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   async function onSubmit(data: FormSchema) {
@@ -51,12 +53,10 @@ export default function LoginForm() {
     form.setError("root", { message: errMsg, type: "custom" });
   }
 
-  async function onInvalid() {}
-
   return (
     <Card className="w-full max-w-sm">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
@@ -109,7 +109,17 @@ export default function LoginForm() {
                 {errors.root.message}
               </p>
             )}
-            <Button className="w-full">Sign in</Button>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className={cn("animate-spin")} />
+              ) : (
+                "Sign in"
+              )}
+            </Button>
           </CardFooter>
         </form>
       </Form>

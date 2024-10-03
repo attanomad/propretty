@@ -1,6 +1,7 @@
 "use server";
 
 import { ApolloError, gql } from "@apollo/client";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getClient } from "../apollo-client";
 import { createSession } from "../session";
@@ -22,6 +23,11 @@ export async function login(formData: FormData) {
   }
 
   redirect("/");
+}
+
+export async function logout() {
+  cookies().delete("session");
+  redirect("/login");
 }
 
 async function getAccessToken(username: string, password: string) {
