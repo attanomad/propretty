@@ -100,7 +100,7 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
 
   return {
     name,
-    description,
+    description: description ?? "",
     commercialStatus,
     priceList,
     status,

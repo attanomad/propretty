@@ -9,7 +9,7 @@ import {
 export interface Property {
   id: string;
   name: string;
-  description?: string;
+  description: string | null;
   landSize?: number;
   floorSize?: number;
   priceList: { currency: SupportedCurrency; price: number }[];

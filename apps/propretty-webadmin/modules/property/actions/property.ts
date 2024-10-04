@@ -1,9 +1,9 @@
 "use server";
 
-import { Property } from "@/app/(private)/properties/types";
 import { getClient } from "@/lib/apollo-client";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { ApolloError, gql } from "@apollo/client";
+import { Property } from "@propretty/common";
 import { amenitiesFieldValidation } from "../components/form/amenities-field/validation";
 
 export interface CreatePropertyVariables {
@@ -53,7 +53,9 @@ export async function createProperty(
             name
             uniqueCode
             status
-            location
+            location {
+              id
+            }
             priceList {
               currency
               price
