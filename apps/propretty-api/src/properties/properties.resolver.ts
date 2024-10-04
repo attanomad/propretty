@@ -65,7 +65,10 @@ export class PropertiesResolver {
             },
           };
         } else {
-          data.location = { create: { ...args.location } };
+          // At least one field is not empty
+          if (Object.values(args.location).join('') !== '') {
+            data.location = { create: { ...args.location } };
+          }
         }
       }
 
@@ -136,10 +139,20 @@ export class PropertiesResolver {
       if (args.location) {
         const { id, ...rest } = args.location;
 
-        data.location = {
-          upsert: { where: { id }, create: rest, update: rest },
-        };
+        if (id) {
+          data.location = {
+            upsert: { where: { id }, create: rest, update: rest },
+          };
+        } else {
+          // At least one field is not empty
+          if (Object.values(rest).join('') !== '') {
+            data.location = { create: rest };
+          }
+        }
       }
+
+      console.log('args: ', args);
+      console.log('data: ', data);
 
       const result = await this.prismaService.client.property.update({
         where: { id },
@@ -164,7 +177,7 @@ export class PropertiesResolver {
     }
   }
 
-  @Query((returns) => Property)
+  @Query((returns) => Property, { nullable: true })
   @Auth()
   async findProperty(@Args('id') id: string) {
     if (!id) throw new Error("'id' could not be empty");
@@ -192,7 +205,7 @@ export class PropertiesResolver {
     return property;
   }
 
-  @Query((returns) => [Property])
+  @Query((returns) => [Property], { nullable: 'items' })
   @Auth()
   async properties(@User() user: JwtPayload, @Args() args: FindPropertiesArgs) {
     const prismaArgs: Prisma.PropertyFindManyArgs = {

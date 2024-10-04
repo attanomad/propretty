@@ -1,7 +1,7 @@
-import { Property } from "@/app/(private)/properties/types";
 import {
   CommercialStatus,
   FurnishingType,
+  Property,
   PropertyStatus,
   SupportedAreaMeasurementUnit,
   SupportedCurrenciesCount,
@@ -54,13 +54,13 @@ export const formSchema = z.object({
     .optional(),
   location: z
     .object({
-      id: z.string().cuid().optional().default(""),
+      id: z.string().cuid().optional().or(z.literal("")).default(""),
       address: z.string().optional().default(""),
       subdistrict: z.string().optional().default(""),
       district: z.string().optional().default(""),
       province: z.string().optional().default(""),
       country: z.string().optional().default(""),
-      postalCode: z.string().length(5).optional().default(""),
+      postalCode: z.string().length(5).optional().or(z.literal("")).default(""),
       latitude: z.number().optional(),
       longitude: z.number().optional(),
     })

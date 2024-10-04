@@ -105,8 +105,8 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Query {
-  findProperty(id: String!): Property!
-  properties(id: String, name: String, typeId: String): [Property!]!
+  findProperty(id: String!): Property
+  properties(id: String, name: String, typeId: String): [Property]!
   propertyTypes(id: String, name: String): [PropertyType!]!
   amenities(id: String, name: String): [Amenity!]!
   files: [File!]!

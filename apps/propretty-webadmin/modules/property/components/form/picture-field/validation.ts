@@ -1,6 +1,6 @@
-import { Property } from "@/app/(private)/properties/types";
+import { Property } from "@propretty/common";
 import { z } from "zod";
-import { MAX_MEDIA_COUNT, MIN_MEDIA_COUNT } from "./constants";
+import { MAX_MEDIA_COUNT } from "./constants";
 
 const schema = z
   .array(
@@ -10,8 +10,8 @@ const schema = z
       _isReady: z.boolean(),
     })
   )
-  .min(MIN_MEDIA_COUNT)
-  .max(MAX_MEDIA_COUNT);
+  .max(MAX_MEDIA_COUNT)
+  .optional();
 
 type Schema = z.infer<typeof schema>;
 
