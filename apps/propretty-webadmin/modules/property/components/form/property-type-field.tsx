@@ -1,4 +1,3 @@
-import { PropertyType } from "@/app/(private)/properties/types";
 import {
   FormControl,
   FormDescription,
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { findPropertyTypes } from "@/lib/property-type/server-actions";
 import { cn } from "@/lib/utils";
+import { PropertyType } from "@propretty/common";
 import { SelectProps } from "@radix-ui/react-select";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";

@@ -1,4 +1,4 @@
-import PropertyForm from "@/components/property/form/form";
+import PropertyForm from "@/modules/property/components/form/form";
 
 export default function NewPropertyPage() {
   return (

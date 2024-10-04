@@ -1,4 +1,4 @@
-import { Property } from "@/app/(private)/properties/types";
+import { Property } from "@propretty/common";
 import { createContext, ReactNode, useContext } from "react";
 
 export const PropertyContext = createContext<Property | null>(null);

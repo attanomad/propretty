@@ -1,11 +1,6 @@
 import { getClient } from "@/lib/apollo-client";
 import { gql } from "@apollo/client";
-
-export interface Amenity {
-  id: string;
-  name: string;
-  description?: string;
-}
+import { Amenity } from "@propretty/common";
 
 export async function findAnemities() {
   const { data } = await getClient().query<{ amenities: Amenity[] }>({

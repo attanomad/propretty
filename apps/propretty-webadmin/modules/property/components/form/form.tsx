@@ -1,6 +1,5 @@
 "use client";
 
-import { Property } from "@/app/(private)/properties/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,12 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { createProperty, updateProperty } from "@/lib/property/server-actions";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Property } from "@propretty/common";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { createProperty, updateProperty } from "../../actions/property";
 import AmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
@@ -28,6 +28,7 @@ import {
   formSchema,
   FormSchema,
 } from "./form-schema";
+import FurnishingField from "./furnishing-field";
 import LandSizeField from "./land-size-field";
 import LocationField from "./location-field";
 import NameField from "./name-field";
@@ -128,6 +129,7 @@ export default function PropertyForm({ property }: { property?: Property }) {
               <PropertyTypeField control={form.control} />
               <CommercialStatusField control={form.control} />
               <StatusField control={form.control} />
+              <FurnishingField />
             </CardContent>
           </Card>
 

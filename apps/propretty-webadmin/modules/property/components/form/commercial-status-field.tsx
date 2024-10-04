@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CommercialStatus } from "@/lib/property/types";
+import { CommercialStatus } from "@propretty/common";
 import { Control } from "react-hook-form";
 import { FormSchema } from "./form-schema";
 

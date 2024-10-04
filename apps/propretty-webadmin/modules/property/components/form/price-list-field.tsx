@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SupportedCurrency } from "@/lib/property/types";
+import { SupportedCurrency } from "@propretty/common";
 import { Trash } from "lucide-react";
 import {
   createContext,

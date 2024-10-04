@@ -1,0 +1,31 @@
+{
+  "name": "@propretty/common",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./property": {
+      "import": "./dist/property/index.js",
+      "types": "./dist/property/index.d.js"
+    },
+    "./amentiy": {
+      "import": "./dist/amentiy/index.js",
+      "types": "./dist/amentiy/index.d.js"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

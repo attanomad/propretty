@@ -30,6 +30,9 @@ export class PropertiesResolver {
         type: { connect: { id: args.typeId } },
         uniqueCode: args.uniqueCode,
         author: { connect: { id: user.userId } },
+        furnishing: args.furnishing,
+        commercialStatus: args.commercialStatus,
+        description: args.description,
       };
       const amenities =
         args.amenityIds?.map<Prisma.PropertyAmenityWhereUniqueInput>((id) => ({
@@ -100,8 +103,12 @@ export class PropertiesResolver {
       const data: Prisma.PropertyUpdateArgs['data'] = {
         name: args.name,
         uniqueCode: args.uniqueCode,
+        status: args.status,
         landSize: args.landSize,
         floorSize: args.floorSize,
+        furnishing: args.furnishing,
+        commercialStatus: args.commercialStatus,
+        description: args.description,
       };
 
       if (args.typeId) {

@@ -1,5 +1,5 @@
-import PropertyForm from "@/components/property/form/form";
-import { findPropertyById } from "@/lib/property/server-actions";
+import { findPropertyById } from "@/modules/property/actions/property";
+import PropertyForm from "@/modules/property/components/form/form";
 
 export default async function ViewProperty({
   params: { id },

@@ -1,4 +1,4 @@
-import { findProperties } from "@/lib/property/server-actions";
+import { findProperties } from "@/modules/property/actions/property";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";

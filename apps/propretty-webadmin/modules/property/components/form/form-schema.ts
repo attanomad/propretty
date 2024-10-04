@@ -1,17 +1,18 @@
 import { Property } from "@/app/(private)/properties/types";
 import {
-  CreatePropertyVariables,
-  UpdatePropertyVariables,
-} from "@/lib/property/server-actions";
-import {
   CommercialStatus,
-  convertAreaMeasurementUnit,
+  FurnishingType,
   PropertyStatus,
   SupportedAreaMeasurementUnit,
   SupportedCurrenciesCount,
   SupportedCurrency,
-} from "@/lib/property/types";
+  convertAreaMeasurementUnit,
+} from "@propretty/common";
 import { z } from "zod";
+import {
+  CreatePropertyVariables,
+  UpdatePropertyVariables,
+} from "../../actions/property";
 import { amenitiesFieldValidation } from "./amenities-field/validation";
 import { pictureFieldValidation } from "./picture-field/validation";
 
@@ -20,6 +21,7 @@ export const formSchema = z.object({
   description: z.string().optional(),
   status: z.nativeEnum(PropertyStatus),
   commercialStatus: z.nativeEnum(CommercialStatus).optional(),
+  furnishing: z.nativeEnum(FurnishingType).optional(),
   priceList: z
     .array(
       z.object({

@@ -1,10 +1,10 @@
 "use server";
 
 import { Property } from "@/app/(private)/properties/types";
-import { amenitiesFieldValidation } from "@/components/property/form/amenities-field/validation";
+import { getClient } from "@/lib/apollo-client";
+import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { ApolloError, gql } from "@apollo/client";
-import { getClient } from "../apollo-client";
-import { ServerActionBaseResponse } from "../server-actions.types";
+import { amenitiesFieldValidation } from "../components/form/amenities-field/validation";
 
 export interface CreatePropertyVariables {
   name: string;

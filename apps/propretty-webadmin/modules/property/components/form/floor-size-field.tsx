@@ -17,25 +17,25 @@ import {
   convertAreaMeasurementUnit,
   SupportedAreaMeasurementUnit,
   SupportedAreaMeasurementUnitInfo,
-} from "@/lib/property/types";
+} from "@propretty/common";
 import { HTMLProps } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormSchema } from "./form-schema";
 
-export default function LandSizeField(props: HTMLProps<HTMLDivElement>) {
+export default function FloorSizeField(props: HTMLProps<HTMLDivElement>) {
   const { control, getValues, setValue } = useFormContext<FormSchema>();
 
   return (
     <>
       <FormField
         control={control}
-        name="landSize.unit"
+        name="floorSize.unit"
         render={({ field: { value: currentUnit, onChange } }) => {
           const handleChange = (newUnit: SupportedAreaMeasurementUnit) => {
-            const sizeValue = getValues("landSize.value");
+            const sizeValue = getValues("floorSize.value");
 
             setValue(
-              "landSize.value",
+              "floorSize.value",
               convertAreaMeasurementUnit(sizeValue, currentUnit, newUnit)
             );
             onChange(newUnit);
@@ -77,11 +77,11 @@ export default function LandSizeField(props: HTMLProps<HTMLDivElement>) {
 
       <FormField
         control={control}
-        name="landSize.value"
+        name="floorSize.value"
         render={({ field }) => {
           return (
             <FormItem {...props}>
-              <FormLabel>Land Size</FormLabel>
+              <FormLabel>Floor Size</FormLabel>
               <FormControl>
                 <Input
                   {...field}
