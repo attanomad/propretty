@@ -1,6 +1,7 @@
 {
   "f916832c776f53b9ffe69b1df2d87d93fdc02c10": "query FindAmenities { amenities { description id name } }",
   "9ed095dfb8d28663a5e785a4b5c483f21079e9b5": "mutation CreateAmenity($description: String, $name: String!) { createAmenity(createAmenityData: {name: $name, description: $description}) { description id name } }",
+  "d0f4769aa18d1f04a71c8d20d4a52980873d780b": "mutation Login($password: String!, $username: String!) { login(credentials: {username: $username, password: $password}) { accessToken } }",
   "cdf351fbe9b417810a55872fb5ca8fa08b2ee1b2": "query FindFiles { files { id mimetype name url } }",
   "8d74b64796136c9e234c58d313d0be9c6beddcf2": "query FindPropertyTypes { propertyTypes { description id name } }",
   "e8555fc951848f2da9f0adf3215b00e64d5bf638": "fragment PropertyAttributes on Property { amenities { id name } floorSize id landSize mediaList { id } name priceList { currency price } status type { id name } uniqueCode } mutation CreateProperty($amenityIds: [String!], $floorSize: Decimal, $landSize: Decimal, $location: UpsertLocationInput, $mediaList: [String], $name: String!, $priceList: [CreatePriceInput!], $status: PropertyStatus!, $typeId: String!, $uniqueCode: String) { createProperty( createPropertyData: {name: $name, status: $status, typeId: $typeId, uniqueCode: $uniqueCode, mediaList: $mediaList, priceList: $priceList, amenityIds: $amenityIds, location: $location, landSize: $landSize, floorSize: $floorSize} ) { ...PropertyAttributes } }",

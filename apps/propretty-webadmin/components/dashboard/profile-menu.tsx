@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/auth/actions";
+import { logout } from "@/modules/auth/actions/auth.actions";
 import Image from "next/image";
 import Link from "next/link";
 

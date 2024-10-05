@@ -1,10 +1,10 @@
 "use server";
 
+import { getClient } from "@/lib/apollo-client";
+import { createSession } from "@/lib/session";
 import { ApolloError, gql } from "@apollo/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getClient } from "../apollo-client";
-import { createSession } from "../session";
 
 export async function login(formData: FormData) {
   const username = formData.get("username") as string;
