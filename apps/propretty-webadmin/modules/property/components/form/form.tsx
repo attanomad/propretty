@@ -15,9 +15,7 @@ import {
   UpdatePropertyMutation,
 } from "@/gql/graphql";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createProperty, updateProperty } from "../../actions/property.actions";
 import AmenitiesField from "./amenities-field/amenities-field";
@@ -27,11 +25,9 @@ import FloorSizeField from "./floor-size-field";
 import {
   convertFormToCreateVariables,
   convertFormToUpdateVariables,
-  convertPropertyToForm,
-  defaultFormValues,
-  formSchema,
   FormSchema,
 } from "./form-schema";
+import { usePropertyForm } from "./form.hooks";
 import FurnishingField from "./furnishing-field";
 import LandSizeField from "./land-size-field";
 import LocationField from "./location-field";
@@ -45,14 +41,7 @@ import UniqueCodeField from "./unique-code-field";
 
 export default function PropertyForm({ property }: { property?: Property }) {
   const router = useRouter();
-  const defaultValues = property
-    ? convertPropertyToForm(property)
-    : defaultFormValues;
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues,
-    mode: "onChange",
-  });
+  const form = usePropertyForm(property);
   const isUpdate = !!property;
   async function onSubmit(values: FormSchema) {
     let res: ServerActionBaseResponse<

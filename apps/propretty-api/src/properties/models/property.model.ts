@@ -57,7 +57,7 @@ export class Property {
   @Field((type) => [PropertyMedia])
   mediaList: PropertyMedia[];
 
-  @Field((type) => [Amenity], { nullable: 'items' })
+  @Field((type) => [Amenity])
   amenities: Amenity[];
 
   @Field()

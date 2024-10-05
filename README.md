@@ -26,7 +26,12 @@
 
 #### Property Management
 
-CRUD Operations
+1. CRUD Operations
+2. Rich-text description
+3. Image watermark
+4. Google Calendar integration
+5. Property taggings
+6. Property shortlist
 
 #### Agent Management
 

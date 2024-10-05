@@ -135,7 +135,7 @@ export type Price = {
 
 export type Property = {
   __typename?: 'Property';
-  amenities: Array<Maybe<Amenity>>;
+  amenities: Array<Amenity>;
   author: User;
   authorId: Scalars['String']['output'];
   commercialStatus?: Maybe<PropertyCommercialStatus>;
@@ -298,7 +298,7 @@ export type FindPropertyTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type FindPropertyTypesQuery = { __typename?: 'Query', propertyTypes: Array<{ __typename?: 'PropertyType', id: string, name: string, description?: string | null }> };
 
-export type PropertyAttributesFragment = { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string } | null> };
+export type PropertyAttributesFragment = { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string }> };
 
 export type CreatePropertyMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -314,7 +314,7 @@ export type CreatePropertyMutationVariables = Exact<{
 }>;
 
 
-export type CreatePropertyMutation = { __typename?: 'Mutation', createProperty: { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string } | null> } };
+export type CreatePropertyMutation = { __typename?: 'Mutation', createProperty: { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string }> } };
 
 export type UpdatePropertyMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -330,14 +330,14 @@ export type UpdatePropertyMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePropertyMutation = { __typename?: 'Mutation', updateProperty: { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string } | null> } };
+export type UpdatePropertyMutation = { __typename?: 'Mutation', updateProperty: { __typename?: 'Property', id: string, name: string, status: PropertyStatus, uniqueCode?: string | null, landSize?: any | null, floorSize?: any | null, mediaList: Array<{ __typename?: 'PropertyMedia', id: string }>, priceList: Array<{ __typename?: 'Price', currency: string, price: any }>, type: { __typename?: 'PropertyType', id: string, name: string }, amenities: Array<{ __typename?: 'Amenity', id: string, name: string }> } };
 
 export type FindPropertyByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type FindPropertyByIdQuery = { __typename?: 'Query', findProperty?: { __typename?: 'Property', name: string, description?: string | null, status: PropertyStatus, uniqueCode?: string | null, id: string, commercialStatus?: PropertyCommercialStatus | null, furnishing?: PropertyFurnishing | null, floorSize?: any | null, landSize?: any | null, location?: { __typename?: 'Location', id: string, address?: string | null, subdistrict?: string | null, district?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, latitude?: any | null, longitude?: any | null } | null, priceList: Array<{ __typename?: 'Price', id: string, price: any, currency: string }>, type: { __typename?: 'PropertyType', id: string, name: string }, mediaList: Array<{ __typename?: 'PropertyMedia', id: string, url: string, mimetype: string }>, amenities: Array<{ __typename?: 'Amenity', id: string, name: string } | null> } | null };
+export type FindPropertyByIdQuery = { __typename?: 'Query', findProperty?: { __typename?: 'Property', name: string, description?: string | null, status: PropertyStatus, uniqueCode?: string | null, id: string, commercialStatus?: PropertyCommercialStatus | null, furnishing?: PropertyFurnishing | null, floorSize?: any | null, landSize?: any | null, location?: { __typename?: 'Location', id: string, address?: string | null, subdistrict?: string | null, district?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, latitude?: any | null, longitude?: any | null } | null, priceList: Array<{ __typename?: 'Price', id: string, price: any, currency: string }>, type: { __typename?: 'PropertyType', id: string, name: string }, mediaList: Array<{ __typename?: 'PropertyMedia', id: string, url: string, mimetype: string }>, amenities: Array<{ __typename?: 'Amenity', id: string, name: string }> } | null };
 
 export type FindPropertiesQueryVariables = Exact<{ [key: string]: never; }>;
 

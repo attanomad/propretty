@@ -1,4 +1,4 @@
-import { Property } from "@/app/(private)/properties/types";
+import { Property } from "@/gql/graphql";
 import { z } from "zod";
 
 const schema = z.record(z.string().cuid(), z.boolean());

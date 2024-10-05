@@ -78,7 +78,7 @@ type Property {
   furnishing: PropertyFurnishing
   type: PropertyType!
   mediaList: [PropertyMedia!]!
-  amenities: [Amenity]!
+  amenities: [Amenity!]!
   authorId: String!
   author: User!
   location: Location
