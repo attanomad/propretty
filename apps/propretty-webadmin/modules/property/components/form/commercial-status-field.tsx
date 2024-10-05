@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CommercialStatus } from "@propretty/common";
+import { PropertyCommercialStatus } from "@/gql/graphql";
 import { Control } from "react-hook-form";
 import { FormSchema } from "./form-schema";
 
@@ -39,7 +39,7 @@ export default function CommercialStatusField({
           <FormLabel>Commercial Status</FormLabel>
           <Select
             onValueChange={field.onChange}
-            defaultValue={field.value}
+            defaultValue={field.value as PropertyCommercialStatus}
           >
             <FormControl>
               <SelectTrigger>
@@ -47,7 +47,7 @@ export default function CommercialStatusField({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {Object.values(CommercialStatus).map((s) => (
+              {Object.values(PropertyCommercialStatus).map((s) => (
                 <SelectItem
                   key={s}
                   value={s}

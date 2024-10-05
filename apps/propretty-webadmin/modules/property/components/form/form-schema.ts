@@ -3,10 +3,10 @@ import {
   Property,
   PropertyCommercialStatus,
   PropertyFurnishing,
+  PropertyStatus,
   UpdatePropertyMutationVariables,
 } from "@/gql/graphql";
 import {
-  PropertyStatus,
   SupportedAreaMeasurementUnit,
   SupportedCurrenciesCount,
   SupportedCurrency,

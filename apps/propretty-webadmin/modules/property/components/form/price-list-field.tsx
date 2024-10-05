@@ -49,7 +49,7 @@ export default function PriceListField() {
     }
   };
   const initialIndex = fields.reduce<CurrencyIndex>((obj, f, index) => {
-    obj[f.currency] = index;
+    obj[f.currency as SupportedCurrency] = index;
 
     return obj;
   }, {} as CurrencyIndex);
@@ -249,7 +249,7 @@ const CurrencyField = ({
         const handleChange = (newValue: SupportedCurrency) => {
           onChange(newValue);
           use(newValue, index);
-          remove(value);
+          remove(value as SupportedCurrency);
         };
 
         return (
