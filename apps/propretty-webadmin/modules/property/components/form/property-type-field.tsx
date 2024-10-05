@@ -13,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { findPropertyTypes } from "@/lib/property-type/server-actions";
+import { PropertyType } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
-import { PropertyType } from "@propretty/common";
+import { findPropertyTypes } from "@/modules/property-type/actions/property-type.actions";
 import { SelectProps } from "@radix-ui/react-select";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";

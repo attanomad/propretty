@@ -1,4 +1,4 @@
-import CreateAmenityForm from "./create-amenity-form";
+import CreateAmenityForm from "@/modules/amenity/components/create-amenity-form";
 
 export default function NewAmenityPage() {
   return (

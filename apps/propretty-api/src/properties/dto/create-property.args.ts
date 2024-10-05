@@ -1,5 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { PropertyCommercialStatus, PropertyFurnishing } from '@prisma/client';
+import {
+  PropertyCommercialStatus,
+  PropertyFurnishing,
+  PropertyStatus,
+} from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Transform } from 'class-transformer';
 import {
@@ -7,7 +11,6 @@ import {
   transformToDecimal,
 } from 'prisma-graphql-type-decimal';
 import { UpsertLocationInput } from 'src/location/dto/upsert-location.args';
-import { Status } from '../enums/status.enum';
 import { CreatePriceInput } from './create-price.args';
 
 @InputType()
@@ -15,8 +18,8 @@ export class CreatePropertyInput {
   @Field()
   name: string;
 
-  @Field((type) => Status)
-  status: Status;
+  @Field((type) => PropertyStatus)
+  status: PropertyStatus;
 
   @Field({ nullable: true })
   description: string;

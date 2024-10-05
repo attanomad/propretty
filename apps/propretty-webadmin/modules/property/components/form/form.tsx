@@ -9,13 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import {
+  CreatePropertyMutation,
+  Property,
+  UpdatePropertyMutation,
+} from "@/gql/graphql";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Property } from "@propretty/common";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createProperty, updateProperty } from "../../actions/property";
+import { createProperty, updateProperty } from "../../actions/property.actions";
 import AmenitiesField from "./amenities-field/amenities-field";
 import CommercialStatusField from "./commercial-status-field";
 import DescriptionField from "./description-field";
@@ -51,12 +55,14 @@ export default function PropertyForm({ property }: { property?: Property }) {
   });
   const isUpdate = !!property;
   async function onSubmit(values: FormSchema) {
-    let res: ServerActionBaseResponse<Property>;
+    let res: ServerActionBaseResponse<
+      | CreatePropertyMutation["createProperty"]
+      | UpdatePropertyMutation["updateProperty"]
+    >;
 
     if (isUpdate) {
       res = await updateProperty(
-        property.id,
-        convertFormToUpdateVariables(values)
+        convertFormToUpdateVariables(property.id, values)
       );
 
       if (res.code === 0) {

@@ -1,0 +1,83 @@
+fragment PropertyAttributes on Property {
+  id
+  name
+  status
+  uniqueCode
+  landSize
+  floorSize
+  mediaList {
+    id
+  }
+  priceList {
+    currency
+    price
+  }
+  type {
+    id
+    name
+  }
+  amenities {
+    id
+    name
+  }
+}
+
+mutation CreateProperty(
+  $name: String!
+  $status: PropertyStatus!
+  $typeId: String!
+  $uniqueCode: String
+  $mediaList: [String]
+  $priceList: [CreatePriceInput!]
+  $amenityIds: [String!]
+  $location: UpsertLocationInput
+  $landSize: Decimal
+  $floorSize: Decimal
+) {
+  createProperty(
+    createPropertyData: {
+      name: $name
+      status: $status
+      typeId: $typeId
+      uniqueCode: $uniqueCode
+      mediaList: $mediaList
+      priceList: $priceList
+      amenityIds: $amenityIds
+      location: $location
+      landSize: $landSize
+      floorSize: $floorSize
+    }
+  ) {
+    ...PropertyAttributes
+  }
+}
+
+mutation UpdateProperty(
+  $id: String!
+  $name: String
+  $typeId: String
+  $uniqueCode: String
+  $landSize: Decimal
+  $floorSize: Decimal
+  $location: UpsertLocationInput
+  $mediaList: [String!]
+  $priceList: [CreatePriceInput!]
+  $amenityIds: [String!]
+) {
+  updateProperty(
+    id: $id
+    updatePropertyData: {
+      name: $name
+      typeId: $typeId
+      uniqueCode: $uniqueCode
+      landSize: $landSize
+      floorSize: $floorSize
+      mediaList: $mediaList
+      priceList: $priceList
+      location: $location
+      amenityIds: $amenityIds
+    }
+  ) {
+    ...PropertyAttributes
+  }
+}

@@ -1,4 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { Property, PropertyMedia, PropertyType } from "@/gql/graphql";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,12 +10,29 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+} from "@radix-ui/react-dropdown-menu";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { Link, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { Property, PropertyMedia, PropertyType } from "./types";
+import { useRouter } from "next/navigation";
+
+export default function PropertyListTable({
+  properties,
+}: {
+  properties: Property[];
+}) {
+  const router = useRouter();
+  const handleRowClick = (row: Row<Property>) =>
+    router.push(`/properties/${row.original.id}`);
+
+  return (
+    <DataTable
+      columns={columns}
+      data={properties}
+      onRowClick={handleRowClick}
+    />
+  );
+}
 
 export const columns: ColumnDef<Property>[] = [
   {

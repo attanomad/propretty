@@ -1,0 +1,59 @@
+query FindPropertyById($id: String!) {
+  findProperty(id: $id) {
+    name
+    description
+    status
+    uniqueCode
+    id
+    commercialStatus
+    furnishing
+    floorSize
+    landSize
+    location {
+      id
+      address
+      subdistrict
+      district
+      province
+      postalCode
+      country
+      latitude
+      longitude
+    }
+    priceList {
+      id
+      price
+      currency
+    }
+    type {
+      id
+      name
+    }
+    mediaList {
+      id
+      url
+      mimetype
+    }
+    amenities {
+      id
+      name
+    }
+  }
+}
+
+query FindProperties {
+  properties {
+    id
+    name
+    uniqueCode
+    type {
+      id
+      name
+    }
+    mediaList {
+      url
+    }
+    createdAt
+    updatedAt
+  }
+}

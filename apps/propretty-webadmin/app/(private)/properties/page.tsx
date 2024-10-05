@@ -1,11 +1,12 @@
-import { findProperties } from "@/modules/property/actions/property";
+import { Property } from "@/gql/graphql";
+import { findProperties } from "@/modules/property/actions/property.actions";
+import PropertyListTable from "@/modules/property/components/property-list-table";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import PropertyListTable from "./property-list-table";
 
 async function PropertyList() {
-  const properties = await findProperties();
+  const properties = (await findProperties()) as Property[];
 
   return <PropertyListTable properties={properties} />;
 }

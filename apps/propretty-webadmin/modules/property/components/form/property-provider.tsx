@@ -1,4 +1,4 @@
-import { Property } from "@propretty/common";
+import { Property } from "@/gql/graphql";
 import { createContext, ReactNode, useContext } from "react";
 
 export const PropertyContext = createContext<Property | null>(null);

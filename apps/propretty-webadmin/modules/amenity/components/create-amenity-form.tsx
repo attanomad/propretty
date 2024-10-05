@@ -11,10 +11,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createAmenity } from "@/modules/amenity/actions/amenity.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { createAmenity } from "./actions";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),

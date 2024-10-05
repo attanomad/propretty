@@ -1,5 +1,6 @@
 {
     "conventionalCommits.scopes": [
         "api"
-    ]
+    ],
+    "graphql-config.load.filepath": "./apps/propretty-webadmin/.graphqlrc.json"
 }

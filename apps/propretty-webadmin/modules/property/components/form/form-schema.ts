@@ -1,7 +1,11 @@
 import {
-  CommercialStatus,
-  FurnishingType,
+  CreatePropertyMutationVariables,
   Property,
+  PropertyCommercialStatus,
+  PropertyFurnishing,
+  UpdatePropertyMutationVariables,
+} from "@/gql/graphql";
+import {
   PropertyStatus,
   SupportedAreaMeasurementUnit,
   SupportedCurrenciesCount,
@@ -9,10 +13,6 @@ import {
   convertAreaMeasurementUnit,
 } from "@propretty/common";
 import { z } from "zod";
-import {
-  CreatePropertyVariables,
-  UpdatePropertyVariables,
-} from "../../actions/property";
 import { amenitiesFieldValidation } from "./amenities-field/validation";
 import { pictureFieldValidation } from "./picture-field/validation";
 
@@ -20,19 +20,17 @@ export const formSchema = z.object({
   name: z.string().min(2).max(50),
   description: z.string().optional(),
   status: z.nativeEnum(PropertyStatus),
-  commercialStatus: z.nativeEnum(CommercialStatus).optional(),
-  furnishing: z.nativeEnum(FurnishingType).optional(),
+  commercialStatus: z.nativeEnum(PropertyCommercialStatus).nullish(),
+  furnishing: z.nativeEnum(PropertyFurnishing).optional(),
   priceList: z
     .array(
       z.object({
-        currency: z
-          .nativeEnum(SupportedCurrency)
-          .default(SupportedCurrency.USD),
+        currency: z.string().default(SupportedCurrency.USD),
         price: z.coerce.number().multipleOf(0.01).nonnegative().min(0),
       })
     )
     .max(SupportedCurrenciesCount),
-  uniqueCode: z.string().max(50).optional(),
+  uniqueCode: z.string().max(50).nullish(),
   typeId: z.string().cuid(),
   mediaList: pictureFieldValidation.schema,
   [amenitiesFieldValidation.formKey]: amenitiesFieldValidation.schema,
@@ -73,7 +71,7 @@ export const defaultFormValues: FormSchema = {
   name: "",
   description: "",
   status: PropertyStatus.Active,
-  commercialStatus: CommercialStatus.AVAILABLE,
+  commercialStatus: PropertyCommercialStatus.Available,
   priceList: [],
   typeId: "",
   uniqueCode: "",
@@ -132,7 +130,7 @@ export const convertPropertyToForm = (property: Property): FormSchema => {
 
 export const convertFormToCreateVariables = (
   form: FormSchema
-): CreatePropertyVariables => {
+): CreatePropertyMutationVariables => {
   const { landSize, floorSize, location, ...rest } = form;
   return {
     ...rest,
@@ -164,11 +162,13 @@ export const convertFormToCreateVariables = (
 };
 
 export const convertFormToUpdateVariables = (
+  propertyId: string,
   form: FormSchema
-): UpdatePropertyVariables => {
+): UpdatePropertyMutationVariables => {
   const { landSize, floorSize, ...rest } = form;
 
   return {
+    id: propertyId,
     ...rest,
     landSize:
       landSize && landSize.value > 0

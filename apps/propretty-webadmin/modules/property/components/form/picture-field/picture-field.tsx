@@ -6,8 +6,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { saveMediaFile } from "@/lib/media/server-actions";
 import { cn } from "@/lib/utils";
+import { saveMediaFile } from "@/modules/media/actions/media.actions";
 import { ImageUp, Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, forwardRef, useRef } from "react";

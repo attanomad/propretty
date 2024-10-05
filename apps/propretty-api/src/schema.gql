@@ -69,7 +69,7 @@ type Property {
   id: String!
   name: String!
   description: String
-  status: String!
+  status: PropertyStatus!
   priceList: [Price!]!
   commercialStatus: PropertyCommercialStatus
   uniqueCode: String
@@ -77,13 +77,18 @@ type Property {
   landSize: Decimal
   furnishing: PropertyFurnishing
   type: PropertyType!
-  mediaList: [PropertyMedia]!
+  mediaList: [PropertyMedia!]!
   amenities: [Amenity]!
   authorId: String!
   author: User!
   location: Location
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum PropertyStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum PropertyCommercialStatus {
@@ -128,7 +133,7 @@ input LoginInput {
 
 input CreatePropertyInput {
   name: String!
-  status: Status!
+  status: PropertyStatus!
   description: String
   uniqueCode: String
   typeId: String!
@@ -140,11 +145,6 @@ input CreatePropertyInput {
   amenityIds: [String]
   mediaList: [String]
   location: UpsertLocationInput
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
 }
 
 input CreatePriceInput {
@@ -166,7 +166,7 @@ input UpsertLocationInput {
 
 input UpdatePropertyInput {
   name: String
-  status: Status
+  status: PropertyStatus
   description: String
   uniqueCode: String
   typeId: String

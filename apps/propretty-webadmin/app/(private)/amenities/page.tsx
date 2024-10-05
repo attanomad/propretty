@@ -1,11 +1,16 @@
+import { Amenity } from "@/gql/graphql";
+import { findAmenities } from "@/modules/amenity/actions/amenity.actions";
+import AmenityListTable from "@/modules/amenity/components/amenity-list-table";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { findAnemities } from "./actions";
-import AmenityListTable from "./amenity-list-table";
 
 export default async function AmenitiesPage() {
-  const amenities = await findAnemities();
+  const { code, message, data: amenities } = await findAmenities();
+
+  if (code !== 0) {
+    throw new Error(message);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -22,9 +27,8 @@ export default async function AmenitiesPage() {
       <Suspense
         fallback={<p className="font-bold p-4 m-4">Loading property list...</p>}
       >
-        <AmenityListTable amenities={amenities} />
+        <AmenityListTable amenities={amenities as Amenity[]} />
       </Suspense>
     </div>
   );
-  //   return <AmenityListTable amenities={amenities} />;
 }

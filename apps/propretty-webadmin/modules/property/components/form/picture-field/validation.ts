@@ -1,4 +1,4 @@
-import { Property } from "@propretty/common";
+import { Property } from "@/gql/graphql";
 import { z } from "zod";
 import { MAX_MEDIA_COUNT } from "./constants";
 

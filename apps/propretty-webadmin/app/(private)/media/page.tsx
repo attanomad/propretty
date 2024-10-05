@@ -1,11 +1,16 @@
+import { File } from "@/gql/graphql";
+import { findFiles } from "@/modules/media/actions/media.actions";
+import FileListTable from "@/modules/media/components/media-list-table";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { findFiles } from "./actions";
-import FileListTable from "./media-list-table";
 
 export default async function MediaPage() {
-  const files = await findFiles();
+  const { code, message, data: files } = await findFiles();
+
+  if (code !== 0) {
+    throw new Error(message);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -22,7 +27,7 @@ export default async function MediaPage() {
       <Suspense
         fallback={<p className="font-bold p-4 m-4">Loading property list...</p>}
       >
-        <FileListTable files={files} />
+        <FileListTable files={files as File[]} />
       </Suspense>
     </div>
   );

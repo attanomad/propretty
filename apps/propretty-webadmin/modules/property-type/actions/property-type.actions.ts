@@ -1,15 +1,24 @@
 "use server";
 
-import { Amenity } from "@/app/(private)/amenities/actions";
+import {
+  FindPropertyTypesQuery,
+  FindPropertyTypesQueryVariables,
+} from "@/gql/graphql";
+import { getClient } from "@/lib/apollo-client";
 import { ApolloError, gql } from "@apollo/client";
-import { getClient } from "../apollo-client";
+import { ServerActionBaseResponse } from "../../../lib/server-actions.types";
 
-export async function findAmenities() {
+export async function findPropertyTypes(): Promise<
+  ServerActionBaseResponse<FindPropertyTypesQuery["propertyTypes"]>
+> {
   try {
-    const { data } = await getClient().query<{ amenities: Amenity[] }>({
+    const { data } = await getClient().query<
+      FindPropertyTypesQuery,
+      FindPropertyTypesQueryVariables
+    >({
       query: gql`
-        query FindAmenity($name: String) {
-          amenities(name: $name) {
+        query FindPropertyTypes {
+          propertyTypes {
             id
             name
             description
@@ -18,9 +27,9 @@ export async function findAmenities() {
       `,
     });
 
-    return { code: 0, message: "success", data: data?.amenities };
+    return { code: 0, message: "success", data: data.propertyTypes };
   } catch (e) {
-    console.log(`Failed to find amenities: `, JSON.stringify(e));
+    console.log(`Failed to find property types: `, JSON.stringify(e));
 
     let code: number | null = null;
     let message: string = "";

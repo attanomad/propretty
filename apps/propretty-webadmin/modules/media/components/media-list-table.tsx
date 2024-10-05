@@ -1,8 +1,8 @@
 "use client";
 
+import { DataTable } from "@/components/ui/data-table";
+import { File } from "@/gql/graphql";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "../properties/data-table";
-import { File } from "./actions";
 
 export const columns: ColumnDef<File>[] = [
   {

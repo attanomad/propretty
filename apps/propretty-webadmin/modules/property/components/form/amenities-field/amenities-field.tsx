@@ -1,4 +1,3 @@
-import { Amenity } from "@/app/(private)/amenities/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -7,8 +6,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { findAmenities } from "@/lib/amenity/server-actions";
+import { Amenity } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
+import { findAmenities } from "@/modules/amenity/actions/amenity.actions";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Control, useFormContext } from "react-hook-form";

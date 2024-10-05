@@ -1,5 +1,9 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { PropertyCommercialStatus, PropertyFurnishing } from '@prisma/client';
+import {
+  PropertyCommercialStatus,
+  PropertyFurnishing,
+  PropertyStatus,
+} from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Transform } from 'class-transformer';
 import {
@@ -24,8 +28,8 @@ export class Property {
   @Field({ nullable: true })
   description: string;
 
-  @Field()
-  status: string;
+  @Field((type) => PropertyStatus)
+  status: PropertyStatus;
 
   @Field((type) => [Price])
   priceList: Price[];
@@ -50,7 +54,7 @@ export class Property {
   @Field((type) => PropertyType)
   type: PropertyType;
 
-  @Field((type) => [PropertyMedia], { nullable: 'items' })
+  @Field((type) => [PropertyMedia])
   mediaList: PropertyMedia[];
 
   @Field((type) => [Amenity], { nullable: 'items' })
@@ -76,3 +80,4 @@ registerEnumType(PropertyCommercialStatus, {
   name: 'PropertyCommercialStatus',
 });
 registerEnumType(PropertyFurnishing, { name: 'PropertyFurnishing' });
+registerEnumType(PropertyStatus, { name: 'PropertyStatus' });
