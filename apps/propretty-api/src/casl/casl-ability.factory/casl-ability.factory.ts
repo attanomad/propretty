@@ -1,5 +1,10 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
-import { createPrismaAbility, PrismaQuery, Subjects } from '@casl/prisma';
+import {
+  createPrismaAbility,
+  PrismaQuery,
+  Subjects,
+  WhereInput,
+} from '@casl/prisma';
 import { Injectable } from '@nestjs/common';
 import {
   PermissionSubject,
@@ -30,7 +35,9 @@ export class CaslAbilityFactory {
   constructor(private prismaService: PrismaService) {}
 
   async createForUser(user: Request['user']) {
-    const { can, build } = new AbilityBuilder<AppAbility>(createPrismaAbility);
+    const { can, cannot, build } = new AbilityBuilder<AppAbility>(
+      createPrismaAbility,
+    );
 
     if (user.userRoles) {
       const roles = await this.prismaService.client.role.findMany({
@@ -40,13 +47,20 @@ export class CaslAbilityFactory {
 
       roles.forEach((role) => {
         role.permissions.forEach((p) => {
-          can(p.action, p.subject, p.field);
+          if (p.conditions !== null && typeof p.conditions !== 'object')
+            throw new Error(`Invalid permission conditions`);
+
+          const func = p.isAllowed ? can : cannot;
+
+          func(
+            p.action,
+            p.subject,
+            p.field,
+            p.conditions ? (p.conditions as WhereInput<any>) : undefined,
+          );
         });
       });
     }
-
-    // can(Action.Update, 'Property', { id: { notIn: ['1', '2', '3'] } });
-    // cannot(Action.Delete, 'Property', { isPublished: true });
 
     return build();
   }
