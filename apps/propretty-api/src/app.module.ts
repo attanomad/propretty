@@ -16,6 +16,7 @@ import { PropertiesModule } from './properties/properties.module';
 import { PropertyTypesModule } from './property-types/property-types.module';
 import { UnifiedResponseInterceptor } from './unified-response.interceptor';
 import { UsersModule } from './users/users.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { UsersModule } from './users/users.module';
     AmenitiesModule,
     FilesModule,
     PrismaModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [

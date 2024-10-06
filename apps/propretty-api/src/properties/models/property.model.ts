@@ -12,7 +12,6 @@ import {
 } from 'prisma-graphql-type-decimal';
 import { Amenity } from 'src/amenities/models/amenity.model';
 import { Location } from 'src/location/models/location.model';
-import { User } from 'src/users/models/user.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
 import { Price } from './price.model';
 import { PropertyMedia } from './property-media.model';
@@ -59,12 +58,6 @@ export class Property {
 
   @Field((type) => [Amenity])
   amenities: Amenity[];
-
-  @Field()
-  authorId: string;
-
-  @Field((type) => User)
-  author: User;
 
   @Field((type) => Location, { nullable: true })
   location: Location;

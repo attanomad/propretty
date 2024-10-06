@@ -1,11 +1,13 @@
-import { PrismaClient, PropertyAmenity, User } from '@prisma/client';
+import { PrismaClient, PropertyAmenity } from '@prisma/client';
 import { configDotenv } from 'dotenv';
 import configuration from 'src/config/configuration';
 import { extendPrismaClient } from 'src/prisma/prisma.extension';
-import { Role } from 'src/roles/role.enum';
+import permissions from './data/permissions';
 import propertyTypes from './data/propert-type';
 import properties from './data/property';
 import propertyAmenities from './data/property-amenity';
+import roles from './data/roles';
+import users from './data/users';
 
 configDotenv();
 
@@ -14,25 +16,52 @@ const prisma = extendPrismaClient(new PrismaClient(), {
   saltRounds: config.security.password.saltRounds,
   fileHost: config.host,
 });
-const users: Omit<User, 'id'>[] = [
-  { username: 'admin1', roles: [Role.Admin], hashedPassword: 'changeme' },
-  { username: 'admin2', roles: [Role.Admin], hashedPassword: 'changeme' },
-  { username: 'agent1', roles: [Role.Agent], hashedPassword: 'changeme' },
-  { username: 'agent2', roles: [Role.Agent], hashedPassword: 'changeme' },
-  { username: 'viewer1', roles: [Role.Viewer], hashedPassword: 'changeme' },
-  { username: 'viewer2', roles: [Role.Viewer], hashedPassword: 'changeme' },
-];
 
 async function main() {
+  const upsertedPermissions = await Promise.all(
+    permissions.map(({ subject, action, ...rest }) =>
+      prisma.permission.upsert({
+        where: { subject_action: { subject, action } },
+        create: { subject, action, ...rest },
+        update: {},
+      }),
+    ),
+  );
+
+  console.log('upserted permissions: ', upsertedPermissions);
+
+  const upsertedRoles = await Promise.all(
+    roles.map(({ name, permissions }) =>
+      prisma.role.upsert({
+        where: { name },
+        create: {
+          name,
+          permissions: {
+            connect: permissions.map(({ subject, action }) => ({
+              subject_action: { subject, action },
+            })),
+          },
+        },
+        update: {},
+      }),
+    ),
+  );
+
+  console.log('upserted roles: ', upsertedRoles);
+
   const upsertedUsers = await Promise.all(
-    users.map(({ username, roles, hashedPassword }) =>
+    users.map(({ username, roles, password }) =>
       prisma.user.upsert({
         where: { username },
         update: {},
         create: {
           username,
-          roles,
-          hashedPassword,
+          // This is a plaintext password, will be hashed by our Prisma Client Extension
+          hashedPassword: password,
+          roles:
+            Array.isArray(roles) && roles.length > 0
+              ? { connect: roles.map((name) => ({ name })) }
+              : undefined,
         },
       }),
     ),
@@ -78,7 +107,6 @@ async function main() {
         where: { uniqueCode: p.uniqueCode },
         update: {},
         include: {
-          author: { select: { id: true, username: true } },
           priceList: true,
           type: true,
           amenities: { select: { id: true, name: true } },
@@ -88,7 +116,6 @@ async function main() {
           priceList: {
             createMany: { data: p.priceList, skipDuplicates: true },
           },
-          authorId: author.id,
           typeId: propertyType.id,
           status: 'ACTIVE',
           amenities: { connect: amenities.map(({ id }) => ({ id })) },

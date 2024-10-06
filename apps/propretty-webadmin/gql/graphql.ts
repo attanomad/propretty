@@ -136,8 +136,6 @@ export type Price = {
 export type Property = {
   __typename?: 'Property';
   amenities: Array<Amenity>;
-  author: User;
-  authorId: Scalars['String']['output'];
   commercialStatus?: Maybe<PropertyCommercialStatus>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -220,12 +218,6 @@ export type QueryPropertyTypesArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
-export enum Role {
-  Admin = 'Admin',
-  Agent = 'Agent',
-  Viewer = 'Viewer'
-}
-
 export type Token = {
   __typename?: 'Token';
   accessToken: Scalars['String']['output'];
@@ -257,14 +249,6 @@ export type UpsertLocationInput = {
   postalCode?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
   subdistrict?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type User = {
-  __typename?: 'User';
-  hashedPassword: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  roles: Array<Role>;
-  username: Scalars['String']['output'];
 };
 
 export type FindAmenitiesQueryVariables = Exact<{ [key: string]: never; }>;

@@ -34,19 +34,6 @@ type Location {
 """An arbitrary-precision Decimal type"""
 scalar Decimal
 
-type User {
-  id: String!
-  username: String!
-  hashedPassword: String!
-  roles: [Role!]!
-}
-
-enum Role {
-  Viewer
-  Agent
-  Admin
-}
-
 type PropertyType {
   id: String!
   name: String!
@@ -79,8 +66,6 @@ type Property {
   type: PropertyType!
   mediaList: [PropertyMedia!]!
   amenities: [Amenity!]!
-  authorId: String!
-  author: User!
   location: Location
   createdAt: DateTime!
   updatedAt: DateTime!

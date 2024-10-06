@@ -29,7 +29,6 @@ export class PropertiesResolver {
         floorSize: args.floorSize,
         type: { connect: { id: args.typeId } },
         uniqueCode: args.uniqueCode,
-        author: { connect: { id: user.userId } },
         furnishing: args.furnishing,
         commercialStatus: args.commercialStatus,
         description: args.description,
@@ -186,7 +185,6 @@ export class PropertiesResolver {
       where: { id },
       omit: {
         typeId: true,
-        authorId: true,
         propertyOwnerId: true,
         locationId: true,
       },
@@ -194,7 +192,6 @@ export class PropertiesResolver {
         type: true,
         mediaList: true,
         amenities: true,
-        author: true,
         location: true,
         priceList: true,
         PropertyListing: true,
@@ -211,7 +208,6 @@ export class PropertiesResolver {
     const prismaArgs: Prisma.PropertyFindManyArgs = {
       omit: {
         typeId: true,
-        authorId: true,
         propertyOwnerId: true,
         locationId: true,
       },
@@ -219,7 +215,6 @@ export class PropertiesResolver {
         type: true,
         mediaList: true,
         amenities: true,
-        author: true,
         location: true,
         priceList: true,
         PropertyListing: true,

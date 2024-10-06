@@ -21,8 +21,50 @@ model User {
   // emailVerified Boolean @default(false)
   hashedPassword String
 
-  roles      String[]
-  properties Property[]
+  roles Role[]
+
+  // Direct permissions
+  permissions        Permission[]
+  assignedProperties Property[]   @relation(name: "AgentToProperty")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+
+  permissions Permission[]
+  users       User[]
+}
+
+enum PermissionSubject {
+  User
+  Property
+  PropertyType
+  Amenity
+  Client
+  Tenant
+  Agent
+}
+
+model Permission {
+  id String @id @default(cuid())
+
+  // true ? can() : cannot()
+  isAllowed Boolean           @default(true)
+  subject   PermissionSubject
+  action    String
+
+  // Subject field
+  field String[]
+
+  // CASL conditions (Prisma Query object)
+  conditions Json? @db.JsonB
+
+  roles Role[]
+  users User[]
+
+  @@unique([subject, action])
 }
 
 enum PropertyStatus {
@@ -78,12 +120,11 @@ model Property {
 
   amenities PropertyAmenity[]
 
-  authorId        String
-  author          User              @relation(fields: [authorId], references: [id])
   locationId      String?
   PropertyOwner   PropertyOwner?    @relation(fields: [propertyOwnerId], references: [id])
   propertyOwnerId String?
   PropertyListing PropertyListing[]
+  assignedAgents  User[]            @relation(name: "AgentToProperty")
 }
 
 model PropertyListing {

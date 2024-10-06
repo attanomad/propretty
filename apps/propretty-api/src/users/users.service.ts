@@ -24,7 +24,14 @@ export class UsersService {
     );
 
     return this.prismaService.client.user.create({
-      data: { hashedPassword, username, roles },
+      data: {
+        hashedPassword,
+        username,
+        roles:
+          Array.isArray(roles) && roles.length > 0
+            ? { connect: roles.map((name) => ({ name })) }
+            : undefined,
+      },
       select: { id: true, username: true },
     });
   }

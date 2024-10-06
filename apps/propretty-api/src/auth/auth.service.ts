@@ -1,8 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { Role } from 'src/roles/role.enum';
 import { User } from 'src/users/models/user.model';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './jwt.payload';
@@ -13,7 +11,6 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async validateUser(
@@ -55,6 +52,6 @@ export class AuthService {
   }
 
   async signUp(username: string, pass: string) {
-    return this.usersService.create(username, pass, [Role.Viewer]);
+    return this.usersService.create(username, pass);
   }
 }

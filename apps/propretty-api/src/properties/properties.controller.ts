@@ -40,7 +40,6 @@ export class PropertiesController {
       data: {
         ...body,
         type,
-        author: { connect: { id: user.userId } },
       },
       include: { type: true },
     });
