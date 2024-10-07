@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { HTMLProps } from "react";
 import NavItem, { NavItemProps } from "./nav-item";
 
@@ -5,6 +6,8 @@ export default function Nav({
   items,
   ...rest
 }: { items: NavItemProps[] } & HTMLProps<HTMLElement>) {
+  const t = useTranslations("navigation");
+
   return (
     <nav {...rest}>
       {items.map((m) => (
@@ -15,7 +18,7 @@ export default function Nav({
           show={m.show}
           tooltip={m.tooltip}
         >
-          {m.children}
+          {t(m.children)}
         </NavItem>
       ))}
     </nav>

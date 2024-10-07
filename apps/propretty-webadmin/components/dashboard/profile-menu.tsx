@@ -11,6 +11,7 @@ import {
 import { logout } from "@/modules/auth/actions/auth.actions";
 import Image from "next/image";
 import Link from "next/link";
+import LocaleSwitcher from "../i18n/locale-switcher";
 
 export default function ProfileMenu() {
   const handleLogout = () => {
@@ -41,6 +42,9 @@ export default function ProfileMenu() {
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
+        <DropdownMenuItem className="flex justify-center">
+          <LocaleSwitcher />
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <Button
           className="w-full"

@@ -1,0 +1,34 @@
+{
+  "LoginPage": {
+    "title": "Log in",
+    "form": {
+      "title": "Log in",
+      "description": "Enter your username below to login to your account.",
+      "field": {
+        "username": {
+          "label": "Username",
+          "placeholder": "Type in your username"
+        },
+        "password": {
+          "label": "Password"
+        }
+      },
+      "submit": "Sign in"
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "th": "Thai (ไทย)"
+  },
+  "navigation": {
+    "Home": "Home",
+    "Dashboard": "Dashboard",
+    "Properties": "Properties",
+    "Amenities": "Amenities",
+    "Settings": "Settings",
+    "Media": "Media",
+    "Contacts": "Contacts",
+    "Agents": "Agents"
+  }
+}

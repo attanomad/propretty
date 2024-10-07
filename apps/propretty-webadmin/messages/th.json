@@ -1,0 +1,34 @@
+{
+  "LoginPage": {
+    "title": "เข้าสู่ระบบ",
+    "form": {
+      "title": "เข้าสู่ระบบ",
+      "description": "ใส่ชื่อผู้ใช้เพื่อเข้าสู่ระบบ",
+      "field": {
+        "username": {
+          "label": "ชื่อผู้ใช้",
+          "placeholder": "พิมพ์ชื่อผู้ใช้ของคุณ"
+        },
+        "password": {
+          "label": "รหัสผ่าน"
+        }
+      },
+      "submit": "เข้าสู่ระบบ"
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "th": "Thai (ไทย)"
+  },
+  "navigation": {
+    "Home": "หน้าแรก",
+    "Dashboard": "แดชบอร์ด",
+    "Properties": "ทรัพย์",
+    "Amenities": "สิ่งอำนวยความสะดวก",
+    "Settings": "ตั้งค่า",
+    "Media": "ไฟล์",
+    "Contacts": "ผู้ติดต่อ",
+    "Agents": "นายหน้า"
+  }
+}

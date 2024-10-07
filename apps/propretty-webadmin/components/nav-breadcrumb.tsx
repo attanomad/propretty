@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
@@ -18,6 +19,7 @@ const breadcrumbLabelByPath: Record<string, string> = {
 };
 
 export default function NavBreadcrumb() {
+  const t = useTranslations("navigation");
   const pathname = usePathname();
   const pathList = pathname === "/" ? [""] : pathname.split("/");
 
@@ -36,7 +38,7 @@ export default function NavBreadcrumb() {
             <Fragment key={p}>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={sliced || "/"}>{label}</Link>
+                  <Link href={sliced || "/"}>{t(label)}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {idx < pathList.length - 1 && <BreadcrumbSeparator />}

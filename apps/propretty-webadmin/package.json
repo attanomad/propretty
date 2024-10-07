@@ -33,6 +33,7 @@
     "jose": "^5.9.3",
     "lucide-react": "^0.441.0",
     "next": "14.2.4",
+    "next-intl": "^3.20.0",
     "next-themes": "^0.3.0",
     "propretty-api": "workspace:../propretty-api",
     "react": "^18",

@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { login } from "@/modules/auth/actions/auth.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -33,6 +34,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export default function LoginForm() {
+  const t = useTranslations("LoginPage");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { username: "", password: "" },
@@ -58,10 +60,8 @@ export default function LoginForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>
-              Enter your username below to login to your account.
-            </CardDescription>
+            <CardTitle className="text-2xl">{t("form.title")}</CardTitle>
+            <CardDescription>{t("form.description")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             <FormField
@@ -71,10 +71,10 @@ export default function LoginForm() {
                 <FormItem>
                   <FormControl>
                     <div className="grid gap-2">
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>{t("form.field.username.label")}</FormLabel>
                       <Input
                         type="text"
-                        placeholder="myusername"
+                        placeholder={t("form.field.username.placeholder")}
                         {...field}
                       />
                     </div>
@@ -91,7 +91,7 @@ export default function LoginForm() {
                 <FormItem>
                   <FormControl>
                     <div className="grid gap-2">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t("form.field.password.label")}</FormLabel>
                       <Input
                         type="password"
                         {...field}
@@ -117,7 +117,7 @@ export default function LoginForm() {
               {isSubmitting ? (
                 <Loader2 className={cn("animate-spin")} />
               ) : (
-                "Sign in"
+                t("form.submit")
               )}
             </Button>
           </CardFooter>
