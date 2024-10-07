@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n        query FindAmenities {\n          amenities {\n            id\n            name\n            description\n          }\n        }\n      ": types.FindAmenitiesDocument,
+    "\n        query FindAmenities($where: PropertyAmenityWhereInput) {\n          amenities(where: $where) {\n            id\n            name\n            description\n          }\n        }\n      ": types.FindAmenitiesDocument,
     "\n        mutation CreateAmenity($name: String!, $description: String) {\n          createAmenity(\n            createAmenityData: { name: $name, description: $description }\n          ) {\n            id\n            name\n            description\n          }\n        }\n      ": types.CreateAmenityDocument,
     "\n        mutation Login($username: String!, $password: String!) {\n          login(credentials: { username: $username, password: $password }) {\n            accessToken\n          }\n        }\n      ": types.LoginDocument,
     "\n        query FindFiles {\n          files {\n            id\n            name\n            url\n            mimetype\n          }\n        }\n      ": types.FindFilesDocument,
@@ -39,7 +39,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n        query FindAmenities {\n          amenities {\n            id\n            name\n            description\n          }\n        }\n      "): (typeof documents)["\n        query FindAmenities {\n          amenities {\n            id\n            name\n            description\n          }\n        }\n      "];
+export function graphql(source: "\n        query FindAmenities($where: PropertyAmenityWhereInput) {\n          amenities(where: $where) {\n            id\n            name\n            description\n          }\n        }\n      "): (typeof documents)["\n        query FindAmenities($where: PropertyAmenityWhereInput) {\n          amenities(where: $where) {\n            id\n            name\n            description\n          }\n        }\n      "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

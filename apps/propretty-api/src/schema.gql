@@ -98,8 +98,118 @@ type Query {
   findProperty(id: String!): Property
   properties(id: String, name: String, typeId: String): [Property]!
   propertyTypes(id: String, name: String): [PropertyType!]!
-  amenities(id: String, name: String): [Amenity!]!
+  amenities(where: PropertyAmenityWhereInput, orderBy: [PropertyAmenityOrderByWithRelationInput!], cursor: PropertyAmenityWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyAmenityScalarFieldEnum!]): [Amenity!]!
   files: [File!]!
+}
+
+input PropertyAmenityWhereInput {
+  AND: [PropertyAmenityWhereInput!]
+  OR: [PropertyAmenityWhereInput!]
+  NOT: [PropertyAmenityWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringFilter
+}
+
+enum QueryMode {
+  default
+  insensitive
+}
+
+input NestedStringFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringFilter
+}
+
+input StringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+  not: NestedStringNullableFilter
+}
+
+input NestedStringNullableFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  not: NestedStringNullableFilter
+}
+
+input PropertyAmenityOrderByWithRelationInput {
+  id: SortOrder
+  name: SortOrder
+  description: SortOrderInput
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+input SortOrderInput {
+  sort: SortOrder!
+  nulls: NullsOrder
+}
+
+enum NullsOrder {
+  first
+  last
+}
+
+input PropertyAmenityWhereUniqueInput {
+  id: String
+  name: String
+  AND: [PropertyAmenityWhereInput!]
+  OR: [PropertyAmenityWhereInput!]
+  NOT: [PropertyAmenityWhereInput!]
+  description: StringNullableFilter
+}
+
+enum PropertyAmenityScalarFieldEnum {
+  id
+  name
+  description
+  createdAt
+  updatedAt
 }
 
 type Mutation {
@@ -107,7 +217,8 @@ type Mutation {
   createProperty(createPropertyData: CreatePropertyInput!): Property!
   updateProperty(id: String!, updatePropertyData: UpdatePropertyInput!): Property!
   createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
-  createAmenity(createAmenityData: CreateAmenityInput!): Amenity!
+  createAmenity(createAmenityData: PropertyAmenityCreateInput!): Amenity!
+  updateAmenity(data: PropertyAmenityUpdateInput!, where: PropertyAmenityWhereUniqueInput!): Amenity!
   generateSignedUrl(name: String!, mimeType: String!): String!
 }
 
@@ -170,7 +281,21 @@ input CreatePropertyTypeInput {
   description: String
 }
 
-input CreateAmenityInput {
+input PropertyAmenityCreateInput {
   name: String!
   description: String
+}
+
+input PropertyAmenityUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+}
+
+input StringFieldUpdateOperationsInput {
+  set: String
+}
+
+input NullableStringFieldUpdateOperationsInput {
+  set: String
 }

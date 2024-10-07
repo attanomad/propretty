@@ -1,5 +1,5 @@
 {
-  "f916832c776f53b9ffe69b1df2d87d93fdc02c10": "query FindAmenities { amenities { description id name } }",
+  "2babce2d5789ab5c53490c5aae410281d31d3dff": "query FindAmenities($where: PropertyAmenityWhereInput) { amenities(where: $where) { description id name } }",
   "9ed095dfb8d28663a5e785a4b5c483f21079e9b5": "mutation CreateAmenity($description: String, $name: String!) { createAmenity(createAmenityData: {name: $name, description: $description}) { description id name } }",
   "d0f4769aa18d1f04a71c8d20d4a52980873d780b": "mutation Login($password: String!, $username: String!) { login(credentials: {username: $username, password: $password}) { accessToken } }",
   "cdf351fbe9b417810a55872fb5ca8fa08b2ee1b2": "query FindFiles { files { id mimetype name url } }",

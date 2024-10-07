@@ -14,6 +14,7 @@ export class UsersService {
     return this.prismaService.client.user.findUnique({
       omit: !withHashedPassword ? { hashedPassword: true } : undefined,
       where: { username },
+      include: { roles: true },
     });
   }
 

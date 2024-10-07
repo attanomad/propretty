@@ -1,15 +1,13 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import {
-  PropertyCommercialStatus,
-  PropertyFurnishing,
-  PropertyStatus,
-} from '@prisma/client';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Transform } from 'class-transformer';
 import {
   GraphQLDecimal,
   transformToDecimal,
 } from 'prisma-graphql-type-decimal';
+import { PropertyCommercialStatus } from 'src/@generated/prisma/property-commercial-status.enum';
+import { PropertyFurnishing } from 'src/@generated/prisma/property-furnishing.enum';
+import { PropertyStatus } from 'src/@generated/prisma/property-status.enum';
 import { Amenity } from 'src/amenities/models/amenity.model';
 import { Location } from 'src/location/models/location.model';
 import { PropertyType } from '../../property-types/models/property-type.model';
@@ -69,8 +67,8 @@ export class Property {
   updatedAt: Date;
 }
 
-registerEnumType(PropertyCommercialStatus, {
-  name: 'PropertyCommercialStatus',
-});
-registerEnumType(PropertyFurnishing, { name: 'PropertyFurnishing' });
-registerEnumType(PropertyStatus, { name: 'PropertyStatus' });
+// registerEnumType(PropertyCommercialStatus, {
+//   name: 'PropertyCommercialStatus',
+// });
+// registerEnumType(PropertyFurnishing, { name: 'PropertyFurnishing' });
+// registerEnumType(PropertyStatus, { name: 'PropertyStatus' });

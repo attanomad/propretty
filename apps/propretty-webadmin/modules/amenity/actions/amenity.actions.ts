@@ -20,8 +20,8 @@ export async function findAmenities(
     >({
       variables,
       query: gql`
-        query FindAmenities {
-          amenities {
+        query FindAmenities($where: PropertyAmenityWhereInput) {
+          amenities(where: $where) {
             id
             name
             description

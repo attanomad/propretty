@@ -1,10 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { FindManyPropertyAmenityArgs } from 'src/@generated/property-amenity/find-many-property-amenity.args';
+import { PropertyAmenityCreateInput } from 'src/@generated/property-amenity/property-amenity-create.input';
+import { UpdateOnePropertyAmenityArgs } from 'src/@generated/property-amenity/update-one-property-amenity.args';
 import { Auth } from 'src/auth/auth.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/roles/role.enum';
-import { CreateAmenityInput } from './dto/create-amenity.args';
-import { FindAmenitiesArgs } from './dto/find-amenities.args';
 import { Amenity } from './models/amenity.model';
 
 @Resolver()
@@ -12,11 +13,13 @@ export class AmenitiesResolver {
   constructor(private prismaService: PrismaService) {}
 
   @Mutation((returns) => Amenity)
-  @Auth(Role.Admin)
-  async createAmenity(@Args('createAmenityData') args: CreateAmenityInput) {
+  @Auth(Role.Admin, Role.Root)
+  async createAmenity(
+    @Args('createAmenityData') data: PropertyAmenityCreateInput,
+  ) {
     try {
       const result = await this.prismaService.client.propertyAmenity.create({
-        data: args,
+        data,
       });
 
       return result;
@@ -24,7 +27,34 @@ export class AmenitiesResolver {
       console.log('e: ', e);
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          throw new Error(`Amenity '${args.name}' already exists`);
+          throw new Error(`Amenity '${data.name}' already exists`);
+        }
+      }
+
+      throw e;
+    }
+  }
+
+  @Mutation((returns) => Amenity)
+  @Auth(Role.Admin, Role.Root)
+  async updateAmenity(@Args() args: UpdateOnePropertyAmenityArgs) {
+    try {
+      const result =
+        await this.prismaService.client.propertyAmenity.update(args);
+
+      return result;
+    } catch (e) {
+      console.log('e: ', e);
+      if (e instanceof PrismaClientKnownRequestError) {
+        switch (e.code) {
+          case 'P2002':
+            throw new Error(`Amenity '${args.data.name}' already exists`);
+
+          case 'P2025':
+            throw new Error(`The amenity does not exists`);
+
+          default:
+            break;
         }
       }
 
@@ -34,15 +64,7 @@ export class AmenitiesResolver {
 
   @Query((returns) => [Amenity])
   @Auth()
-  amenities(@Args() args: FindAmenitiesArgs) {
-    return this.prismaService.client.propertyAmenity.findMany({
-      where: {
-        id: args.id,
-        name: args.name
-          ? { contains: args.name, mode: 'insensitive' }
-          : undefined,
-      },
-      orderBy: { name: 'asc' },
-    });
+  amenities(@Args() args: FindManyPropertyAmenityArgs) {
+    return this.prismaService.client.propertyAmenity.findMany(args);
   }
 }

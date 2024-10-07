@@ -9,6 +9,13 @@ generator client {
   previewFeatures = ["omitApi"]
 }
 
+generator nestgraphql {
+  provider = "node node_modules/prisma-nestjs-graphql"
+  // for yarn monorepos
+  // provider = "prisma-nestjs-graphql"
+  output   = "../src/@generated"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -174,19 +181,28 @@ model Location {
 }
 
 model PropertyType {
-  id          String     @id @default(cuid())
-  name        String     @unique
+  /// @HideField({ input: true })
+  id          String  @id @default(cuid())
+  name        String  @unique
   description String?
-  Property    Property[]
+
+  /// @HideField({ input: true })
+  Property Property[]
 }
 
 model PropertyAmenity {
-  id          String   @id @default(cuid())
-  name        String   @unique
+  /// @HideField({ match: 'PropertyAmenityCreateInput' })
+  id          String  @id @default(cuid())
+  name        String  @unique
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
+  /// @HideField({ input: true })
+  createdAt DateTime @default(now())
+
+  /// @HideField({ input: true })
+  updatedAt DateTime @updatedAt
+
+  /// @HideField({ input: true })
   properties Property[]
 }
 
