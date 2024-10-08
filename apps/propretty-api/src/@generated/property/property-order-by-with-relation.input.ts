@@ -11,6 +11,8 @@ import { PropertyAmenityOrderByRelationAggregateInput } from '../property-amenit
 import { PropertyOwnerOrderByWithRelationInput } from '../property-owner/property-owner-order-by-with-relation.input';
 import { PropertyListingOrderByRelationAggregateInput } from '../property-listing/property-listing-order-by-relation-aggregate.input';
 import { UserOrderByRelationAggregateInput } from '../user/user-order-by-relation-aggregate.input';
+import { LeaseOrderByRelationAggregateInput } from '../lease/lease-order-by-relation-aggregate.input';
+import { PropertyMaintenanceRequestOrderByRelationAggregateInput } from '../property-maintenance-request/property-maintenance-request-order-by-relation-aggregate.input';
 
 @InputType()
 export class PropertyOrderByWithRelationInput {
@@ -90,4 +92,12 @@ export class PropertyOrderByWithRelationInput {
     @Field(() => UserOrderByRelationAggregateInput, {nullable:true})
     @Type(() => UserOrderByRelationAggregateInput)
     assignedAgents?: UserOrderByRelationAggregateInput;
+
+    @Field(() => LeaseOrderByRelationAggregateInput, {nullable:true})
+    @Type(() => LeaseOrderByRelationAggregateInput)
+    leases?: LeaseOrderByRelationAggregateInput;
+
+    @Field(() => PropertyMaintenanceRequestOrderByRelationAggregateInput, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestOrderByRelationAggregateInput)
+    maintenanceRequests?: PropertyMaintenanceRequestOrderByRelationAggregateInput;
 }

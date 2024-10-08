@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { FindManyPropertyAmenityArgs } from 'src/@generated/property-amenity/find-many-property-amenity.args';
 import { PropertyAmenityCreateInput } from 'src/@generated/property-amenity/property-amenity-create.input';
-import { UpdateOnePropertyAmenityArgs } from 'src/@generated/property-amenity/update-one-property-amenity.args';
+import { PropertyAmenityUpdateInput } from 'src/@generated/property-amenity/property-amenity-update.input';
 import { Auth } from 'src/auth/auth.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/roles/role.enum';
@@ -37,10 +37,15 @@ export class AmenitiesResolver {
 
   @Mutation((returns) => Amenity)
   @Auth(Role.Admin, Role.Root)
-  async updateAmenity(@Args() args: UpdateOnePropertyAmenityArgs) {
+  async updateAmenity(
+    @Args('id') id: string,
+    @Args('data') data: PropertyAmenityUpdateInput,
+  ) {
     try {
-      const result =
-        await this.prismaService.client.propertyAmenity.update(args);
+      const result = await this.prismaService.client.propertyAmenity.update({
+        where: { id },
+        data,
+      });
 
       return result;
     } catch (e) {
@@ -48,7 +53,7 @@ export class AmenitiesResolver {
       if (e instanceof PrismaClientKnownRequestError) {
         switch (e.code) {
           case 'P2002':
-            throw new Error(`Amenity '${args.data.name}' already exists`);
+            throw new Error(`Amenity '${data.name}' already exists`);
 
           case 'P2025':
             throw new Error(`The amenity does not exists`);

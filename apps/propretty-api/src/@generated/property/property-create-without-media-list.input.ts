@@ -15,6 +15,8 @@ import { PropertyAmenityCreateNestedManyWithoutPropertiesInput } from '../proper
 import { PropertyOwnerCreateNestedOneWithoutPropertiesInput } from '../property-owner/property-owner-create-nested-one-without-properties.input';
 import { PropertyListingCreateNestedManyWithoutPropertyInput } from '../property-listing/property-listing-create-nested-many-without-property.input';
 import { UserCreateNestedManyWithoutAssignedPropertiesInput } from '../user/user-create-nested-many-without-assigned-properties.input';
+import { LeaseCreateNestedManyWithoutPropertyInput } from '../lease/lease-create-nested-many-without-property.input';
+import { PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput } from '../property-maintenance-request/property-maintenance-request-create-nested-many-without-property.input';
 
 @InputType()
 export class PropertyCreateWithoutMediaListInput {
@@ -83,4 +85,12 @@ export class PropertyCreateWithoutMediaListInput {
     @Field(() => UserCreateNestedManyWithoutAssignedPropertiesInput, {nullable:true})
     @Type(() => UserCreateNestedManyWithoutAssignedPropertiesInput)
     assignedAgents?: UserCreateNestedManyWithoutAssignedPropertiesInput;
+
+    @Field(() => LeaseCreateNestedManyWithoutPropertyInput, {nullable:true})
+    @Type(() => LeaseCreateNestedManyWithoutPropertyInput)
+    leases?: LeaseCreateNestedManyWithoutPropertyInput;
+
+    @Field(() => PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput)
+    maintenanceRequests?: PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput;
 }

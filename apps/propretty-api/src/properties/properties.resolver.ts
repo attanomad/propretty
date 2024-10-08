@@ -1,14 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { CreateOnePropertyArgs } from 'src/@generated/property/create-one-property.args';
+import { FindManyPropertyArgs } from 'src/@generated/property/find-many-property.args';
+import { FindUniquePropertyArgs } from 'src/@generated/property/find-unique-property.args';
+import { PropertyUpdateInput } from 'src/@generated/property/property-update.input';
 import { Auth } from 'src/auth/auth.decorator';
 import { JwtPayload } from 'src/auth/jwt.payload';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/roles/role.enum';
 import { User } from 'src/user/user.decorator';
-import { CreatePropertyInput } from './dto/create-property.args';
-import { FindPropertiesArgs } from './dto/find-properties.args';
-import { UpdatePropertyInput } from './dto/update-property.args';
 import { Property } from './models/property.model';
 
 @Resolver()
@@ -19,68 +19,10 @@ export class PropertiesResolver {
   @Auth(Role.Admin, Role.Agent)
   async createProperty(
     @User() user: JwtPayload,
-    @Args('createPropertyData') args: CreatePropertyInput,
+    @Args() args: CreateOnePropertyArgs,
   ) {
     try {
-      const data: Prisma.PropertyCreateArgs['data'] = {
-        name: args.name,
-        status: args.status,
-        landSize: args.landSize,
-        floorSize: args.floorSize,
-        type: { connect: { id: args.typeId } },
-        uniqueCode: args.uniqueCode,
-        furnishing: args.furnishing,
-        commercialStatus: args.commercialStatus,
-        description: args.description,
-      };
-      const amenities =
-        args.amenityIds?.map<Prisma.PropertyAmenityWhereUniqueInput>((id) => ({
-          id,
-        }));
-      const mediaList = args.mediaList?.map((id) => ({ id }));
-
-      if (amenities && amenities.length > 0) {
-        data.amenities = { connect: amenities };
-      }
-
-      if (mediaList && mediaList.length > 0) {
-        data.mediaList = { connect: mediaList };
-      }
-
-      if (args.priceList && args.priceList.length > 0) {
-        data.priceList = {
-          createMany: { data: args.priceList, skipDuplicates: true },
-        };
-      }
-
-      if (args.location) {
-        if (args.location.id) {
-          const { id, ...rest } = args.location;
-
-          data.location = {
-            connectOrCreate: {
-              where: { id },
-              create: rest,
-            },
-          };
-        } else {
-          // At least one field is not empty
-          if (Object.values(args.location).join('') !== '') {
-            data.location = { create: { ...args.location } };
-          }
-        }
-      }
-
-      const result = await this.prismaService.client.property.create({
-        omit: { typeId: true },
-        data,
-        include: {
-          type: true,
-          mediaList: true,
-          amenities: true,
-          priceList: true,
-        },
-      });
+      const result = await this.prismaService.client.property.create(args);
 
       return result;
     } catch (e) {
@@ -99,70 +41,12 @@ export class PropertiesResolver {
   @Auth(Role.Admin, Role.Agent)
   async updateProperty(
     @Args('id') id: string,
-    @Args('updatePropertyData') args: UpdatePropertyInput,
+    @Args('data') data: PropertyUpdateInput,
   ) {
     try {
-      const data: Prisma.PropertyUpdateArgs['data'] = {
-        name: args.name,
-        uniqueCode: args.uniqueCode,
-        status: args.status,
-        landSize: args.landSize,
-        floorSize: args.floorSize,
-        furnishing: args.furnishing,
-        commercialStatus: args.commercialStatus,
-        description: args.description,
-      };
-
-      if (args.typeId) {
-        data.type = { connect: { id: args.typeId } };
-      }
-
-      if (args.amenityIds && args.amenityIds.length > 0) {
-        data.amenities = {
-          set: [],
-          connect: args.amenityIds.map((id) => ({ id })),
-        };
-      }
-
-      if (Array.isArray(args.mediaList) && args.mediaList.length > 0) {
-        data.mediaList = { connect: args.mediaList.map((id) => ({ id })) };
-      }
-
-      if (args.priceList && args.priceList.length > 0) {
-        data.priceList = {
-          deleteMany: {},
-          createMany: { data: args.priceList, skipDuplicates: true },
-        };
-      }
-
-      if (args.location) {
-        const { id, ...rest } = args.location;
-
-        if (id) {
-          data.location = {
-            upsert: { where: { id }, create: rest, update: rest },
-          };
-        } else {
-          // At least one field is not empty
-          if (Object.values(rest).join('') !== '') {
-            data.location = { create: rest };
-          }
-        }
-      }
-
-      console.log('args: ', args);
-      console.log('data: ', data);
-
       const result = await this.prismaService.client.property.update({
         where: { id },
-        omit: { typeId: true },
         data,
-        include: {
-          type: true,
-          mediaList: true,
-          amenities: true,
-          priceList: true,
-        },
       });
 
       return result;
@@ -178,71 +62,16 @@ export class PropertiesResolver {
 
   @Query((returns) => Property, { nullable: true })
   @Auth()
-  async findProperty(@Args('id') id: string) {
-    if (!id) throw new Error("'id' could not be empty");
-
-    const property = await this.prismaService.client.property.findUnique({
-      where: { id },
-      omit: {
-        typeId: true,
-        propertyOwnerId: true,
-        locationId: true,
-      },
-      include: {
-        type: true,
-        mediaList: true,
-        amenities: true,
-        location: true,
-        priceList: true,
-        PropertyListing: true,
-        PropertyOwner: true,
-      },
-    });
-
-    return property;
+  async findUniqueProperty(@Args() args: FindUniquePropertyArgs) {
+    return this.prismaService.client.property.findUnique(args);
   }
 
   @Query((returns) => [Property], { nullable: 'items' })
   @Auth()
-  async properties(@User() user: JwtPayload, @Args() args: FindPropertiesArgs) {
-    const prismaArgs: Prisma.PropertyFindManyArgs = {
-      omit: {
-        typeId: true,
-        propertyOwnerId: true,
-        locationId: true,
-      },
-      include: {
-        type: true,
-        mediaList: true,
-        amenities: true,
-        location: true,
-        priceList: true,
-        PropertyListing: true,
-        PropertyOwner: true,
-      },
-    };
-
-    if (args.id) {
-      prismaArgs.where = { id: args.id };
-    }
-
-    if (args.name) {
-      prismaArgs.where = {
-        ...(prismaArgs.where ?? {}),
-        name: { contains: args.name, mode: 'insensitive' },
-      };
-    }
-
-    if (args.typeId) {
-      prismaArgs.where = {
-        ...(prismaArgs.where ?? {}),
-        typeId: args.typeId,
-      };
-    }
-
-    const result =
-      await this.prismaService.client.property.findMany(prismaArgs);
-
-    return result;
+  async findProperties(
+    @User() user: JwtPayload,
+    @Args() args: FindManyPropertyArgs,
+  ) {
+    return this.prismaService.client.property.findMany(args);
   }
 }

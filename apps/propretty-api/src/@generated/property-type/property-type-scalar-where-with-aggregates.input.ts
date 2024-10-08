@@ -1,7 +1,6 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
 import { StringWithAggregatesFilter } from '../prisma/string-with-aggregates-filter.input';
-import { HideField } from '@nestjs/graphql';
 import { StringNullableWithAggregatesFilter } from '../prisma/string-nullable-with-aggregates-filter.input';
 
 @InputType()
@@ -16,7 +15,7 @@ export class PropertyTypeScalarWhereWithAggregatesInput {
     @Field(() => [PropertyTypeScalarWhereWithAggregatesInput], {nullable:true})
     NOT?: Array<PropertyTypeScalarWhereWithAggregatesInput>;
 
-    @HideField()
+    @Field(() => StringWithAggregatesFilter, {nullable:true})
     id?: StringWithAggregatesFilter;
 
     @Field(() => StringWithAggregatesFilter, {nullable:true})

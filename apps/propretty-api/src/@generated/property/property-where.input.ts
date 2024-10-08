@@ -16,6 +16,8 @@ import { PropertyAmenityListRelationFilter } from '../property-amenity/property-
 import { PropertyOwnerNullableRelationFilter } from '../property-owner/property-owner-nullable-relation-filter.input';
 import { PropertyListingListRelationFilter } from '../property-listing/property-listing-list-relation-filter.input';
 import { UserListRelationFilter } from '../user/user-list-relation-filter.input';
+import { LeaseListRelationFilter } from '../lease/lease-list-relation-filter.input';
+import { PropertyMaintenanceRequestListRelationFilter } from '../property-maintenance-request/property-maintenance-request-list-relation-filter.input';
 
 @InputType()
 export class PropertyWhereInput {
@@ -107,4 +109,12 @@ export class PropertyWhereInput {
     @Field(() => UserListRelationFilter, {nullable:true})
     @Type(() => UserListRelationFilter)
     assignedAgents?: UserListRelationFilter;
+
+    @Field(() => LeaseListRelationFilter, {nullable:true})
+    @Type(() => LeaseListRelationFilter)
+    leases?: LeaseListRelationFilter;
+
+    @Field(() => PropertyMaintenanceRequestListRelationFilter, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestListRelationFilter)
+    maintenanceRequests?: PropertyMaintenanceRequestListRelationFilter;
 }

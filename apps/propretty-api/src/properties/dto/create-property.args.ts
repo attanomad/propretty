@@ -5,11 +5,11 @@ import {
   GraphQLDecimal,
   transformToDecimal,
 } from 'prisma-graphql-type-decimal';
+import { LocationUpsertWithoutPropertyInput } from 'src/@generated/location/location-upsert-without-property.input';
+import { PriceCreateInput } from 'src/@generated/price/price-create.input';
 import { PropertyCommercialStatus } from 'src/@generated/prisma/property-commercial-status.enum';
 import { PropertyFurnishing } from 'src/@generated/prisma/property-furnishing.enum';
 import { PropertyStatus } from 'src/@generated/prisma/property-status.enum';
-import { UpsertLocationInput } from 'src/location/dto/upsert-location.args';
-import { CreatePriceInput } from './create-price.args';
 
 @InputType()
 export class CreatePropertyInput {
@@ -42,8 +42,8 @@ export class CreatePropertyInput {
   @Field((type) => PropertyFurnishing, { nullable: true })
   furnishing: PropertyFurnishing;
 
-  @Field((type) => [CreatePriceInput], { nullable: true })
-  priceList?: CreatePriceInput[];
+  @Field((type) => [PriceCreateInput], { nullable: true })
+  priceList?: PriceCreateInput[];
 
   @Field((type) => [String], { nullable: 'itemsAndList' })
   amenityIds?: string[];
@@ -51,6 +51,6 @@ export class CreatePropertyInput {
   @Field((type) => [String], { nullable: 'itemsAndList' })
   mediaList?: string[];
 
-  @Field((type) => UpsertLocationInput, { nullable: true })
-  location?: UpsertLocationInput;
+  @Field((type) => LocationUpsertWithoutPropertyInput, { nullable: true })
+  location?: LocationUpsertWithoutPropertyInput;
 }

@@ -17,8 +17,8 @@ export async function findPropertyTypes(): Promise<
       FindPropertyTypesQueryVariables
     >({
       query: gql`
-        query FindPropertyTypes {
-          propertyTypes {
+        query FindPropertyTypes($where: PropertyTypeWhereInput) {
+          findPropertyTypes(where: $where) {
             id
             name
             description

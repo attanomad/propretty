@@ -15,6 +15,8 @@ import { PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput } from '../prop
 import { PropertyAmenityUpdateManyWithoutPropertiesNestedInput } from '../property-amenity/property-amenity-update-many-without-properties-nested.input';
 import { PropertyOwnerUpdateOneWithoutPropertiesNestedInput } from '../property-owner/property-owner-update-one-without-properties-nested.input';
 import { UserUpdateManyWithoutAssignedPropertiesNestedInput } from '../user/user-update-many-without-assigned-properties-nested.input';
+import { LeaseUpdateManyWithoutPropertyNestedInput } from '../lease/lease-update-many-without-property-nested.input';
+import { PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput } from '../property-maintenance-request/property-maintenance-request-update-many-without-property-nested.input';
 
 @InputType()
 export class PropertyUpdateWithoutPropertyListingInput {
@@ -81,4 +83,12 @@ export class PropertyUpdateWithoutPropertyListingInput {
     @Field(() => UserUpdateManyWithoutAssignedPropertiesNestedInput, {nullable:true})
     @Type(() => UserUpdateManyWithoutAssignedPropertiesNestedInput)
     assignedAgents?: UserUpdateManyWithoutAssignedPropertiesNestedInput;
+
+    @Field(() => LeaseUpdateManyWithoutPropertyNestedInput, {nullable:true})
+    @Type(() => LeaseUpdateManyWithoutPropertyNestedInput)
+    leases?: LeaseUpdateManyWithoutPropertyNestedInput;
+
+    @Field(() => PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput)
+    maintenanceRequests?: PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput;
 }

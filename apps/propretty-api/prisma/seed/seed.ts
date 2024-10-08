@@ -7,6 +7,7 @@ import propertyTypes from './data/propert-type';
 import properties from './data/property';
 import propertyAmenities from './data/property-amenity';
 import roles from './data/roles';
+import tenants from './data/tenants';
 import users from './data/users';
 
 configDotenv();
@@ -126,6 +127,18 @@ async function main() {
   );
 
   console.log('upserted properties: ', upsertedProperties);
+
+  const upsertedTenants = await Promise.all(
+    tenants.map(({ nationalId, ...rest }) =>
+      prisma.tenant.upsert({
+        where: { nationalId },
+        create: { nationalId, ...rest },
+        update: {},
+      }),
+    ),
+  );
+
+  console.log('upserted tenants: ', upsertedTenants);
 }
 
 main()

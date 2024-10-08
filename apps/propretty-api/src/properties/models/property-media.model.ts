@@ -1,8 +1,8 @@
 import { ObjectType, PickType } from '@nestjs/graphql';
-import { File } from 'src/files/models/file.model';
+import { FileWithUrl } from 'src/files/models/file.model';
 
 @ObjectType()
-export class PropertyMedia extends PickType(File, [
+export class PropertyMedia extends PickType(FileWithUrl, [
   'id',
   'url',
   'mimetype',

@@ -29,6 +29,21 @@
     "Settings": "Settings",
     "Media": "Media",
     "Contacts": "Contacts",
-    "Agents": "Agents"
+    "Agents": "Agents",
+    "Tenants": "Tenants",
+    "Leases": "Leases"
+  },
+  "TenantsPage": {
+    "title": "Tenant List"
+  },
+  "TenantListTable": {
+    "column": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "gender": "Gender",
+      "nationalId": "National ID",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
   }
 }

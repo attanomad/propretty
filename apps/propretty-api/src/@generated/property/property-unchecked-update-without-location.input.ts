@@ -13,6 +13,8 @@ import { PriceUncheckedUpdateManyWithoutPropertyNestedInput } from '../price/pri
 import { PropertyAmenityUncheckedUpdateManyWithoutPropertiesNestedInput } from '../property-amenity/property-amenity-unchecked-update-many-without-properties-nested.input';
 import { PropertyListingUncheckedUpdateManyWithoutPropertyNestedInput } from '../property-listing/property-listing-unchecked-update-many-without-property-nested.input';
 import { UserUncheckedUpdateManyWithoutAssignedPropertiesNestedInput } from '../user/user-unchecked-update-many-without-assigned-properties-nested.input';
+import { LeaseUncheckedUpdateManyWithoutPropertyNestedInput } from '../lease/lease-unchecked-update-many-without-property-nested.input';
+import { PropertyMaintenanceRequestUncheckedUpdateManyWithoutPropertyNestedInput } from '../property-maintenance-request/property-maintenance-request-unchecked-update-many-without-property-nested.input';
 
 @InputType()
 export class PropertyUncheckedUpdateWithoutLocationInput {
@@ -77,4 +79,12 @@ export class PropertyUncheckedUpdateWithoutLocationInput {
     @Field(() => UserUncheckedUpdateManyWithoutAssignedPropertiesNestedInput, {nullable:true})
     @Type(() => UserUncheckedUpdateManyWithoutAssignedPropertiesNestedInput)
     assignedAgents?: UserUncheckedUpdateManyWithoutAssignedPropertiesNestedInput;
+
+    @Field(() => LeaseUncheckedUpdateManyWithoutPropertyNestedInput, {nullable:true})
+    @Type(() => LeaseUncheckedUpdateManyWithoutPropertyNestedInput)
+    leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput;
+
+    @Field(() => PropertyMaintenanceRequestUncheckedUpdateManyWithoutPropertyNestedInput, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestUncheckedUpdateManyWithoutPropertyNestedInput)
+    maintenanceRequests?: PropertyMaintenanceRequestUncheckedUpdateManyWithoutPropertyNestedInput;
 }

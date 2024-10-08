@@ -12,15 +12,23 @@ type Token {
   accessToken: String!
 }
 
-type File {
-  id: String!
-  name: String!
-  mimetype: String!
-  url: String!
+type Price {
+  id: ID!
+  currency: String!
+  price: Decimal!
+  propertyId: String!
+  property: PropertyGenerated!
+}
+
+"""An arbitrary-precision Decimal type"""
+scalar Decimal
+
+type LocationCount {
+  Property: Int!
 }
 
 type Location {
-  id: String!
+  id: ID!
   address: String
   subdistrict: String
   district: String
@@ -29,46 +37,262 @@ type Location {
   postalCode: String
   latitude: Decimal
   longitude: Decimal
+  Property: [PropertyGenerated!]
+  _count: LocationCount!
 }
 
-"""An arbitrary-precision Decimal type"""
-scalar Decimal
+type PropertyTypeCount {
+  Property: Int!
+}
 
 type PropertyType {
-  id: String!
+  id: ID!
   name: String!
   description: String
+  Property: [PropertyGenerated!]
+  _count: PropertyTypeCount!
 }
 
-type Price {
-  id: String!
-  currency: String!
-  price: Decimal!
+type PropertyAmenityCount {
+  properties: Int!
 }
 
-type PropertyMedia {
-  id: String!
-  mimetype: String!
-  url: String!
+type PropertyAmenity {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  properties: [PropertyGenerated!]
+  _count: PropertyAmenityCount!
 }
 
-type Property {
-  id: String!
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type PropertyOwnerCount {
+  properties: Int!
+}
+
+type PropertyOwner {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  profilePictureUrl: String
+  dob: DateTime
+  properties: [PropertyGenerated!]
+  _count: PropertyOwnerCount!
+}
+
+type PropertyListing {
+  id: ID!
+  status: PropertyListingStatus!
+  type: PropertyListingType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  propertyId: String!
+  property: PropertyGenerated!
+}
+
+enum PropertyListingStatus {
+  LISTED
+  UNLISTED
+}
+
+enum PropertyListingType {
+  FOR_SALE
+  FOR_RENT
+}
+
+type PermissionCount {
+  roles: Int!
+  users: Int!
+}
+
+type Permission {
+  id: ID!
+  isAllowed: Boolean!
+  subject: PermissionSubject!
+  action: String!
+  field: [String!]
+  conditions: JSON
+  roles: [Role!]
+  users: [User!]
+  _count: PermissionCount!
+}
+
+enum PermissionSubject {
+  User
+  Property
+  PropertyType
+  Amenity
+  Client
+  Tenant
+  Agent
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type RoleCount {
+  permissions: Int!
+  users: Int!
+}
+
+type Role {
+  id: ID!
+  name: String!
+  description: String
+  permissions: [Permission!]
+  users: [User!]
+  _count: RoleCount!
+}
+
+type UserCount {
+  roles: Int!
+  permissions: Int!
+  assignedProperties: Int!
+}
+
+type User {
+  id: ID!
+  username: String!
+  hashedPassword: String!
+  roles: [Role!]
+  permissions: [Permission!]
+  assignedProperties: [PropertyGenerated!]
+  _count: UserCount!
+}
+
+type PropertyMaintenanceRequestActivity {
+  id: ID!
+  requestId: String!
+  status: PropertyMaintenanceRequestStatus!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  request: PropertyMaintenanceRequest!
+}
+
+enum PropertyMaintenanceRequestStatus {
+  Pending
+  InProgress
+  Completed
+  Cancelled
+}
+
+type PropertyMaintenanceRequestCount {
+  activities: Int!
+}
+
+type PropertyMaintenanceRequest {
+  id: ID!
+  propertyId: String!
+  tenantId: String!
+  leaseId: String!
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  property: PropertyGenerated!
+  tenant: Tenant!
+  lease: Lease!
+  activities: [PropertyMaintenanceRequestActivity!]
+  _count: PropertyMaintenanceRequestCount!
+}
+
+type TenantCount {
+  leases: Int!
+  maintenanceRequests: Int!
+}
+
+type Tenant {
+  id: ID!
+  nationalId: String!
+  firstName: String
+  lastName: String
+  email: String
+  phoneNumber: String
+  dateOfBirth: DateTime
+  gender: String
+  address: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  leases: [Lease!]
+  maintenanceRequests: [PropertyMaintenanceRequest!]
+  _count: TenantCount!
+}
+
+type LeaseCount {
+  maintenanceRequests: Int!
+}
+
+type Lease {
+  id: ID!
+  propertyId: String!
+  tenantId: String!
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  property: PropertyGenerated!
+  tenant: Tenant!
+  maintenanceRequests: [PropertyMaintenanceRequest!]
+  _count: LeaseCount!
+}
+
+enum LeaseStatus {
+  Active
+  Pending
+  Terminated
+  Expired
+}
+
+type PropertyCount {
+  mediaList: Int!
+  priceList: Int!
+  amenities: Int!
+  PropertyListing: Int!
+  assignedAgents: Int!
+  leases: Int!
+  maintenanceRequests: Int!
+}
+
+type PropertyGenerated {
+  id: ID!
   name: String!
   description: String
   status: PropertyStatus!
-  priceList: [Price!]!
-  commercialStatus: PropertyCommercialStatus
+  commercialStatus: PropertyCommercialStatus!
   uniqueCode: String
   floorSize: Decimal
   landSize: Decimal
   furnishing: PropertyFurnishing
-  type: PropertyType!
-  mediaList: [PropertyMedia!]!
-  amenities: [Amenity!]!
-  location: Location
   createdAt: DateTime!
   updatedAt: DateTime!
+  typeId: String!
+  locationId: String
+  propertyOwnerId: String
+  mediaList: [File!]
+  priceList: [Price!]
+  location: Location
+  type: PropertyType!
+  amenities: [PropertyAmenity!]
+  PropertyOwner: PropertyOwner
+  PropertyListing: [PropertyListing!]
+  assignedAgents: [User!]
+  leases: [Lease!]
+  maintenanceRequests: [PropertyMaintenanceRequest!]
+  _count: PropertyCount!
 }
 
 enum PropertyStatus {
@@ -89,26 +313,127 @@ enum PropertyFurnishing {
   UNFURNISHED
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Query {
-  findProperty(id: String!): Property
-  properties(id: String, name: String, typeId: String): [Property]!
-  propertyTypes(id: String, name: String): [PropertyType!]!
-  amenities(where: PropertyAmenityWhereInput, orderBy: [PropertyAmenityOrderByWithRelationInput!], cursor: PropertyAmenityWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyAmenityScalarFieldEnum!]): [Amenity!]!
-  files: [File!]!
+type FileCount {
+  Property: Int!
 }
 
-input PropertyAmenityWhereInput {
-  AND: [PropertyAmenityWhereInput!]
-  OR: [PropertyAmenityWhereInput!]
-  NOT: [PropertyAmenityWhereInput!]
+type File {
+  id: ID!
+  name: String!
+  path: String!
+  mimetype: String!
+  size: String!
+  Property: [PropertyGenerated!]
+  _count: FileCount!
+}
+
+type FileWithUrl {
+  id: ID!
+  name: String!
+  path: String!
+  mimetype: String!
+  size: String!
+  Property: [PropertyGenerated!]
+  _count: FileCount!
+  url: String!
+}
+
+type Property {
+  id: ID!
+  name: String!
+  description: String
+  status: PropertyStatus!
+  commercialStatus: PropertyCommercialStatus!
+  uniqueCode: String
+  floorSize: Decimal
+  landSize: Decimal
+  furnishing: PropertyFurnishing
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  typeId: String!
+  locationId: String
+  propertyOwnerId: String
+  mediaList: [FileWithUrl!]
+  priceList: [Price!]
+  location: Location
+  type: PropertyType!
+  amenities: [PropertyAmenity!]
+  PropertyOwner: PropertyOwner
+  PropertyListing: [PropertyListing!]
+  assignedAgents: [User!]
+  leases: [Lease!]
+  maintenanceRequests: [PropertyMaintenanceRequest!]
+  _count: PropertyCount!
+}
+
+type Query {
+  findUniqueProperty(where: PropertyWhereUniqueInput!): Property
+  findProperties(where: PropertyWhereInput, orderBy: [PropertyOrderByWithRelationInput!], cursor: PropertyWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyScalarFieldEnum!]): [Property]!
+  findPropertyTypes(where: PropertyTypeWhereInput, orderBy: [PropertyTypeOrderByWithRelationInput!], cursor: PropertyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyTypeScalarFieldEnum!]): [PropertyType!]!
+  amenities(where: PropertyAmenityWhereInput, orderBy: [PropertyAmenityOrderByWithRelationInput!], cursor: PropertyAmenityWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyAmenityScalarFieldEnum!]): [Amenity!]!
+  files: [FileWithUrl!]!
+  findTenants(where: TenantWhereInput, orderBy: [TenantOrderByWithRelationInput!], cursor: TenantWhereUniqueInput, take: Int, skip: Int, distinct: [TenantScalarFieldEnum!]): [Tenant!]!
+  findUniqueTenant(where: TenantWhereUniqueInput!): Tenant!
+}
+
+input PropertyWhereUniqueInput {
+  id: String
+  uniqueCode: String
+  AND: [PropertyWhereInput!]
+  OR: [PropertyWhereInput!]
+  NOT: [PropertyWhereInput!]
+  name: StringFilter
+  description: StringNullableFilter
+  status: EnumPropertyStatusFilter
+  commercialStatus: EnumPropertyCommercialStatusFilter
+  floorSize: DecimalNullableFilter
+  landSize: DecimalNullableFilter
+  furnishing: EnumPropertyFurnishingNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  typeId: StringFilter
+  locationId: StringNullableFilter
+  propertyOwnerId: StringNullableFilter
+  mediaList: FileListRelationFilter
+  priceList: PriceListRelationFilter
+  location: LocationNullableRelationFilter
+  type: PropertyTypeRelationFilter
+  amenities: PropertyAmenityListRelationFilter
+  PropertyOwner: PropertyOwnerNullableRelationFilter
+  PropertyListing: PropertyListingListRelationFilter
+  assignedAgents: UserListRelationFilter
+  leases: LeaseListRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
+}
+
+input PropertyWhereInput {
+  AND: [PropertyWhereInput!]
+  OR: [PropertyWhereInput!]
+  NOT: [PropertyWhereInput!]
   id: StringFilter
   name: StringFilter
   description: StringNullableFilter
+  status: EnumPropertyStatusFilter
+  commercialStatus: EnumPropertyCommercialStatusFilter
+  uniqueCode: StringNullableFilter
+  floorSize: DecimalNullableFilter
+  landSize: DecimalNullableFilter
+  furnishing: EnumPropertyFurnishingNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  typeId: StringFilter
+  locationId: StringNullableFilter
+  propertyOwnerId: StringNullableFilter
+  mediaList: FileListRelationFilter
+  priceList: PriceListRelationFilter
+  location: LocationNullableRelationFilter
+  type: PropertyTypeRelationFilter
+  amenities: PropertyAmenityListRelationFilter
+  PropertyOwner: PropertyOwnerNullableRelationFilter
+  PropertyListing: PropertyListingListRelationFilter
+  assignedAgents: UserListRelationFilter
+  leases: LeaseListRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
 }
 
 input StringFilter {
@@ -174,10 +499,578 @@ input NestedStringNullableFilter {
   not: NestedStringNullableFilter
 }
 
-input PropertyAmenityOrderByWithRelationInput {
+input EnumPropertyStatusFilter {
+  equals: PropertyStatus
+  in: [PropertyStatus!]
+  notIn: [PropertyStatus!]
+  not: NestedEnumPropertyStatusFilter
+}
+
+input NestedEnumPropertyStatusFilter {
+  equals: PropertyStatus
+  in: [PropertyStatus!]
+  notIn: [PropertyStatus!]
+  not: NestedEnumPropertyStatusFilter
+}
+
+input EnumPropertyCommercialStatusFilter {
+  equals: PropertyCommercialStatus
+  in: [PropertyCommercialStatus!]
+  notIn: [PropertyCommercialStatus!]
+  not: NestedEnumPropertyCommercialStatusFilter
+}
+
+input NestedEnumPropertyCommercialStatusFilter {
+  equals: PropertyCommercialStatus
+  in: [PropertyCommercialStatus!]
+  notIn: [PropertyCommercialStatus!]
+  not: NestedEnumPropertyCommercialStatusFilter
+}
+
+input DecimalNullableFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: NestedDecimalNullableFilter
+}
+
+input NestedDecimalNullableFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: NestedDecimalNullableFilter
+}
+
+input EnumPropertyFurnishingNullableFilter {
+  equals: PropertyFurnishing
+  in: [PropertyFurnishing!]
+  notIn: [PropertyFurnishing!]
+  not: NestedEnumPropertyFurnishingNullableFilter
+}
+
+input NestedEnumPropertyFurnishingNullableFilter {
+  equals: PropertyFurnishing
+  in: [PropertyFurnishing!]
+  notIn: [PropertyFurnishing!]
+  not: NestedEnumPropertyFurnishingNullableFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: NestedDateTimeFilter
+}
+
+input NestedDateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: NestedDateTimeFilter
+}
+
+input FileListRelationFilter {
+  every: FileWhereInput
+  some: FileWhereInput
+  none: FileWhereInput
+}
+
+input FileWhereInput {
+  AND: [FileWhereInput!]
+  OR: [FileWhereInput!]
+  NOT: [FileWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  path: StringFilter
+  mimetype: StringFilter
+  size: BigIntFilter
+  Property: PropertyListRelationFilter
+}
+
+input BigIntFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  not: NestedBigIntFilter
+}
+
+input NestedBigIntFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  not: NestedBigIntFilter
+}
+
+input PropertyListRelationFilter {
+  every: PropertyWhereInput
+  some: PropertyWhereInput
+  none: PropertyWhereInput
+}
+
+input PriceListRelationFilter {
+  every: PriceWhereInput
+  some: PriceWhereInput
+  none: PriceWhereInput
+}
+
+input PriceWhereInput {
+  AND: [PriceWhereInput!]
+  OR: [PriceWhereInput!]
+  NOT: [PriceWhereInput!]
+  id: StringFilter
+  currency: StringFilter
+  price: DecimalFilter
+  propertyId: StringFilter
+  property: PropertyRelationFilter
+}
+
+input DecimalFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: NestedDecimalFilter
+}
+
+input NestedDecimalFilter {
+  equals: Decimal
+  in: [Decimal!]
+  notIn: [Decimal!]
+  lt: Decimal
+  lte: Decimal
+  gt: Decimal
+  gte: Decimal
+  not: NestedDecimalFilter
+}
+
+input PropertyRelationFilter {
+  is: PropertyWhereInput
+  isNot: PropertyWhereInput
+}
+
+input LocationNullableRelationFilter {
+  is: LocationWhereInput
+  isNot: LocationWhereInput
+}
+
+input LocationWhereInput {
+  AND: [LocationWhereInput!]
+  OR: [LocationWhereInput!]
+  NOT: [LocationWhereInput!]
+  id: StringFilter
+  address: StringNullableFilter
+  subdistrict: StringNullableFilter
+  district: StringNullableFilter
+  province: StringNullableFilter
+  country: StringNullableFilter
+  postalCode: StringNullableFilter
+  latitude: DecimalNullableFilter
+  longitude: DecimalNullableFilter
+  Property: PropertyListRelationFilter
+}
+
+input PropertyTypeRelationFilter {
+  is: PropertyTypeWhereInput
+  isNot: PropertyTypeWhereInput
+}
+
+input PropertyTypeWhereInput {
+  AND: [PropertyTypeWhereInput!]
+  OR: [PropertyTypeWhereInput!]
+  NOT: [PropertyTypeWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+}
+
+input PropertyAmenityListRelationFilter {
+  every: PropertyAmenityWhereInput
+  some: PropertyAmenityWhereInput
+  none: PropertyAmenityWhereInput
+}
+
+input PropertyAmenityWhereInput {
+  AND: [PropertyAmenityWhereInput!]
+  OR: [PropertyAmenityWhereInput!]
+  NOT: [PropertyAmenityWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+}
+
+input PropertyOwnerNullableRelationFilter {
+  is: PropertyOwnerWhereInput
+  isNot: PropertyOwnerWhereInput
+}
+
+input PropertyOwnerWhereInput {
+  AND: [PropertyOwnerWhereInput!]
+  OR: [PropertyOwnerWhereInput!]
+  NOT: [PropertyOwnerWhereInput!]
+  id: StringFilter
+  firstName: StringFilter
+  lastName: StringFilter
+  profilePictureUrl: StringNullableFilter
+  dob: DateTimeNullableFilter
+  properties: PropertyListRelationFilter
+}
+
+input DateTimeNullableFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: NestedDateTimeNullableFilter
+}
+
+input NestedDateTimeNullableFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: NestedDateTimeNullableFilter
+}
+
+input PropertyListingListRelationFilter {
+  every: PropertyListingWhereInput
+  some: PropertyListingWhereInput
+  none: PropertyListingWhereInput
+}
+
+input PropertyListingWhereInput {
+  AND: [PropertyListingWhereInput!]
+  OR: [PropertyListingWhereInput!]
+  NOT: [PropertyListingWhereInput!]
+  id: StringFilter
+  status: EnumPropertyListingStatusFilter
+  type: EnumPropertyListingTypeFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  propertyId: StringFilter
+  property: PropertyRelationFilter
+}
+
+input EnumPropertyListingStatusFilter {
+  equals: PropertyListingStatus
+  in: [PropertyListingStatus!]
+  notIn: [PropertyListingStatus!]
+  not: NestedEnumPropertyListingStatusFilter
+}
+
+input NestedEnumPropertyListingStatusFilter {
+  equals: PropertyListingStatus
+  in: [PropertyListingStatus!]
+  notIn: [PropertyListingStatus!]
+  not: NestedEnumPropertyListingStatusFilter
+}
+
+input EnumPropertyListingTypeFilter {
+  equals: PropertyListingType
+  in: [PropertyListingType!]
+  notIn: [PropertyListingType!]
+  not: NestedEnumPropertyListingTypeFilter
+}
+
+input NestedEnumPropertyListingTypeFilter {
+  equals: PropertyListingType
+  in: [PropertyListingType!]
+  notIn: [PropertyListingType!]
+  not: NestedEnumPropertyListingTypeFilter
+}
+
+input UserListRelationFilter {
+  every: UserWhereInput
+  some: UserWhereInput
+  none: UserWhereInput
+}
+
+input UserWhereInput {
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  NOT: [UserWhereInput!]
+  id: StringFilter
+  username: StringFilter
+  hashedPassword: StringFilter
+  roles: RoleListRelationFilter
+  permissions: PermissionListRelationFilter
+  assignedProperties: PropertyListRelationFilter
+}
+
+input RoleListRelationFilter {
+  every: RoleWhereInput
+  some: RoleWhereInput
+  none: RoleWhereInput
+}
+
+input RoleWhereInput {
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  NOT: [RoleWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+  permissions: PermissionListRelationFilter
+  users: UserListRelationFilter
+}
+
+input PermissionListRelationFilter {
+  every: PermissionWhereInput
+  some: PermissionWhereInput
+  none: PermissionWhereInput
+}
+
+input PermissionWhereInput {
+  AND: [PermissionWhereInput!]
+  OR: [PermissionWhereInput!]
+  NOT: [PermissionWhereInput!]
+  id: StringFilter
+  isAllowed: BoolFilter
+  subject: EnumPermissionSubjectFilter
+  action: StringFilter
+  field: StringNullableListFilter
+  conditions: JsonNullableFilter
+  roles: RoleListRelationFilter
+  users: UserListRelationFilter
+}
+
+input BoolFilter {
+  equals: Boolean
+  not: NestedBoolFilter
+}
+
+input NestedBoolFilter {
+  equals: Boolean
+  not: NestedBoolFilter
+}
+
+input EnumPermissionSubjectFilter {
+  equals: PermissionSubject
+  in: [PermissionSubject!]
+  notIn: [PermissionSubject!]
+  not: NestedEnumPermissionSubjectFilter
+}
+
+input NestedEnumPermissionSubjectFilter {
+  equals: PermissionSubject
+  in: [PermissionSubject!]
+  notIn: [PermissionSubject!]
+  not: NestedEnumPermissionSubjectFilter
+}
+
+input StringNullableListFilter {
+  equals: [String!]
+  has: String
+  hasEvery: [String!]
+  hasSome: [String!]
+  isEmpty: Boolean
+}
+
+input JsonNullableFilter {
+  equals: JSON
+  path: [String!]
+  string_contains: String
+  string_starts_with: String
+  string_ends_with: String
+  array_contains: JSON
+  array_starts_with: JSON
+  array_ends_with: JSON
+  lt: JSON
+  lte: JSON
+  gt: JSON
+  gte: JSON
+  not: JSON
+}
+
+input LeaseListRelationFilter {
+  every: LeaseWhereInput
+  some: LeaseWhereInput
+  none: LeaseWhereInput
+}
+
+input LeaseWhereInput {
+  AND: [LeaseWhereInput!]
+  OR: [LeaseWhereInput!]
+  NOT: [LeaseWhereInput!]
+  id: StringFilter
+  propertyId: StringFilter
+  tenantId: StringFilter
+  startedDate: DateTimeFilter
+  endDate: DateTimeFilter
+  status: EnumLeaseStatusFilter
+  rentAmount: DecimalFilter
+  depositAmount: DecimalFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  property: PropertyRelationFilter
+  tenant: TenantRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
+}
+
+input EnumLeaseStatusFilter {
+  equals: LeaseStatus
+  in: [LeaseStatus!]
+  notIn: [LeaseStatus!]
+  not: NestedEnumLeaseStatusFilter
+}
+
+input NestedEnumLeaseStatusFilter {
+  equals: LeaseStatus
+  in: [LeaseStatus!]
+  notIn: [LeaseStatus!]
+  not: NestedEnumLeaseStatusFilter
+}
+
+input TenantRelationFilter {
+  is: TenantWhereInput
+  isNot: TenantWhereInput
+}
+
+input TenantWhereInput {
+  AND: [TenantWhereInput!]
+  OR: [TenantWhereInput!]
+  NOT: [TenantWhereInput!]
+  id: StringFilter
+  nationalId: StringFilter
+  firstName: StringNullableFilter
+  lastName: StringNullableFilter
+  email: StringNullableFilter
+  phoneNumber: StringNullableFilter
+  dateOfBirth: DateTimeNullableFilter
+  gender: StringNullableFilter
+  address: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  leases: LeaseListRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
+}
+
+input PropertyMaintenanceRequestListRelationFilter {
+  every: PropertyMaintenanceRequestWhereInput
+  some: PropertyMaintenanceRequestWhereInput
+  none: PropertyMaintenanceRequestWhereInput
+}
+
+input PropertyMaintenanceRequestWhereInput {
+  AND: [PropertyMaintenanceRequestWhereInput!]
+  OR: [PropertyMaintenanceRequestWhereInput!]
+  NOT: [PropertyMaintenanceRequestWhereInput!]
+  id: StringFilter
+  propertyId: StringFilter
+  tenantId: StringFilter
+  leaseId: StringFilter
+  title: StringFilter
+  description: StringFilter
+  requestedAt: DateTimeFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  property: PropertyRelationFilter
+  tenant: TenantRelationFilter
+  lease: LeaseRelationFilter
+  activities: PropertyMaintenanceRequestActivityListRelationFilter
+}
+
+input EnumPropertyMaintenanceRequestStatusFilter {
+  equals: PropertyMaintenanceRequestStatus
+  in: [PropertyMaintenanceRequestStatus!]
+  notIn: [PropertyMaintenanceRequestStatus!]
+  not: NestedEnumPropertyMaintenanceRequestStatusFilter
+}
+
+input NestedEnumPropertyMaintenanceRequestStatusFilter {
+  equals: PropertyMaintenanceRequestStatus
+  in: [PropertyMaintenanceRequestStatus!]
+  notIn: [PropertyMaintenanceRequestStatus!]
+  not: NestedEnumPropertyMaintenanceRequestStatusFilter
+}
+
+input LeaseRelationFilter {
+  is: LeaseWhereInput
+  isNot: LeaseWhereInput
+}
+
+input PropertyMaintenanceRequestActivityListRelationFilter {
+  every: PropertyMaintenanceRequestActivityWhereInput
+  some: PropertyMaintenanceRequestActivityWhereInput
+  none: PropertyMaintenanceRequestActivityWhereInput
+}
+
+input PropertyMaintenanceRequestActivityWhereInput {
+  AND: [PropertyMaintenanceRequestActivityWhereInput!]
+  OR: [PropertyMaintenanceRequestActivityWhereInput!]
+  NOT: [PropertyMaintenanceRequestActivityWhereInput!]
+  id: StringFilter
+  requestId: StringFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  description: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  request: PropertyMaintenanceRequestRelationFilter
+}
+
+input PropertyMaintenanceRequestRelationFilter {
+  is: PropertyMaintenanceRequestWhereInput
+  isNot: PropertyMaintenanceRequestWhereInput
+}
+
+input PropertyOrderByWithRelationInput {
   id: SortOrder
   name: SortOrder
   description: SortOrderInput
+  status: SortOrder
+  commercialStatus: SortOrder
+  uniqueCode: SortOrderInput
+  floorSize: SortOrderInput
+  landSize: SortOrderInput
+  furnishing: SortOrderInput
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  typeId: SortOrder
+  locationId: SortOrderInput
+  propertyOwnerId: SortOrderInput
+  mediaList: FileOrderByRelationAggregateInput
+  priceList: PriceOrderByRelationAggregateInput
+  location: LocationOrderByWithRelationInput
+  type: PropertyTypeOrderByWithRelationInput
+  amenities: PropertyAmenityOrderByRelationAggregateInput
+  PropertyOwner: PropertyOwnerOrderByWithRelationInput
+  PropertyListing: PropertyListingOrderByRelationAggregateInput
+  assignedAgents: UserOrderByRelationAggregateInput
+  leases: LeaseOrderByRelationAggregateInput
+  maintenanceRequests: PropertyMaintenanceRequestOrderByRelationAggregateInput
 }
 
 enum SortOrder {
@@ -193,6 +1086,104 @@ input SortOrderInput {
 enum NullsOrder {
   first
   last
+}
+
+input FileOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PriceOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input LocationOrderByWithRelationInput {
+  id: SortOrder
+  address: SortOrderInput
+  subdistrict: SortOrderInput
+  district: SortOrderInput
+  province: SortOrderInput
+  country: SortOrderInput
+  postalCode: SortOrderInput
+  latitude: SortOrderInput
+  longitude: SortOrderInput
+  Property: PropertyOrderByRelationAggregateInput
+}
+
+input PropertyOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PropertyTypeOrderByWithRelationInput {
+  id: SortOrder
+  name: SortOrder
+  description: SortOrderInput
+}
+
+input PropertyAmenityOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PropertyOwnerOrderByWithRelationInput {
+  id: SortOrder
+  firstName: SortOrder
+  lastName: SortOrder
+  profilePictureUrl: SortOrderInput
+  dob: SortOrderInput
+  properties: PropertyOrderByRelationAggregateInput
+}
+
+input PropertyListingOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input UserOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input LeaseOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PropertyMaintenanceRequestOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+enum PropertyScalarFieldEnum {
+  id
+  name
+  description
+  status
+  commercialStatus
+  uniqueCode
+  floorSize
+  landSize
+  furnishing
+  createdAt
+  updatedAt
+  typeId
+  locationId
+  propertyOwnerId
+}
+
+input PropertyTypeWhereUniqueInput {
+  id: String
+  name: String
+  AND: [PropertyTypeWhereInput!]
+  OR: [PropertyTypeWhereInput!]
+  NOT: [PropertyTypeWhereInput!]
+  description: StringNullableFilter
+}
+
+enum PropertyTypeScalarFieldEnum {
+  id
+  name
+  description
+}
+
+input PropertyAmenityOrderByWithRelationInput {
+  id: SortOrder
+  name: SortOrder
+  description: SortOrderInput
 }
 
 input PropertyAmenityWhereUniqueInput {
@@ -212,14 +1203,66 @@ enum PropertyAmenityScalarFieldEnum {
   updatedAt
 }
 
+input TenantOrderByWithRelationInput {
+  id: SortOrder
+  nationalId: SortOrder
+  firstName: SortOrderInput
+  lastName: SortOrderInput
+  email: SortOrderInput
+  phoneNumber: SortOrderInput
+  dateOfBirth: SortOrderInput
+  gender: SortOrderInput
+  address: SortOrderInput
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  leases: LeaseOrderByRelationAggregateInput
+  maintenanceRequests: PropertyMaintenanceRequestOrderByRelationAggregateInput
+}
+
+input TenantWhereUniqueInput {
+  id: String
+  nationalId: String
+  AND: [TenantWhereInput!]
+  OR: [TenantWhereInput!]
+  NOT: [TenantWhereInput!]
+  firstName: StringNullableFilter
+  lastName: StringNullableFilter
+  email: StringNullableFilter
+  phoneNumber: StringNullableFilter
+  dateOfBirth: DateTimeNullableFilter
+  gender: StringNullableFilter
+  address: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  leases: LeaseListRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
+}
+
+enum TenantScalarFieldEnum {
+  id
+  nationalId
+  firstName
+  lastName
+  email
+  phoneNumber
+  dateOfBirth
+  gender
+  address
+  createdAt
+  updatedAt
+}
+
 type Mutation {
   login(credentials: LoginInput!): Token!
-  createProperty(createPropertyData: CreatePropertyInput!): Property!
-  updateProperty(id: String!, updatePropertyData: UpdatePropertyInput!): Property!
-  createPropertyType(createPropertyTypeData: CreatePropertyTypeInput!): PropertyType!
+  createProperty(data: PropertyCreateInput!): Property!
+  updateProperty(id: String!, data: PropertyUpdateInput!): Property!
+  createPropertyType(data: PropertyTypeCreateInput!): PropertyType!
   createAmenity(createAmenityData: PropertyAmenityCreateInput!): Amenity!
-  updateAmenity(data: PropertyAmenityUpdateInput!, where: PropertyAmenityWhereUniqueInput!): Amenity!
+  updateAmenity(id: String!, data: PropertyAmenityUpdateInput!): Amenity!
   generateSignedUrl(name: String!, mimeType: String!): String!
+  createTenant(data: TenantCreateInput!): Tenant!
+  updateTenant(data: TenantUpdateInput!, where: TenantWhereUniqueInput!): Tenant!
+  removeTenant(id: Int!): Tenant!
 }
 
 input LoginInput {
@@ -227,28 +1270,114 @@ input LoginInput {
   password: String!
 }
 
-input CreatePropertyInput {
+input PropertyCreateInput {
+  id: String
   name: String!
-  status: PropertyStatus!
   description: String
-  uniqueCode: String
-  typeId: String!
+  status: PropertyStatus!
   commercialStatus: PropertyCommercialStatus
+  uniqueCode: String
   floorSize: Decimal
   landSize: Decimal
   furnishing: PropertyFurnishing
-  priceList: [CreatePriceInput!]
-  amenityIds: [String]
-  mediaList: [String]
-  location: UpsertLocationInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  mediaList: FileCreateNestedManyWithoutPropertyInput
+  priceList: PriceCreateNestedManyWithoutPropertyInput
+  location: LocationCreateNestedOneWithoutPropertyInput
+  type: PropertyTypeCreateNestedOneWithoutPropertyInput!
+  amenities: PropertyAmenityCreateNestedManyWithoutPropertiesInput
+  PropertyOwner: PropertyOwnerCreateNestedOneWithoutPropertiesInput
+  PropertyListing: PropertyListingCreateNestedManyWithoutPropertyInput
+  assignedAgents: UserCreateNestedManyWithoutAssignedPropertiesInput
+  leases: LeaseCreateNestedManyWithoutPropertyInput
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput
 }
 
-input CreatePriceInput {
+input FileCreateNestedManyWithoutPropertyInput {
+  create: [FileCreateWithoutPropertyInput!]
+  connectOrCreate: [FileCreateOrConnectWithoutPropertyInput!]
+  connect: [FileWhereUniqueInput!]
+}
+
+input FileCreateWithoutPropertyInput {
+  id: String
+  name: String!
+  path: String!
+  mimetype: String!
+  size: String!
+}
+
+input FileCreateOrConnectWithoutPropertyInput {
+  where: FileWhereUniqueInput!
+  create: FileCreateWithoutPropertyInput!
+}
+
+input FileWhereUniqueInput {
+  id: String
+  AND: [FileWhereInput!]
+  OR: [FileWhereInput!]
+  NOT: [FileWhereInput!]
+  name: StringFilter
+  path: StringFilter
+  mimetype: StringFilter
+  size: BigIntFilter
+  Property: PropertyListRelationFilter
+}
+
+input PriceCreateNestedManyWithoutPropertyInput {
+  create: [PriceCreateWithoutPropertyInput!]
+  connectOrCreate: [PriceCreateOrConnectWithoutPropertyInput!]
+  createMany: PriceCreateManyPropertyInputEnvelope
+  connect: [PriceWhereUniqueInput!]
+}
+
+input PriceCreateWithoutPropertyInput {
+  id: String
   currency: String!
   price: Decimal!
 }
 
-input UpsertLocationInput {
+input PriceCreateOrConnectWithoutPropertyInput {
+  where: PriceWhereUniqueInput!
+  create: PriceCreateWithoutPropertyInput!
+}
+
+input PriceWhereUniqueInput {
+  id: String
+  currency_propertyId: PriceCurrencyPropertyIdCompoundUniqueInput
+  AND: [PriceWhereInput!]
+  OR: [PriceWhereInput!]
+  NOT: [PriceWhereInput!]
+  currency: StringFilter
+  price: DecimalFilter
+  propertyId: StringFilter
+  property: PropertyRelationFilter
+}
+
+input PriceCurrencyPropertyIdCompoundUniqueInput {
+  currency: String!
+  propertyId: String!
+}
+
+input PriceCreateManyPropertyInputEnvelope {
+  data: [PriceCreateManyPropertyInput!]!
+  skipDuplicates: Boolean
+}
+
+input PriceCreateManyPropertyInput {
+  id: String
+  currency: String!
+  price: Decimal!
+}
+
+input LocationCreateNestedOneWithoutPropertyInput {
+  create: LocationCreateWithoutPropertyInput
+  connectOrCreate: LocationCreateOrConnectWithoutPropertyInput
+  connect: LocationWhereUniqueInput
+}
+
+input LocationCreateWithoutPropertyInput {
   id: String
   address: String
   subdistrict: String
@@ -260,23 +1389,2110 @@ input UpsertLocationInput {
   longitude: Decimal
 }
 
-input UpdatePropertyInput {
-  name: String
-  status: PropertyStatus
+input LocationCreateOrConnectWithoutPropertyInput {
+  where: LocationWhereUniqueInput!
+  create: LocationCreateWithoutPropertyInput!
+}
+
+input LocationWhereUniqueInput {
+  id: String
+  AND: [LocationWhereInput!]
+  OR: [LocationWhereInput!]
+  NOT: [LocationWhereInput!]
+  address: StringNullableFilter
+  subdistrict: StringNullableFilter
+  district: StringNullableFilter
+  province: StringNullableFilter
+  country: StringNullableFilter
+  postalCode: StringNullableFilter
+  latitude: DecimalNullableFilter
+  longitude: DecimalNullableFilter
+  Property: PropertyListRelationFilter
+}
+
+input PropertyTypeCreateNestedOneWithoutPropertyInput {
+  create: PropertyTypeCreateWithoutPropertyInput
+  connectOrCreate: PropertyTypeCreateOrConnectWithoutPropertyInput
+  connect: PropertyTypeWhereUniqueInput
+}
+
+input PropertyTypeCreateWithoutPropertyInput {
+  id: String
+  name: String!
   description: String
-  uniqueCode: String
-  typeId: String
+}
+
+input PropertyTypeCreateOrConnectWithoutPropertyInput {
+  where: PropertyTypeWhereUniqueInput!
+  create: PropertyTypeCreateWithoutPropertyInput!
+}
+
+input PropertyAmenityCreateNestedManyWithoutPropertiesInput {
+  create: [PropertyAmenityCreateWithoutPropertiesInput!]
+  connectOrCreate: [PropertyAmenityCreateOrConnectWithoutPropertiesInput!]
+  connect: [PropertyAmenityWhereUniqueInput!]
+}
+
+input PropertyAmenityCreateWithoutPropertiesInput {
+  id: String
+  name: String!
+  description: String
+}
+
+input PropertyAmenityCreateOrConnectWithoutPropertiesInput {
+  where: PropertyAmenityWhereUniqueInput!
+  create: PropertyAmenityCreateWithoutPropertiesInput!
+}
+
+input PropertyOwnerCreateNestedOneWithoutPropertiesInput {
+  create: PropertyOwnerCreateWithoutPropertiesInput
+  connectOrCreate: PropertyOwnerCreateOrConnectWithoutPropertiesInput
+  connect: PropertyOwnerWhereUniqueInput
+}
+
+input PropertyOwnerCreateWithoutPropertiesInput {
+  id: String
+  firstName: String!
+  lastName: String!
+  profilePictureUrl: String
+  dob: DateTime
+}
+
+input PropertyOwnerCreateOrConnectWithoutPropertiesInput {
+  where: PropertyOwnerWhereUniqueInput!
+  create: PropertyOwnerCreateWithoutPropertiesInput!
+}
+
+input PropertyOwnerWhereUniqueInput {
+  id: String
+  AND: [PropertyOwnerWhereInput!]
+  OR: [PropertyOwnerWhereInput!]
+  NOT: [PropertyOwnerWhereInput!]
+  firstName: StringFilter
+  lastName: StringFilter
+  profilePictureUrl: StringNullableFilter
+  dob: DateTimeNullableFilter
+  properties: PropertyListRelationFilter
+}
+
+input PropertyListingCreateNestedManyWithoutPropertyInput {
+  create: [PropertyListingCreateWithoutPropertyInput!]
+  connectOrCreate: [PropertyListingCreateOrConnectWithoutPropertyInput!]
+  createMany: PropertyListingCreateManyPropertyInputEnvelope
+  connect: [PropertyListingWhereUniqueInput!]
+}
+
+input PropertyListingCreateWithoutPropertyInput {
+  id: String
+  status: PropertyListingStatus!
+  type: PropertyListingType!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PropertyListingCreateOrConnectWithoutPropertyInput {
+  where: PropertyListingWhereUniqueInput!
+  create: PropertyListingCreateWithoutPropertyInput!
+}
+
+input PropertyListingWhereUniqueInput {
+  id: String
+  AND: [PropertyListingWhereInput!]
+  OR: [PropertyListingWhereInput!]
+  NOT: [PropertyListingWhereInput!]
+  status: EnumPropertyListingStatusFilter
+  type: EnumPropertyListingTypeFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  propertyId: StringFilter
+  property: PropertyRelationFilter
+}
+
+input PropertyListingCreateManyPropertyInputEnvelope {
+  data: [PropertyListingCreateManyPropertyInput!]!
+  skipDuplicates: Boolean
+}
+
+input PropertyListingCreateManyPropertyInput {
+  id: String
+  status: PropertyListingStatus!
+  type: PropertyListingType!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input UserCreateNestedManyWithoutAssignedPropertiesInput {
+  create: [UserCreateWithoutAssignedPropertiesInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutAssignedPropertiesInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateWithoutAssignedPropertiesInput {
+  id: String
+  username: String!
+  hashedPassword: String!
+  roles: RoleCreateNestedManyWithoutUsersInput
+  permissions: PermissionCreateNestedManyWithoutUsersInput
+}
+
+input RoleCreateNestedManyWithoutUsersInput {
+  create: [RoleCreateWithoutUsersInput!]
+  connectOrCreate: [RoleCreateOrConnectWithoutUsersInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
+input RoleCreateWithoutUsersInput {
+  id: String
+  name: String!
+  description: String
+  permissions: PermissionCreateNestedManyWithoutRolesInput
+}
+
+input PermissionCreateNestedManyWithoutRolesInput {
+  create: [PermissionCreateWithoutRolesInput!]
+  connectOrCreate: [PermissionCreateOrConnectWithoutRolesInput!]
+  connect: [PermissionWhereUniqueInput!]
+}
+
+input PermissionCreateWithoutRolesInput {
+  id: String
+  isAllowed: Boolean
+  subject: PermissionSubject!
+  action: String!
+  field: PermissionCreatefieldInput
+  conditions: JSON
+  users: UserCreateNestedManyWithoutPermissionsInput
+}
+
+input PermissionCreatefieldInput {
+  set: [String!]!
+}
+
+input UserCreateNestedManyWithoutPermissionsInput {
+  create: [UserCreateWithoutPermissionsInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutPermissionsInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateWithoutPermissionsInput {
+  id: String
+  username: String!
+  hashedPassword: String!
+  roles: RoleCreateNestedManyWithoutUsersInput
+  assignedProperties: PropertyCreateNestedManyWithoutAssignedAgentsInput
+}
+
+input PropertyCreateNestedManyWithoutAssignedAgentsInput {
+  create: [PropertyCreateWithoutAssignedAgentsInput!]
+  connectOrCreate: [PropertyCreateOrConnectWithoutAssignedAgentsInput!]
+  connect: [PropertyWhereUniqueInput!]
+}
+
+input PropertyCreateWithoutAssignedAgentsInput {
+  id: String
+  name: String!
+  description: String
+  status: PropertyStatus!
   commercialStatus: PropertyCommercialStatus
+  uniqueCode: String
   floorSize: Decimal
   landSize: Decimal
   furnishing: PropertyFurnishing
-  priceList: [CreatePriceInput!]
-  amenityIds: [String!]
-  mediaList: [String!]
-  location: UpsertLocationInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  mediaList: FileCreateNestedManyWithoutPropertyInput
+  priceList: PriceCreateNestedManyWithoutPropertyInput
+  location: LocationCreateNestedOneWithoutPropertyInput
+  type: PropertyTypeCreateNestedOneWithoutPropertyInput!
+  amenities: PropertyAmenityCreateNestedManyWithoutPropertiesInput
+  PropertyOwner: PropertyOwnerCreateNestedOneWithoutPropertiesInput
+  PropertyListing: PropertyListingCreateNestedManyWithoutPropertyInput
+  leases: LeaseCreateNestedManyWithoutPropertyInput
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput
 }
 
-input CreatePropertyTypeInput {
+input LeaseCreateNestedManyWithoutPropertyInput {
+  create: [LeaseCreateWithoutPropertyInput!]
+  connectOrCreate: [LeaseCreateOrConnectWithoutPropertyInput!]
+  createMany: LeaseCreateManyPropertyInputEnvelope
+  connect: [LeaseWhereUniqueInput!]
+}
+
+input LeaseCreateWithoutPropertyInput {
+  id: String
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime
+  updatedAt: DateTime
+  tenant: TenantCreateNestedOneWithoutLeasesInput!
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutLeaseInput
+}
+
+input TenantCreateNestedOneWithoutLeasesInput {
+  create: TenantCreateWithoutLeasesInput
+  connectOrCreate: TenantCreateOrConnectWithoutLeasesInput
+  connect: TenantWhereUniqueInput
+}
+
+input TenantCreateWithoutLeasesInput {
+  id: String
+  nationalId: String!
+  firstName: String
+  lastName: String
+  email: String
+  phoneNumber: String
+  dateOfBirth: DateTime
+  gender: String
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutTenantInput
+}
+
+input PropertyMaintenanceRequestCreateNestedManyWithoutTenantInput {
+  create: [PropertyMaintenanceRequestCreateWithoutTenantInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutTenantInput!]
+  createMany: PropertyMaintenanceRequestCreateManyTenantInputEnvelope
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+}
+
+input PropertyMaintenanceRequestCreateWithoutTenantInput {
+  id: String
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  property: PropertyCreateNestedOneWithoutMaintenanceRequestsInput!
+  lease: LeaseCreateNestedOneWithoutMaintenanceRequestsInput!
+  activities: PropertyMaintenanceRequestActivityCreateNestedManyWithoutRequestInput
+}
+
+input PropertyCreateNestedOneWithoutMaintenanceRequestsInput {
+  create: PropertyCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: PropertyCreateOrConnectWithoutMaintenanceRequestsInput
+  connect: PropertyWhereUniqueInput
+}
+
+input PropertyCreateWithoutMaintenanceRequestsInput {
+  id: String
+  name: String!
+  description: String
+  status: PropertyStatus!
+  commercialStatus: PropertyCommercialStatus
+  uniqueCode: String
+  floorSize: Decimal
+  landSize: Decimal
+  furnishing: PropertyFurnishing
+  createdAt: DateTime
+  updatedAt: DateTime
+  mediaList: FileCreateNestedManyWithoutPropertyInput
+  priceList: PriceCreateNestedManyWithoutPropertyInput
+  location: LocationCreateNestedOneWithoutPropertyInput
+  type: PropertyTypeCreateNestedOneWithoutPropertyInput!
+  amenities: PropertyAmenityCreateNestedManyWithoutPropertiesInput
+  PropertyOwner: PropertyOwnerCreateNestedOneWithoutPropertiesInput
+  PropertyListing: PropertyListingCreateNestedManyWithoutPropertyInput
+  assignedAgents: UserCreateNestedManyWithoutAssignedPropertiesInput
+  leases: LeaseCreateNestedManyWithoutPropertyInput
+}
+
+input PropertyCreateOrConnectWithoutMaintenanceRequestsInput {
+  where: PropertyWhereUniqueInput!
+  create: PropertyCreateWithoutMaintenanceRequestsInput!
+}
+
+input LeaseCreateNestedOneWithoutMaintenanceRequestsInput {
+  create: LeaseCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: LeaseCreateOrConnectWithoutMaintenanceRequestsInput
+  connect: LeaseWhereUniqueInput
+}
+
+input LeaseCreateWithoutMaintenanceRequestsInput {
+  id: String
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime
+  updatedAt: DateTime
+  property: PropertyCreateNestedOneWithoutLeasesInput!
+  tenant: TenantCreateNestedOneWithoutLeasesInput!
+}
+
+input PropertyCreateNestedOneWithoutLeasesInput {
+  create: PropertyCreateWithoutLeasesInput
+  connectOrCreate: PropertyCreateOrConnectWithoutLeasesInput
+  connect: PropertyWhereUniqueInput
+}
+
+input PropertyCreateWithoutLeasesInput {
+  id: String
+  name: String!
+  description: String
+  status: PropertyStatus!
+  commercialStatus: PropertyCommercialStatus
+  uniqueCode: String
+  floorSize: Decimal
+  landSize: Decimal
+  furnishing: PropertyFurnishing
+  createdAt: DateTime
+  updatedAt: DateTime
+  mediaList: FileCreateNestedManyWithoutPropertyInput
+  priceList: PriceCreateNestedManyWithoutPropertyInput
+  location: LocationCreateNestedOneWithoutPropertyInput
+  type: PropertyTypeCreateNestedOneWithoutPropertyInput!
+  amenities: PropertyAmenityCreateNestedManyWithoutPropertiesInput
+  PropertyOwner: PropertyOwnerCreateNestedOneWithoutPropertiesInput
+  PropertyListing: PropertyListingCreateNestedManyWithoutPropertyInput
+  assignedAgents: UserCreateNestedManyWithoutAssignedPropertiesInput
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput
+}
+
+input PropertyMaintenanceRequestCreateNestedManyWithoutPropertyInput {
+  create: [PropertyMaintenanceRequestCreateWithoutPropertyInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutPropertyInput!]
+  createMany: PropertyMaintenanceRequestCreateManyPropertyInputEnvelope
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+}
+
+input PropertyMaintenanceRequestCreateWithoutPropertyInput {
+  id: String
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  tenant: TenantCreateNestedOneWithoutMaintenanceRequestsInput!
+  lease: LeaseCreateNestedOneWithoutMaintenanceRequestsInput!
+  activities: PropertyMaintenanceRequestActivityCreateNestedManyWithoutRequestInput
+}
+
+input TenantCreateNestedOneWithoutMaintenanceRequestsInput {
+  create: TenantCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: TenantCreateOrConnectWithoutMaintenanceRequestsInput
+  connect: TenantWhereUniqueInput
+}
+
+input TenantCreateWithoutMaintenanceRequestsInput {
+  id: String
+  nationalId: String!
+  firstName: String
+  lastName: String
+  email: String
+  phoneNumber: String
+  dateOfBirth: DateTime
+  gender: String
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  leases: LeaseCreateNestedManyWithoutTenantInput
+}
+
+input LeaseCreateNestedManyWithoutTenantInput {
+  create: [LeaseCreateWithoutTenantInput!]
+  connectOrCreate: [LeaseCreateOrConnectWithoutTenantInput!]
+  createMany: LeaseCreateManyTenantInputEnvelope
+  connect: [LeaseWhereUniqueInput!]
+}
+
+input LeaseCreateWithoutTenantInput {
+  id: String
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime
+  updatedAt: DateTime
+  property: PropertyCreateNestedOneWithoutLeasesInput!
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutLeaseInput
+}
+
+input PropertyMaintenanceRequestCreateNestedManyWithoutLeaseInput {
+  create: [PropertyMaintenanceRequestCreateWithoutLeaseInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutLeaseInput!]
+  createMany: PropertyMaintenanceRequestCreateManyLeaseInputEnvelope
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+}
+
+input PropertyMaintenanceRequestCreateWithoutLeaseInput {
+  id: String
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  property: PropertyCreateNestedOneWithoutMaintenanceRequestsInput!
+  tenant: TenantCreateNestedOneWithoutMaintenanceRequestsInput!
+  activities: PropertyMaintenanceRequestActivityCreateNestedManyWithoutRequestInput
+}
+
+input PropertyMaintenanceRequestActivityCreateNestedManyWithoutRequestInput {
+  create: [PropertyMaintenanceRequestActivityCreateWithoutRequestInput!]
+  connectOrCreate: [PropertyMaintenanceRequestActivityCreateOrConnectWithoutRequestInput!]
+  createMany: PropertyMaintenanceRequestActivityCreateManyRequestInputEnvelope
+  connect: [PropertyMaintenanceRequestActivityWhereUniqueInput!]
+}
+
+input PropertyMaintenanceRequestActivityCreateWithoutRequestInput {
+  id: String
+  status: PropertyMaintenanceRequestStatus
+  description: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PropertyMaintenanceRequestActivityCreateOrConnectWithoutRequestInput {
+  where: PropertyMaintenanceRequestActivityWhereUniqueInput!
+  create: PropertyMaintenanceRequestActivityCreateWithoutRequestInput!
+}
+
+input PropertyMaintenanceRequestActivityWhereUniqueInput {
+  id: String
+  AND: [PropertyMaintenanceRequestActivityWhereInput!]
+  OR: [PropertyMaintenanceRequestActivityWhereInput!]
+  NOT: [PropertyMaintenanceRequestActivityWhereInput!]
+  requestId: StringFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  description: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  request: PropertyMaintenanceRequestRelationFilter
+}
+
+input PropertyMaintenanceRequestActivityCreateManyRequestInputEnvelope {
+  data: [PropertyMaintenanceRequestActivityCreateManyRequestInput!]!
+  skipDuplicates: Boolean
+}
+
+input PropertyMaintenanceRequestActivityCreateManyRequestInput {
+  id: String
+  status: PropertyMaintenanceRequestStatus
+  description: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PropertyMaintenanceRequestCreateOrConnectWithoutLeaseInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  create: PropertyMaintenanceRequestCreateWithoutLeaseInput!
+}
+
+input PropertyMaintenanceRequestWhereUniqueInput {
+  id: String
+  AND: [PropertyMaintenanceRequestWhereInput!]
+  OR: [PropertyMaintenanceRequestWhereInput!]
+  NOT: [PropertyMaintenanceRequestWhereInput!]
+  propertyId: StringFilter
+  tenantId: StringFilter
+  leaseId: StringFilter
+  title: StringFilter
+  description: StringFilter
+  requestedAt: DateTimeFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  property: PropertyRelationFilter
+  tenant: TenantRelationFilter
+  lease: LeaseRelationFilter
+  activities: PropertyMaintenanceRequestActivityListRelationFilter
+}
+
+input PropertyMaintenanceRequestCreateManyLeaseInputEnvelope {
+  data: [PropertyMaintenanceRequestCreateManyLeaseInput!]!
+  skipDuplicates: Boolean
+}
+
+input PropertyMaintenanceRequestCreateManyLeaseInput {
+  id: String
+  propertyId: String!
+  tenantId: String!
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input LeaseCreateOrConnectWithoutTenantInput {
+  where: LeaseWhereUniqueInput!
+  create: LeaseCreateWithoutTenantInput!
+}
+
+input LeaseWhereUniqueInput {
+  id: String
+  AND: [LeaseWhereInput!]
+  OR: [LeaseWhereInput!]
+  NOT: [LeaseWhereInput!]
+  propertyId: StringFilter
+  tenantId: StringFilter
+  startedDate: DateTimeFilter
+  endDate: DateTimeFilter
+  status: EnumLeaseStatusFilter
+  rentAmount: DecimalFilter
+  depositAmount: DecimalFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  property: PropertyRelationFilter
+  tenant: TenantRelationFilter
+  maintenanceRequests: PropertyMaintenanceRequestListRelationFilter
+}
+
+input LeaseCreateManyTenantInputEnvelope {
+  data: [LeaseCreateManyTenantInput!]!
+  skipDuplicates: Boolean
+}
+
+input LeaseCreateManyTenantInput {
+  id: String
+  propertyId: String!
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input TenantCreateOrConnectWithoutMaintenanceRequestsInput {
+  where: TenantWhereUniqueInput!
+  create: TenantCreateWithoutMaintenanceRequestsInput!
+}
+
+input PropertyMaintenanceRequestCreateOrConnectWithoutPropertyInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  create: PropertyMaintenanceRequestCreateWithoutPropertyInput!
+}
+
+input PropertyMaintenanceRequestCreateManyPropertyInputEnvelope {
+  data: [PropertyMaintenanceRequestCreateManyPropertyInput!]!
+  skipDuplicates: Boolean
+}
+
+input PropertyMaintenanceRequestCreateManyPropertyInput {
+  id: String
+  tenantId: String!
+  leaseId: String!
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PropertyCreateOrConnectWithoutLeasesInput {
+  where: PropertyWhereUniqueInput!
+  create: PropertyCreateWithoutLeasesInput!
+}
+
+input LeaseCreateOrConnectWithoutMaintenanceRequestsInput {
+  where: LeaseWhereUniqueInput!
+  create: LeaseCreateWithoutMaintenanceRequestsInput!
+}
+
+input PropertyMaintenanceRequestCreateOrConnectWithoutTenantInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  create: PropertyMaintenanceRequestCreateWithoutTenantInput!
+}
+
+input PropertyMaintenanceRequestCreateManyTenantInputEnvelope {
+  data: [PropertyMaintenanceRequestCreateManyTenantInput!]!
+  skipDuplicates: Boolean
+}
+
+input PropertyMaintenanceRequestCreateManyTenantInput {
+  id: String
+  propertyId: String!
+  leaseId: String!
+  title: String!
+  description: String!
+  requestedAt: DateTime!
+  status: PropertyMaintenanceRequestStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input TenantCreateOrConnectWithoutLeasesInput {
+  where: TenantWhereUniqueInput!
+  create: TenantCreateWithoutLeasesInput!
+}
+
+input LeaseCreateOrConnectWithoutPropertyInput {
+  where: LeaseWhereUniqueInput!
+  create: LeaseCreateWithoutPropertyInput!
+}
+
+input LeaseCreateManyPropertyInputEnvelope {
+  data: [LeaseCreateManyPropertyInput!]!
+  skipDuplicates: Boolean
+}
+
+input LeaseCreateManyPropertyInput {
+  id: String
+  tenantId: String!
+  startedDate: DateTime!
+  endDate: DateTime!
+  status: LeaseStatus!
+  rentAmount: Decimal!
+  depositAmount: Decimal!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PropertyCreateOrConnectWithoutAssignedAgentsInput {
+  where: PropertyWhereUniqueInput!
+  create: PropertyCreateWithoutAssignedAgentsInput!
+}
+
+input UserCreateOrConnectWithoutPermissionsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutPermissionsInput!
+}
+
+input UserWhereUniqueInput {
+  id: String
+  username: String
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  NOT: [UserWhereInput!]
+  hashedPassword: StringFilter
+  roles: RoleListRelationFilter
+  permissions: PermissionListRelationFilter
+  assignedProperties: PropertyListRelationFilter
+}
+
+input PermissionCreateOrConnectWithoutRolesInput {
+  where: PermissionWhereUniqueInput!
+  create: PermissionCreateWithoutRolesInput!
+}
+
+input PermissionWhereUniqueInput {
+  id: String
+  subject_action: PermissionSubjectActionCompoundUniqueInput
+  AND: [PermissionWhereInput!]
+  OR: [PermissionWhereInput!]
+  NOT: [PermissionWhereInput!]
+  isAllowed: BoolFilter
+  subject: EnumPermissionSubjectFilter
+  action: StringFilter
+  field: StringNullableListFilter
+  conditions: JsonNullableFilter
+  roles: RoleListRelationFilter
+  users: UserListRelationFilter
+}
+
+input PermissionSubjectActionCompoundUniqueInput {
+  subject: PermissionSubject!
+  action: String!
+}
+
+input RoleCreateOrConnectWithoutUsersInput {
+  where: RoleWhereUniqueInput!
+  create: RoleCreateWithoutUsersInput!
+}
+
+input RoleWhereUniqueInput {
+  id: String
+  name: String
+  AND: [RoleWhereInput!]
+  OR: [RoleWhereInput!]
+  NOT: [RoleWhereInput!]
+  description: StringNullableFilter
+  permissions: PermissionListRelationFilter
+  users: UserListRelationFilter
+}
+
+input PermissionCreateNestedManyWithoutUsersInput {
+  create: [PermissionCreateWithoutUsersInput!]
+  connectOrCreate: [PermissionCreateOrConnectWithoutUsersInput!]
+  connect: [PermissionWhereUniqueInput!]
+}
+
+input PermissionCreateWithoutUsersInput {
+  id: String
+  isAllowed: Boolean
+  subject: PermissionSubject!
+  action: String!
+  field: PermissionCreatefieldInput
+  conditions: JSON
+  roles: RoleCreateNestedManyWithoutPermissionsInput
+}
+
+input RoleCreateNestedManyWithoutPermissionsInput {
+  create: [RoleCreateWithoutPermissionsInput!]
+  connectOrCreate: [RoleCreateOrConnectWithoutPermissionsInput!]
+  connect: [RoleWhereUniqueInput!]
+}
+
+input RoleCreateWithoutPermissionsInput {
+  id: String
+  name: String!
+  description: String
+  users: UserCreateNestedManyWithoutRolesInput
+}
+
+input UserCreateNestedManyWithoutRolesInput {
+  create: [UserCreateWithoutRolesInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutRolesInput!]
+  connect: [UserWhereUniqueInput!]
+}
+
+input UserCreateWithoutRolesInput {
+  id: String
+  username: String!
+  hashedPassword: String!
+  permissions: PermissionCreateNestedManyWithoutUsersInput
+  assignedProperties: PropertyCreateNestedManyWithoutAssignedAgentsInput
+}
+
+input UserCreateOrConnectWithoutRolesInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutRolesInput!
+}
+
+input RoleCreateOrConnectWithoutPermissionsInput {
+  where: RoleWhereUniqueInput!
+  create: RoleCreateWithoutPermissionsInput!
+}
+
+input PermissionCreateOrConnectWithoutUsersInput {
+  where: PermissionWhereUniqueInput!
+  create: PermissionCreateWithoutUsersInput!
+}
+
+input UserCreateOrConnectWithoutAssignedPropertiesInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutAssignedPropertiesInput!
+}
+
+input PropertyUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  status: EnumPropertyStatusFieldUpdateOperationsInput
+  commercialStatus: EnumPropertyCommercialStatusFieldUpdateOperationsInput
+  uniqueCode: NullableStringFieldUpdateOperationsInput
+  floorSize: NullableDecimalFieldUpdateOperationsInput
+  landSize: NullableDecimalFieldUpdateOperationsInput
+  furnishing: NullableEnumPropertyFurnishingFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  mediaList: FileUpdateManyWithoutPropertyNestedInput
+  priceList: PriceUpdateManyWithoutPropertyNestedInput
+  location: LocationUpdateOneWithoutPropertyNestedInput
+  type: PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput
+  amenities: PropertyAmenityUpdateManyWithoutPropertiesNestedInput
+  PropertyOwner: PropertyOwnerUpdateOneWithoutPropertiesNestedInput
+  PropertyListing: PropertyListingUpdateManyWithoutPropertyNestedInput
+  assignedAgents: UserUpdateManyWithoutAssignedPropertiesNestedInput
+  leases: LeaseUpdateManyWithoutPropertyNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput
+}
+
+input StringFieldUpdateOperationsInput {
+  set: String
+}
+
+input NullableStringFieldUpdateOperationsInput {
+  set: String
+}
+
+input EnumPropertyStatusFieldUpdateOperationsInput {
+  set: PropertyStatus
+}
+
+input EnumPropertyCommercialStatusFieldUpdateOperationsInput {
+  set: PropertyCommercialStatus
+}
+
+input NullableDecimalFieldUpdateOperationsInput {
+  set: Decimal
+  increment: Decimal
+  decrement: Decimal
+  multiply: Decimal
+  divide: Decimal
+}
+
+input NullableEnumPropertyFurnishingFieldUpdateOperationsInput {
+  set: PropertyFurnishing
+}
+
+input DateTimeFieldUpdateOperationsInput {
+  set: DateTime
+}
+
+input FileUpdateManyWithoutPropertyNestedInput {
+  create: [FileCreateWithoutPropertyInput!]
+  connectOrCreate: [FileCreateOrConnectWithoutPropertyInput!]
+  upsert: [FileUpsertWithWhereUniqueWithoutPropertyInput!]
+  set: [FileWhereUniqueInput!]
+  disconnect: [FileWhereUniqueInput!]
+  delete: [FileWhereUniqueInput!]
+  connect: [FileWhereUniqueInput!]
+  update: [FileUpdateWithWhereUniqueWithoutPropertyInput!]
+  updateMany: [FileUpdateManyWithWhereWithoutPropertyInput!]
+  deleteMany: [FileScalarWhereInput!]
+}
+
+input FileUpsertWithWhereUniqueWithoutPropertyInput {
+  where: FileWhereUniqueInput!
+  update: FileUpdateWithoutPropertyInput!
+  create: FileCreateWithoutPropertyInput!
+}
+
+input FileUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  path: StringFieldUpdateOperationsInput
+  mimetype: StringFieldUpdateOperationsInput
+  size: BigIntFieldUpdateOperationsInput
+}
+
+input BigIntFieldUpdateOperationsInput {
+  set: String
+  increment: String
+  decrement: String
+  multiply: String
+  divide: String
+}
+
+input FileUpdateWithWhereUniqueWithoutPropertyInput {
+  where: FileWhereUniqueInput!
+  data: FileUpdateWithoutPropertyInput!
+}
+
+input FileUpdateManyWithWhereWithoutPropertyInput {
+  where: FileScalarWhereInput!
+  data: FileUpdateManyMutationInput!
+}
+
+input FileScalarWhereInput {
+  AND: [FileScalarWhereInput!]
+  OR: [FileScalarWhereInput!]
+  NOT: [FileScalarWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  path: StringFilter
+  mimetype: StringFilter
+  size: BigIntFilter
+}
+
+input FileUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  path: StringFieldUpdateOperationsInput
+  mimetype: StringFieldUpdateOperationsInput
+  size: BigIntFieldUpdateOperationsInput
+}
+
+input PriceUpdateManyWithoutPropertyNestedInput {
+  create: [PriceCreateWithoutPropertyInput!]
+  connectOrCreate: [PriceCreateOrConnectWithoutPropertyInput!]
+  upsert: [PriceUpsertWithWhereUniqueWithoutPropertyInput!]
+  createMany: PriceCreateManyPropertyInputEnvelope
+  set: [PriceWhereUniqueInput!]
+  disconnect: [PriceWhereUniqueInput!]
+  delete: [PriceWhereUniqueInput!]
+  connect: [PriceWhereUniqueInput!]
+  update: [PriceUpdateWithWhereUniqueWithoutPropertyInput!]
+  updateMany: [PriceUpdateManyWithWhereWithoutPropertyInput!]
+  deleteMany: [PriceScalarWhereInput!]
+}
+
+input PriceUpsertWithWhereUniqueWithoutPropertyInput {
+  where: PriceWhereUniqueInput!
+  update: PriceUpdateWithoutPropertyInput!
+  create: PriceCreateWithoutPropertyInput!
+}
+
+input PriceUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  currency: StringFieldUpdateOperationsInput
+  price: DecimalFieldUpdateOperationsInput
+}
+
+input DecimalFieldUpdateOperationsInput {
+  set: Decimal
+  increment: Decimal
+  decrement: Decimal
+  multiply: Decimal
+  divide: Decimal
+}
+
+input PriceUpdateWithWhereUniqueWithoutPropertyInput {
+  where: PriceWhereUniqueInput!
+  data: PriceUpdateWithoutPropertyInput!
+}
+
+input PriceUpdateManyWithWhereWithoutPropertyInput {
+  where: PriceScalarWhereInput!
+  data: PriceUpdateManyMutationInput!
+}
+
+input PriceScalarWhereInput {
+  AND: [PriceScalarWhereInput!]
+  OR: [PriceScalarWhereInput!]
+  NOT: [PriceScalarWhereInput!]
+  id: StringFilter
+  currency: StringFilter
+  price: DecimalFilter
+  propertyId: StringFilter
+}
+
+input PriceUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  currency: StringFieldUpdateOperationsInput
+  price: DecimalFieldUpdateOperationsInput
+}
+
+input LocationUpdateOneWithoutPropertyNestedInput {
+  create: LocationCreateWithoutPropertyInput
+  connectOrCreate: LocationCreateOrConnectWithoutPropertyInput
+  upsert: LocationUpsertWithoutPropertyInput
+  disconnect: LocationWhereInput
+  delete: LocationWhereInput
+  connect: LocationWhereUniqueInput
+  update: LocationUpdateToOneWithWhereWithoutPropertyInput
+}
+
+input LocationUpsertWithoutPropertyInput {
+  update: LocationUpdateWithoutPropertyInput!
+  create: LocationCreateWithoutPropertyInput!
+  where: LocationWhereInput
+}
+
+input LocationUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  address: NullableStringFieldUpdateOperationsInput
+  subdistrict: NullableStringFieldUpdateOperationsInput
+  district: NullableStringFieldUpdateOperationsInput
+  province: NullableStringFieldUpdateOperationsInput
+  country: NullableStringFieldUpdateOperationsInput
+  postalCode: NullableStringFieldUpdateOperationsInput
+  latitude: NullableDecimalFieldUpdateOperationsInput
+  longitude: NullableDecimalFieldUpdateOperationsInput
+}
+
+input LocationUpdateToOneWithWhereWithoutPropertyInput {
+  where: LocationWhereInput
+  data: LocationUpdateWithoutPropertyInput!
+}
+
+input PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput {
+  create: PropertyTypeCreateWithoutPropertyInput
+  connectOrCreate: PropertyTypeCreateOrConnectWithoutPropertyInput
+  upsert: PropertyTypeUpsertWithoutPropertyInput
+  connect: PropertyTypeWhereUniqueInput
+  update: PropertyTypeUpdateToOneWithWhereWithoutPropertyInput
+}
+
+input PropertyTypeUpsertWithoutPropertyInput {
+  update: PropertyTypeUpdateWithoutPropertyInput!
+  create: PropertyTypeCreateWithoutPropertyInput!
+  where: PropertyTypeWhereInput
+}
+
+input PropertyTypeUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+}
+
+input PropertyTypeUpdateToOneWithWhereWithoutPropertyInput {
+  where: PropertyTypeWhereInput
+  data: PropertyTypeUpdateWithoutPropertyInput!
+}
+
+input PropertyAmenityUpdateManyWithoutPropertiesNestedInput {
+  create: [PropertyAmenityCreateWithoutPropertiesInput!]
+  connectOrCreate: [PropertyAmenityCreateOrConnectWithoutPropertiesInput!]
+  upsert: [PropertyAmenityUpsertWithWhereUniqueWithoutPropertiesInput!]
+  set: [PropertyAmenityWhereUniqueInput!]
+  disconnect: [PropertyAmenityWhereUniqueInput!]
+  delete: [PropertyAmenityWhereUniqueInput!]
+  connect: [PropertyAmenityWhereUniqueInput!]
+  update: [PropertyAmenityUpdateWithWhereUniqueWithoutPropertiesInput!]
+  updateMany: [PropertyAmenityUpdateManyWithWhereWithoutPropertiesInput!]
+  deleteMany: [PropertyAmenityScalarWhereInput!]
+}
+
+input PropertyAmenityUpsertWithWhereUniqueWithoutPropertiesInput {
+  where: PropertyAmenityWhereUniqueInput!
+  update: PropertyAmenityUpdateWithoutPropertiesInput!
+  create: PropertyAmenityCreateWithoutPropertiesInput!
+}
+
+input PropertyAmenityUpdateWithoutPropertiesInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+}
+
+input PropertyAmenityUpdateWithWhereUniqueWithoutPropertiesInput {
+  where: PropertyAmenityWhereUniqueInput!
+  data: PropertyAmenityUpdateWithoutPropertiesInput!
+}
+
+input PropertyAmenityUpdateManyWithWhereWithoutPropertiesInput {
+  where: PropertyAmenityScalarWhereInput!
+  data: PropertyAmenityUpdateManyMutationInput!
+}
+
+input PropertyAmenityScalarWhereInput {
+  AND: [PropertyAmenityScalarWhereInput!]
+  OR: [PropertyAmenityScalarWhereInput!]
+  NOT: [PropertyAmenityScalarWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+}
+
+input PropertyAmenityUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+}
+
+input PropertyOwnerUpdateOneWithoutPropertiesNestedInput {
+  create: PropertyOwnerCreateWithoutPropertiesInput
+  connectOrCreate: PropertyOwnerCreateOrConnectWithoutPropertiesInput
+  upsert: PropertyOwnerUpsertWithoutPropertiesInput
+  disconnect: PropertyOwnerWhereInput
+  delete: PropertyOwnerWhereInput
+  connect: PropertyOwnerWhereUniqueInput
+  update: PropertyOwnerUpdateToOneWithWhereWithoutPropertiesInput
+}
+
+input PropertyOwnerUpsertWithoutPropertiesInput {
+  update: PropertyOwnerUpdateWithoutPropertiesInput!
+  create: PropertyOwnerCreateWithoutPropertiesInput!
+  where: PropertyOwnerWhereInput
+}
+
+input PropertyOwnerUpdateWithoutPropertiesInput {
+  id: StringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  profilePictureUrl: NullableStringFieldUpdateOperationsInput
+  dob: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input NullableDateTimeFieldUpdateOperationsInput {
+  set: DateTime
+}
+
+input PropertyOwnerUpdateToOneWithWhereWithoutPropertiesInput {
+  where: PropertyOwnerWhereInput
+  data: PropertyOwnerUpdateWithoutPropertiesInput!
+}
+
+input PropertyListingUpdateManyWithoutPropertyNestedInput {
+  create: [PropertyListingCreateWithoutPropertyInput!]
+  connectOrCreate: [PropertyListingCreateOrConnectWithoutPropertyInput!]
+  upsert: [PropertyListingUpsertWithWhereUniqueWithoutPropertyInput!]
+  createMany: PropertyListingCreateManyPropertyInputEnvelope
+  set: [PropertyListingWhereUniqueInput!]
+  disconnect: [PropertyListingWhereUniqueInput!]
+  delete: [PropertyListingWhereUniqueInput!]
+  connect: [PropertyListingWhereUniqueInput!]
+  update: [PropertyListingUpdateWithWhereUniqueWithoutPropertyInput!]
+  updateMany: [PropertyListingUpdateManyWithWhereWithoutPropertyInput!]
+  deleteMany: [PropertyListingScalarWhereInput!]
+}
+
+input PropertyListingUpsertWithWhereUniqueWithoutPropertyInput {
+  where: PropertyListingWhereUniqueInput!
+  update: PropertyListingUpdateWithoutPropertyInput!
+  create: PropertyListingCreateWithoutPropertyInput!
+}
+
+input PropertyListingUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  status: EnumPropertyListingStatusFieldUpdateOperationsInput
+  type: EnumPropertyListingTypeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input EnumPropertyListingStatusFieldUpdateOperationsInput {
+  set: PropertyListingStatus
+}
+
+input EnumPropertyListingTypeFieldUpdateOperationsInput {
+  set: PropertyListingType
+}
+
+input PropertyListingUpdateWithWhereUniqueWithoutPropertyInput {
+  where: PropertyListingWhereUniqueInput!
+  data: PropertyListingUpdateWithoutPropertyInput!
+}
+
+input PropertyListingUpdateManyWithWhereWithoutPropertyInput {
+  where: PropertyListingScalarWhereInput!
+  data: PropertyListingUpdateManyMutationInput!
+}
+
+input PropertyListingScalarWhereInput {
+  AND: [PropertyListingScalarWhereInput!]
+  OR: [PropertyListingScalarWhereInput!]
+  NOT: [PropertyListingScalarWhereInput!]
+  id: StringFilter
+  status: EnumPropertyListingStatusFilter
+  type: EnumPropertyListingTypeFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  propertyId: StringFilter
+}
+
+input PropertyListingUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  status: EnumPropertyListingStatusFieldUpdateOperationsInput
+  type: EnumPropertyListingTypeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input UserUpdateManyWithoutAssignedPropertiesNestedInput {
+  create: [UserCreateWithoutAssignedPropertiesInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutAssignedPropertiesInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutAssignedPropertiesInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutAssignedPropertiesInput!]
+  updateMany: [UserUpdateManyWithWhereWithoutAssignedPropertiesInput!]
+  deleteMany: [UserScalarWhereInput!]
+}
+
+input UserUpsertWithWhereUniqueWithoutAssignedPropertiesInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutAssignedPropertiesInput!
+  create: UserCreateWithoutAssignedPropertiesInput!
+}
+
+input UserUpdateWithoutAssignedPropertiesInput {
+  id: StringFieldUpdateOperationsInput
+  username: StringFieldUpdateOperationsInput
+  hashedPassword: StringFieldUpdateOperationsInput
+  roles: RoleUpdateManyWithoutUsersNestedInput
+  permissions: PermissionUpdateManyWithoutUsersNestedInput
+}
+
+input RoleUpdateManyWithoutUsersNestedInput {
+  create: [RoleCreateWithoutUsersInput!]
+  connectOrCreate: [RoleCreateOrConnectWithoutUsersInput!]
+  upsert: [RoleUpsertWithWhereUniqueWithoutUsersInput!]
+  set: [RoleWhereUniqueInput!]
+  disconnect: [RoleWhereUniqueInput!]
+  delete: [RoleWhereUniqueInput!]
+  connect: [RoleWhereUniqueInput!]
+  update: [RoleUpdateWithWhereUniqueWithoutUsersInput!]
+  updateMany: [RoleUpdateManyWithWhereWithoutUsersInput!]
+  deleteMany: [RoleScalarWhereInput!]
+}
+
+input RoleUpsertWithWhereUniqueWithoutUsersInput {
+  where: RoleWhereUniqueInput!
+  update: RoleUpdateWithoutUsersInput!
+  create: RoleCreateWithoutUsersInput!
+}
+
+input RoleUpdateWithoutUsersInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  permissions: PermissionUpdateManyWithoutRolesNestedInput
+}
+
+input PermissionUpdateManyWithoutRolesNestedInput {
+  create: [PermissionCreateWithoutRolesInput!]
+  connectOrCreate: [PermissionCreateOrConnectWithoutRolesInput!]
+  upsert: [PermissionUpsertWithWhereUniqueWithoutRolesInput!]
+  set: [PermissionWhereUniqueInput!]
+  disconnect: [PermissionWhereUniqueInput!]
+  delete: [PermissionWhereUniqueInput!]
+  connect: [PermissionWhereUniqueInput!]
+  update: [PermissionUpdateWithWhereUniqueWithoutRolesInput!]
+  updateMany: [PermissionUpdateManyWithWhereWithoutRolesInput!]
+  deleteMany: [PermissionScalarWhereInput!]
+}
+
+input PermissionUpsertWithWhereUniqueWithoutRolesInput {
+  where: PermissionWhereUniqueInput!
+  update: PermissionUpdateWithoutRolesInput!
+  create: PermissionCreateWithoutRolesInput!
+}
+
+input PermissionUpdateWithoutRolesInput {
+  id: StringFieldUpdateOperationsInput
+  isAllowed: BoolFieldUpdateOperationsInput
+  subject: EnumPermissionSubjectFieldUpdateOperationsInput
+  action: StringFieldUpdateOperationsInput
+  field: PermissionUpdatefieldInput
+  conditions: JSON
+  users: UserUpdateManyWithoutPermissionsNestedInput
+}
+
+input BoolFieldUpdateOperationsInput {
+  set: Boolean
+}
+
+input EnumPermissionSubjectFieldUpdateOperationsInput {
+  set: PermissionSubject
+}
+
+input PermissionUpdatefieldInput {
+  set: [String!]
+  push: [String!]
+}
+
+input UserUpdateManyWithoutPermissionsNestedInput {
+  create: [UserCreateWithoutPermissionsInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutPermissionsInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutPermissionsInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutPermissionsInput!]
+  updateMany: [UserUpdateManyWithWhereWithoutPermissionsInput!]
+  deleteMany: [UserScalarWhereInput!]
+}
+
+input UserUpsertWithWhereUniqueWithoutPermissionsInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutPermissionsInput!
+  create: UserCreateWithoutPermissionsInput!
+}
+
+input UserUpdateWithoutPermissionsInput {
+  id: StringFieldUpdateOperationsInput
+  username: StringFieldUpdateOperationsInput
+  hashedPassword: StringFieldUpdateOperationsInput
+  roles: RoleUpdateManyWithoutUsersNestedInput
+  assignedProperties: PropertyUpdateManyWithoutAssignedAgentsNestedInput
+}
+
+input PropertyUpdateManyWithoutAssignedAgentsNestedInput {
+  create: [PropertyCreateWithoutAssignedAgentsInput!]
+  connectOrCreate: [PropertyCreateOrConnectWithoutAssignedAgentsInput!]
+  upsert: [PropertyUpsertWithWhereUniqueWithoutAssignedAgentsInput!]
+  set: [PropertyWhereUniqueInput!]
+  disconnect: [PropertyWhereUniqueInput!]
+  delete: [PropertyWhereUniqueInput!]
+  connect: [PropertyWhereUniqueInput!]
+  update: [PropertyUpdateWithWhereUniqueWithoutAssignedAgentsInput!]
+  updateMany: [PropertyUpdateManyWithWhereWithoutAssignedAgentsInput!]
+  deleteMany: [PropertyScalarWhereInput!]
+}
+
+input PropertyUpsertWithWhereUniqueWithoutAssignedAgentsInput {
+  where: PropertyWhereUniqueInput!
+  update: PropertyUpdateWithoutAssignedAgentsInput!
+  create: PropertyCreateWithoutAssignedAgentsInput!
+}
+
+input PropertyUpdateWithoutAssignedAgentsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  status: EnumPropertyStatusFieldUpdateOperationsInput
+  commercialStatus: EnumPropertyCommercialStatusFieldUpdateOperationsInput
+  uniqueCode: NullableStringFieldUpdateOperationsInput
+  floorSize: NullableDecimalFieldUpdateOperationsInput
+  landSize: NullableDecimalFieldUpdateOperationsInput
+  furnishing: NullableEnumPropertyFurnishingFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  mediaList: FileUpdateManyWithoutPropertyNestedInput
+  priceList: PriceUpdateManyWithoutPropertyNestedInput
+  location: LocationUpdateOneWithoutPropertyNestedInput
+  type: PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput
+  amenities: PropertyAmenityUpdateManyWithoutPropertiesNestedInput
+  PropertyOwner: PropertyOwnerUpdateOneWithoutPropertiesNestedInput
+  PropertyListing: PropertyListingUpdateManyWithoutPropertyNestedInput
+  leases: LeaseUpdateManyWithoutPropertyNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput
+}
+
+input LeaseUpdateManyWithoutPropertyNestedInput {
+  create: [LeaseCreateWithoutPropertyInput!]
+  connectOrCreate: [LeaseCreateOrConnectWithoutPropertyInput!]
+  upsert: [LeaseUpsertWithWhereUniqueWithoutPropertyInput!]
+  createMany: LeaseCreateManyPropertyInputEnvelope
+  set: [LeaseWhereUniqueInput!]
+  disconnect: [LeaseWhereUniqueInput!]
+  delete: [LeaseWhereUniqueInput!]
+  connect: [LeaseWhereUniqueInput!]
+  update: [LeaseUpdateWithWhereUniqueWithoutPropertyInput!]
+  updateMany: [LeaseUpdateManyWithWhereWithoutPropertyInput!]
+  deleteMany: [LeaseScalarWhereInput!]
+}
+
+input LeaseUpsertWithWhereUniqueWithoutPropertyInput {
+  where: LeaseWhereUniqueInput!
+  update: LeaseUpdateWithoutPropertyInput!
+  create: LeaseCreateWithoutPropertyInput!
+}
+
+input LeaseUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  startedDate: DateTimeFieldUpdateOperationsInput
+  endDate: DateTimeFieldUpdateOperationsInput
+  status: EnumLeaseStatusFieldUpdateOperationsInput
+  rentAmount: DecimalFieldUpdateOperationsInput
+  depositAmount: DecimalFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  tenant: TenantUpdateOneRequiredWithoutLeasesNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutLeaseNestedInput
+}
+
+input EnumLeaseStatusFieldUpdateOperationsInput {
+  set: LeaseStatus
+}
+
+input TenantUpdateOneRequiredWithoutLeasesNestedInput {
+  create: TenantCreateWithoutLeasesInput
+  connectOrCreate: TenantCreateOrConnectWithoutLeasesInput
+  upsert: TenantUpsertWithoutLeasesInput
+  connect: TenantWhereUniqueInput
+  update: TenantUpdateToOneWithWhereWithoutLeasesInput
+}
+
+input TenantUpsertWithoutLeasesInput {
+  update: TenantUpdateWithoutLeasesInput!
+  create: TenantCreateWithoutLeasesInput!
+  where: TenantWhereInput
+}
+
+input TenantUpdateWithoutLeasesInput {
+  id: StringFieldUpdateOperationsInput
+  nationalId: StringFieldUpdateOperationsInput
+  firstName: NullableStringFieldUpdateOperationsInput
+  lastName: NullableStringFieldUpdateOperationsInput
+  email: NullableStringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: NullableStringFieldUpdateOperationsInput
+  address: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutTenantNestedInput
+}
+
+input PropertyMaintenanceRequestUpdateManyWithoutTenantNestedInput {
+  create: [PropertyMaintenanceRequestCreateWithoutTenantInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutTenantInput!]
+  upsert: [PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutTenantInput!]
+  createMany: PropertyMaintenanceRequestCreateManyTenantInputEnvelope
+  set: [PropertyMaintenanceRequestWhereUniqueInput!]
+  disconnect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  delete: [PropertyMaintenanceRequestWhereUniqueInput!]
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  update: [PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutTenantInput!]
+  updateMany: [PropertyMaintenanceRequestUpdateManyWithWhereWithoutTenantInput!]
+  deleteMany: [PropertyMaintenanceRequestScalarWhereInput!]
+}
+
+input PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutTenantInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  update: PropertyMaintenanceRequestUpdateWithoutTenantInput!
+  create: PropertyMaintenanceRequestCreateWithoutTenantInput!
+}
+
+input PropertyMaintenanceRequestUpdateWithoutTenantInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  requestedAt: DateTimeFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  property: PropertyUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  lease: LeaseUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  activities: PropertyMaintenanceRequestActivityUpdateManyWithoutRequestNestedInput
+}
+
+input EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput {
+  set: PropertyMaintenanceRequestStatus
+}
+
+input PropertyUpdateOneRequiredWithoutMaintenanceRequestsNestedInput {
+  create: PropertyCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: PropertyCreateOrConnectWithoutMaintenanceRequestsInput
+  upsert: PropertyUpsertWithoutMaintenanceRequestsInput
+  connect: PropertyWhereUniqueInput
+  update: PropertyUpdateToOneWithWhereWithoutMaintenanceRequestsInput
+}
+
+input PropertyUpsertWithoutMaintenanceRequestsInput {
+  update: PropertyUpdateWithoutMaintenanceRequestsInput!
+  create: PropertyCreateWithoutMaintenanceRequestsInput!
+  where: PropertyWhereInput
+}
+
+input PropertyUpdateWithoutMaintenanceRequestsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  status: EnumPropertyStatusFieldUpdateOperationsInput
+  commercialStatus: EnumPropertyCommercialStatusFieldUpdateOperationsInput
+  uniqueCode: NullableStringFieldUpdateOperationsInput
+  floorSize: NullableDecimalFieldUpdateOperationsInput
+  landSize: NullableDecimalFieldUpdateOperationsInput
+  furnishing: NullableEnumPropertyFurnishingFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  mediaList: FileUpdateManyWithoutPropertyNestedInput
+  priceList: PriceUpdateManyWithoutPropertyNestedInput
+  location: LocationUpdateOneWithoutPropertyNestedInput
+  type: PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput
+  amenities: PropertyAmenityUpdateManyWithoutPropertiesNestedInput
+  PropertyOwner: PropertyOwnerUpdateOneWithoutPropertiesNestedInput
+  PropertyListing: PropertyListingUpdateManyWithoutPropertyNestedInput
+  assignedAgents: UserUpdateManyWithoutAssignedPropertiesNestedInput
+  leases: LeaseUpdateManyWithoutPropertyNestedInput
+}
+
+input PropertyUpdateToOneWithWhereWithoutMaintenanceRequestsInput {
+  where: PropertyWhereInput
+  data: PropertyUpdateWithoutMaintenanceRequestsInput!
+}
+
+input LeaseUpdateOneRequiredWithoutMaintenanceRequestsNestedInput {
+  create: LeaseCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: LeaseCreateOrConnectWithoutMaintenanceRequestsInput
+  upsert: LeaseUpsertWithoutMaintenanceRequestsInput
+  connect: LeaseWhereUniqueInput
+  update: LeaseUpdateToOneWithWhereWithoutMaintenanceRequestsInput
+}
+
+input LeaseUpsertWithoutMaintenanceRequestsInput {
+  update: LeaseUpdateWithoutMaintenanceRequestsInput!
+  create: LeaseCreateWithoutMaintenanceRequestsInput!
+  where: LeaseWhereInput
+}
+
+input LeaseUpdateWithoutMaintenanceRequestsInput {
+  id: StringFieldUpdateOperationsInput
+  startedDate: DateTimeFieldUpdateOperationsInput
+  endDate: DateTimeFieldUpdateOperationsInput
+  status: EnumLeaseStatusFieldUpdateOperationsInput
+  rentAmount: DecimalFieldUpdateOperationsInput
+  depositAmount: DecimalFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  property: PropertyUpdateOneRequiredWithoutLeasesNestedInput
+  tenant: TenantUpdateOneRequiredWithoutLeasesNestedInput
+}
+
+input PropertyUpdateOneRequiredWithoutLeasesNestedInput {
+  create: PropertyCreateWithoutLeasesInput
+  connectOrCreate: PropertyCreateOrConnectWithoutLeasesInput
+  upsert: PropertyUpsertWithoutLeasesInput
+  connect: PropertyWhereUniqueInput
+  update: PropertyUpdateToOneWithWhereWithoutLeasesInput
+}
+
+input PropertyUpsertWithoutLeasesInput {
+  update: PropertyUpdateWithoutLeasesInput!
+  create: PropertyCreateWithoutLeasesInput!
+  where: PropertyWhereInput
+}
+
+input PropertyUpdateWithoutLeasesInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  status: EnumPropertyStatusFieldUpdateOperationsInput
+  commercialStatus: EnumPropertyCommercialStatusFieldUpdateOperationsInput
+  uniqueCode: NullableStringFieldUpdateOperationsInput
+  floorSize: NullableDecimalFieldUpdateOperationsInput
+  landSize: NullableDecimalFieldUpdateOperationsInput
+  furnishing: NullableEnumPropertyFurnishingFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  mediaList: FileUpdateManyWithoutPropertyNestedInput
+  priceList: PriceUpdateManyWithoutPropertyNestedInput
+  location: LocationUpdateOneWithoutPropertyNestedInput
+  type: PropertyTypeUpdateOneRequiredWithoutPropertyNestedInput
+  amenities: PropertyAmenityUpdateManyWithoutPropertiesNestedInput
+  PropertyOwner: PropertyOwnerUpdateOneWithoutPropertiesNestedInput
+  PropertyListing: PropertyListingUpdateManyWithoutPropertyNestedInput
+  assignedAgents: UserUpdateManyWithoutAssignedPropertiesNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput
+}
+
+input PropertyMaintenanceRequestUpdateManyWithoutPropertyNestedInput {
+  create: [PropertyMaintenanceRequestCreateWithoutPropertyInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutPropertyInput!]
+  upsert: [PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutPropertyInput!]
+  createMany: PropertyMaintenanceRequestCreateManyPropertyInputEnvelope
+  set: [PropertyMaintenanceRequestWhereUniqueInput!]
+  disconnect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  delete: [PropertyMaintenanceRequestWhereUniqueInput!]
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  update: [PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutPropertyInput!]
+  updateMany: [PropertyMaintenanceRequestUpdateManyWithWhereWithoutPropertyInput!]
+  deleteMany: [PropertyMaintenanceRequestScalarWhereInput!]
+}
+
+input PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutPropertyInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  update: PropertyMaintenanceRequestUpdateWithoutPropertyInput!
+  create: PropertyMaintenanceRequestCreateWithoutPropertyInput!
+}
+
+input PropertyMaintenanceRequestUpdateWithoutPropertyInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  requestedAt: DateTimeFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  tenant: TenantUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  lease: LeaseUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  activities: PropertyMaintenanceRequestActivityUpdateManyWithoutRequestNestedInput
+}
+
+input TenantUpdateOneRequiredWithoutMaintenanceRequestsNestedInput {
+  create: TenantCreateWithoutMaintenanceRequestsInput
+  connectOrCreate: TenantCreateOrConnectWithoutMaintenanceRequestsInput
+  upsert: TenantUpsertWithoutMaintenanceRequestsInput
+  connect: TenantWhereUniqueInput
+  update: TenantUpdateToOneWithWhereWithoutMaintenanceRequestsInput
+}
+
+input TenantUpsertWithoutMaintenanceRequestsInput {
+  update: TenantUpdateWithoutMaintenanceRequestsInput!
+  create: TenantCreateWithoutMaintenanceRequestsInput!
+  where: TenantWhereInput
+}
+
+input TenantUpdateWithoutMaintenanceRequestsInput {
+  id: StringFieldUpdateOperationsInput
+  nationalId: StringFieldUpdateOperationsInput
+  firstName: NullableStringFieldUpdateOperationsInput
+  lastName: NullableStringFieldUpdateOperationsInput
+  email: NullableStringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: NullableStringFieldUpdateOperationsInput
+  address: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  leases: LeaseUpdateManyWithoutTenantNestedInput
+}
+
+input LeaseUpdateManyWithoutTenantNestedInput {
+  create: [LeaseCreateWithoutTenantInput!]
+  connectOrCreate: [LeaseCreateOrConnectWithoutTenantInput!]
+  upsert: [LeaseUpsertWithWhereUniqueWithoutTenantInput!]
+  createMany: LeaseCreateManyTenantInputEnvelope
+  set: [LeaseWhereUniqueInput!]
+  disconnect: [LeaseWhereUniqueInput!]
+  delete: [LeaseWhereUniqueInput!]
+  connect: [LeaseWhereUniqueInput!]
+  update: [LeaseUpdateWithWhereUniqueWithoutTenantInput!]
+  updateMany: [LeaseUpdateManyWithWhereWithoutTenantInput!]
+  deleteMany: [LeaseScalarWhereInput!]
+}
+
+input LeaseUpsertWithWhereUniqueWithoutTenantInput {
+  where: LeaseWhereUniqueInput!
+  update: LeaseUpdateWithoutTenantInput!
+  create: LeaseCreateWithoutTenantInput!
+}
+
+input LeaseUpdateWithoutTenantInput {
+  id: StringFieldUpdateOperationsInput
+  startedDate: DateTimeFieldUpdateOperationsInput
+  endDate: DateTimeFieldUpdateOperationsInput
+  status: EnumLeaseStatusFieldUpdateOperationsInput
+  rentAmount: DecimalFieldUpdateOperationsInput
+  depositAmount: DecimalFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  property: PropertyUpdateOneRequiredWithoutLeasesNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutLeaseNestedInput
+}
+
+input PropertyMaintenanceRequestUpdateManyWithoutLeaseNestedInput {
+  create: [PropertyMaintenanceRequestCreateWithoutLeaseInput!]
+  connectOrCreate: [PropertyMaintenanceRequestCreateOrConnectWithoutLeaseInput!]
+  upsert: [PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutLeaseInput!]
+  createMany: PropertyMaintenanceRequestCreateManyLeaseInputEnvelope
+  set: [PropertyMaintenanceRequestWhereUniqueInput!]
+  disconnect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  delete: [PropertyMaintenanceRequestWhereUniqueInput!]
+  connect: [PropertyMaintenanceRequestWhereUniqueInput!]
+  update: [PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutLeaseInput!]
+  updateMany: [PropertyMaintenanceRequestUpdateManyWithWhereWithoutLeaseInput!]
+  deleteMany: [PropertyMaintenanceRequestScalarWhereInput!]
+}
+
+input PropertyMaintenanceRequestUpsertWithWhereUniqueWithoutLeaseInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  update: PropertyMaintenanceRequestUpdateWithoutLeaseInput!
+  create: PropertyMaintenanceRequestCreateWithoutLeaseInput!
+}
+
+input PropertyMaintenanceRequestUpdateWithoutLeaseInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  requestedAt: DateTimeFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  property: PropertyUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  tenant: TenantUpdateOneRequiredWithoutMaintenanceRequestsNestedInput
+  activities: PropertyMaintenanceRequestActivityUpdateManyWithoutRequestNestedInput
+}
+
+input PropertyMaintenanceRequestActivityUpdateManyWithoutRequestNestedInput {
+  create: [PropertyMaintenanceRequestActivityCreateWithoutRequestInput!]
+  connectOrCreate: [PropertyMaintenanceRequestActivityCreateOrConnectWithoutRequestInput!]
+  upsert: [PropertyMaintenanceRequestActivityUpsertWithWhereUniqueWithoutRequestInput!]
+  createMany: PropertyMaintenanceRequestActivityCreateManyRequestInputEnvelope
+  set: [PropertyMaintenanceRequestActivityWhereUniqueInput!]
+  disconnect: [PropertyMaintenanceRequestActivityWhereUniqueInput!]
+  delete: [PropertyMaintenanceRequestActivityWhereUniqueInput!]
+  connect: [PropertyMaintenanceRequestActivityWhereUniqueInput!]
+  update: [PropertyMaintenanceRequestActivityUpdateWithWhereUniqueWithoutRequestInput!]
+  updateMany: [PropertyMaintenanceRequestActivityUpdateManyWithWhereWithoutRequestInput!]
+  deleteMany: [PropertyMaintenanceRequestActivityScalarWhereInput!]
+}
+
+input PropertyMaintenanceRequestActivityUpsertWithWhereUniqueWithoutRequestInput {
+  where: PropertyMaintenanceRequestActivityWhereUniqueInput!
+  update: PropertyMaintenanceRequestActivityUpdateWithoutRequestInput!
+  create: PropertyMaintenanceRequestActivityCreateWithoutRequestInput!
+}
+
+input PropertyMaintenanceRequestActivityUpdateWithoutRequestInput {
+  id: StringFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input PropertyMaintenanceRequestActivityUpdateWithWhereUniqueWithoutRequestInput {
+  where: PropertyMaintenanceRequestActivityWhereUniqueInput!
+  data: PropertyMaintenanceRequestActivityUpdateWithoutRequestInput!
+}
+
+input PropertyMaintenanceRequestActivityUpdateManyWithWhereWithoutRequestInput {
+  where: PropertyMaintenanceRequestActivityScalarWhereInput!
+  data: PropertyMaintenanceRequestActivityUpdateManyMutationInput!
+}
+
+input PropertyMaintenanceRequestActivityScalarWhereInput {
+  AND: [PropertyMaintenanceRequestActivityScalarWhereInput!]
+  OR: [PropertyMaintenanceRequestActivityScalarWhereInput!]
+  NOT: [PropertyMaintenanceRequestActivityScalarWhereInput!]
+  id: StringFilter
+  requestId: StringFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  description: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+}
+
+input PropertyMaintenanceRequestActivityUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutLeaseInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  data: PropertyMaintenanceRequestUpdateWithoutLeaseInput!
+}
+
+input PropertyMaintenanceRequestUpdateManyWithWhereWithoutLeaseInput {
+  where: PropertyMaintenanceRequestScalarWhereInput!
+  data: PropertyMaintenanceRequestUpdateManyMutationInput!
+}
+
+input PropertyMaintenanceRequestScalarWhereInput {
+  AND: [PropertyMaintenanceRequestScalarWhereInput!]
+  OR: [PropertyMaintenanceRequestScalarWhereInput!]
+  NOT: [PropertyMaintenanceRequestScalarWhereInput!]
+  id: StringFilter
+  propertyId: StringFilter
+  tenantId: StringFilter
+  leaseId: StringFilter
+  title: StringFilter
+  description: StringFilter
+  requestedAt: DateTimeFilter
+  status: EnumPropertyMaintenanceRequestStatusFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+}
+
+input PropertyMaintenanceRequestUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  requestedAt: DateTimeFieldUpdateOperationsInput
+  status: EnumPropertyMaintenanceRequestStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input LeaseUpdateWithWhereUniqueWithoutTenantInput {
+  where: LeaseWhereUniqueInput!
+  data: LeaseUpdateWithoutTenantInput!
+}
+
+input LeaseUpdateManyWithWhereWithoutTenantInput {
+  where: LeaseScalarWhereInput!
+  data: LeaseUpdateManyMutationInput!
+}
+
+input LeaseScalarWhereInput {
+  AND: [LeaseScalarWhereInput!]
+  OR: [LeaseScalarWhereInput!]
+  NOT: [LeaseScalarWhereInput!]
+  id: StringFilter
+  propertyId: StringFilter
+  tenantId: StringFilter
+  startedDate: DateTimeFilter
+  endDate: DateTimeFilter
+  status: EnumLeaseStatusFilter
+  rentAmount: DecimalFilter
+  depositAmount: DecimalFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+}
+
+input LeaseUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  startedDate: DateTimeFieldUpdateOperationsInput
+  endDate: DateTimeFieldUpdateOperationsInput
+  status: EnumLeaseStatusFieldUpdateOperationsInput
+  rentAmount: DecimalFieldUpdateOperationsInput
+  depositAmount: DecimalFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input TenantUpdateToOneWithWhereWithoutMaintenanceRequestsInput {
+  where: TenantWhereInput
+  data: TenantUpdateWithoutMaintenanceRequestsInput!
+}
+
+input PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutPropertyInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  data: PropertyMaintenanceRequestUpdateWithoutPropertyInput!
+}
+
+input PropertyMaintenanceRequestUpdateManyWithWhereWithoutPropertyInput {
+  where: PropertyMaintenanceRequestScalarWhereInput!
+  data: PropertyMaintenanceRequestUpdateManyMutationInput!
+}
+
+input PropertyUpdateToOneWithWhereWithoutLeasesInput {
+  where: PropertyWhereInput
+  data: PropertyUpdateWithoutLeasesInput!
+}
+
+input LeaseUpdateToOneWithWhereWithoutMaintenanceRequestsInput {
+  where: LeaseWhereInput
+  data: LeaseUpdateWithoutMaintenanceRequestsInput!
+}
+
+input PropertyMaintenanceRequestUpdateWithWhereUniqueWithoutTenantInput {
+  where: PropertyMaintenanceRequestWhereUniqueInput!
+  data: PropertyMaintenanceRequestUpdateWithoutTenantInput!
+}
+
+input PropertyMaintenanceRequestUpdateManyWithWhereWithoutTenantInput {
+  where: PropertyMaintenanceRequestScalarWhereInput!
+  data: PropertyMaintenanceRequestUpdateManyMutationInput!
+}
+
+input TenantUpdateToOneWithWhereWithoutLeasesInput {
+  where: TenantWhereInput
+  data: TenantUpdateWithoutLeasesInput!
+}
+
+input LeaseUpdateWithWhereUniqueWithoutPropertyInput {
+  where: LeaseWhereUniqueInput!
+  data: LeaseUpdateWithoutPropertyInput!
+}
+
+input LeaseUpdateManyWithWhereWithoutPropertyInput {
+  where: LeaseScalarWhereInput!
+  data: LeaseUpdateManyMutationInput!
+}
+
+input PropertyUpdateWithWhereUniqueWithoutAssignedAgentsInput {
+  where: PropertyWhereUniqueInput!
+  data: PropertyUpdateWithoutAssignedAgentsInput!
+}
+
+input PropertyUpdateManyWithWhereWithoutAssignedAgentsInput {
+  where: PropertyScalarWhereInput!
+  data: PropertyUpdateManyMutationInput!
+}
+
+input PropertyScalarWhereInput {
+  AND: [PropertyScalarWhereInput!]
+  OR: [PropertyScalarWhereInput!]
+  NOT: [PropertyScalarWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+  status: EnumPropertyStatusFilter
+  commercialStatus: EnumPropertyCommercialStatusFilter
+  uniqueCode: StringNullableFilter
+  floorSize: DecimalNullableFilter
+  landSize: DecimalNullableFilter
+  furnishing: EnumPropertyFurnishingNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  typeId: StringFilter
+  locationId: StringNullableFilter
+  propertyOwnerId: StringNullableFilter
+}
+
+input PropertyUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  status: EnumPropertyStatusFieldUpdateOperationsInput
+  commercialStatus: EnumPropertyCommercialStatusFieldUpdateOperationsInput
+  uniqueCode: NullableStringFieldUpdateOperationsInput
+  floorSize: NullableDecimalFieldUpdateOperationsInput
+  landSize: NullableDecimalFieldUpdateOperationsInput
+  furnishing: NullableEnumPropertyFurnishingFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input UserUpdateWithWhereUniqueWithoutPermissionsInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutPermissionsInput!
+}
+
+input UserUpdateManyWithWhereWithoutPermissionsInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyMutationInput!
+}
+
+input UserScalarWhereInput {
+  AND: [UserScalarWhereInput!]
+  OR: [UserScalarWhereInput!]
+  NOT: [UserScalarWhereInput!]
+  id: StringFilter
+  username: StringFilter
+  hashedPassword: StringFilter
+}
+
+input UserUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  username: StringFieldUpdateOperationsInput
+  hashedPassword: StringFieldUpdateOperationsInput
+}
+
+input PermissionUpdateWithWhereUniqueWithoutRolesInput {
+  where: PermissionWhereUniqueInput!
+  data: PermissionUpdateWithoutRolesInput!
+}
+
+input PermissionUpdateManyWithWhereWithoutRolesInput {
+  where: PermissionScalarWhereInput!
+  data: PermissionUpdateManyMutationInput!
+}
+
+input PermissionScalarWhereInput {
+  AND: [PermissionScalarWhereInput!]
+  OR: [PermissionScalarWhereInput!]
+  NOT: [PermissionScalarWhereInput!]
+  id: StringFilter
+  isAllowed: BoolFilter
+  subject: EnumPermissionSubjectFilter
+  action: StringFilter
+  field: StringNullableListFilter
+  conditions: JsonNullableFilter
+}
+
+input PermissionUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  isAllowed: BoolFieldUpdateOperationsInput
+  subject: EnumPermissionSubjectFieldUpdateOperationsInput
+  action: StringFieldUpdateOperationsInput
+  field: PermissionUpdatefieldInput
+  conditions: JSON
+}
+
+input RoleUpdateWithWhereUniqueWithoutUsersInput {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateWithoutUsersInput!
+}
+
+input RoleUpdateManyWithWhereWithoutUsersInput {
+  where: RoleScalarWhereInput!
+  data: RoleUpdateManyMutationInput!
+}
+
+input RoleScalarWhereInput {
+  AND: [RoleScalarWhereInput!]
+  OR: [RoleScalarWhereInput!]
+  NOT: [RoleScalarWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  description: StringNullableFilter
+}
+
+input RoleUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+}
+
+input PermissionUpdateManyWithoutUsersNestedInput {
+  create: [PermissionCreateWithoutUsersInput!]
+  connectOrCreate: [PermissionCreateOrConnectWithoutUsersInput!]
+  upsert: [PermissionUpsertWithWhereUniqueWithoutUsersInput!]
+  set: [PermissionWhereUniqueInput!]
+  disconnect: [PermissionWhereUniqueInput!]
+  delete: [PermissionWhereUniqueInput!]
+  connect: [PermissionWhereUniqueInput!]
+  update: [PermissionUpdateWithWhereUniqueWithoutUsersInput!]
+  updateMany: [PermissionUpdateManyWithWhereWithoutUsersInput!]
+  deleteMany: [PermissionScalarWhereInput!]
+}
+
+input PermissionUpsertWithWhereUniqueWithoutUsersInput {
+  where: PermissionWhereUniqueInput!
+  update: PermissionUpdateWithoutUsersInput!
+  create: PermissionCreateWithoutUsersInput!
+}
+
+input PermissionUpdateWithoutUsersInput {
+  id: StringFieldUpdateOperationsInput
+  isAllowed: BoolFieldUpdateOperationsInput
+  subject: EnumPermissionSubjectFieldUpdateOperationsInput
+  action: StringFieldUpdateOperationsInput
+  field: PermissionUpdatefieldInput
+  conditions: JSON
+  roles: RoleUpdateManyWithoutPermissionsNestedInput
+}
+
+input RoleUpdateManyWithoutPermissionsNestedInput {
+  create: [RoleCreateWithoutPermissionsInput!]
+  connectOrCreate: [RoleCreateOrConnectWithoutPermissionsInput!]
+  upsert: [RoleUpsertWithWhereUniqueWithoutPermissionsInput!]
+  set: [RoleWhereUniqueInput!]
+  disconnect: [RoleWhereUniqueInput!]
+  delete: [RoleWhereUniqueInput!]
+  connect: [RoleWhereUniqueInput!]
+  update: [RoleUpdateWithWhereUniqueWithoutPermissionsInput!]
+  updateMany: [RoleUpdateManyWithWhereWithoutPermissionsInput!]
+  deleteMany: [RoleScalarWhereInput!]
+}
+
+input RoleUpsertWithWhereUniqueWithoutPermissionsInput {
+  where: RoleWhereUniqueInput!
+  update: RoleUpdateWithoutPermissionsInput!
+  create: RoleCreateWithoutPermissionsInput!
+}
+
+input RoleUpdateWithoutPermissionsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  users: UserUpdateManyWithoutRolesNestedInput
+}
+
+input UserUpdateManyWithoutRolesNestedInput {
+  create: [UserCreateWithoutRolesInput!]
+  connectOrCreate: [UserCreateOrConnectWithoutRolesInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutRolesInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  connect: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutRolesInput!]
+  updateMany: [UserUpdateManyWithWhereWithoutRolesInput!]
+  deleteMany: [UserScalarWhereInput!]
+}
+
+input UserUpsertWithWhereUniqueWithoutRolesInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutRolesInput!
+  create: UserCreateWithoutRolesInput!
+}
+
+input UserUpdateWithoutRolesInput {
+  id: StringFieldUpdateOperationsInput
+  username: StringFieldUpdateOperationsInput
+  hashedPassword: StringFieldUpdateOperationsInput
+  permissions: PermissionUpdateManyWithoutUsersNestedInput
+  assignedProperties: PropertyUpdateManyWithoutAssignedAgentsNestedInput
+}
+
+input UserUpdateWithWhereUniqueWithoutRolesInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutRolesInput!
+}
+
+input UserUpdateManyWithWhereWithoutRolesInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyMutationInput!
+}
+
+input RoleUpdateWithWhereUniqueWithoutPermissionsInput {
+  where: RoleWhereUniqueInput!
+  data: RoleUpdateWithoutPermissionsInput!
+}
+
+input RoleUpdateManyWithWhereWithoutPermissionsInput {
+  where: RoleScalarWhereInput!
+  data: RoleUpdateManyMutationInput!
+}
+
+input PermissionUpdateWithWhereUniqueWithoutUsersInput {
+  where: PermissionWhereUniqueInput!
+  data: PermissionUpdateWithoutUsersInput!
+}
+
+input PermissionUpdateManyWithWhereWithoutUsersInput {
+  where: PermissionScalarWhereInput!
+  data: PermissionUpdateManyMutationInput!
+}
+
+input UserUpdateWithWhereUniqueWithoutAssignedPropertiesInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateWithoutAssignedPropertiesInput!
+}
+
+input UserUpdateManyWithWhereWithoutAssignedPropertiesInput {
+  where: UserScalarWhereInput!
+  data: UserUpdateManyMutationInput!
+}
+
+input PropertyTypeCreateInput {
   name: String!
   description: String
 }
@@ -292,10 +3508,34 @@ input PropertyAmenityUpdateInput {
   description: NullableStringFieldUpdateOperationsInput
 }
 
-input StringFieldUpdateOperationsInput {
-  set: String
+input TenantCreateInput {
+  id: String
+  nationalId: String!
+  firstName: String
+  lastName: String
+  email: String
+  phoneNumber: String
+  dateOfBirth: DateTime
+  gender: String
+  address: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  leases: LeaseCreateNestedManyWithoutTenantInput
+  maintenanceRequests: PropertyMaintenanceRequestCreateNestedManyWithoutTenantInput
 }
 
-input NullableStringFieldUpdateOperationsInput {
-  set: String
+input TenantUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  nationalId: StringFieldUpdateOperationsInput
+  firstName: NullableStringFieldUpdateOperationsInput
+  lastName: NullableStringFieldUpdateOperationsInput
+  email: NullableStringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: NullableStringFieldUpdateOperationsInput
+  address: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  leases: LeaseUpdateManyWithoutTenantNestedInput
+  maintenanceRequests: PropertyMaintenanceRequestUpdateManyWithoutTenantNestedInput
 }

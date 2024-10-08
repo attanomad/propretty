@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { CreateOnePropertyTypeArgs } from 'src/@generated/property-type/create-one-property-type.args';
+import { FindManyPropertyTypeArgs } from 'src/@generated/property-type/find-many-property-type.args';
+import { PropertyType } from 'src/@generated/property-type/property-type.model';
 import { Auth } from 'src/auth/auth.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/roles/role.enum';
-import { CreatePropertyTypeInput } from './dto/create-property-type.args';
-import { FindPropertyTypesArgs } from './dto/find-property-types.args';
-import { PropertyType } from './models/property-type.model';
 
 @Resolver()
 export class PropertyTypesResolver {
@@ -13,20 +13,16 @@ export class PropertyTypesResolver {
 
   @Mutation((returns) => PropertyType)
   @Auth(Role.Admin)
-  async createPropertyType(
-    @Args('createPropertyTypeData') args: CreatePropertyTypeInput,
-  ) {
+  async createPropertyType(@Args() args: CreateOnePropertyTypeArgs) {
     try {
-      const result = await this.prismaService.client.propertyType.create({
-        data: args,
-      });
+      const result = await this.prismaService.client.propertyType.create(args);
 
       return result;
     } catch (e) {
       console.log('e: ', e);
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          throw new Error(`Property type '${args.name}' already exists`);
+          throw new Error(`Property type '${args.data.name}' already exists`);
         }
       }
 
@@ -36,14 +32,7 @@ export class PropertyTypesResolver {
 
   @Query((returns) => [PropertyType])
   @Auth()
-  propertyTypes(@Args() args: FindPropertyTypesArgs) {
-    return this.prismaService.client.propertyType.findMany({
-      where: {
-        id: args.id,
-        name: args.name
-          ? { contains: args.name, mode: 'insensitive' }
-          : undefined,
-      },
-    });
+  findPropertyTypes(@Args() args: FindManyPropertyTypeArgs) {
+    return this.prismaService.client.propertyType.findMany(args);
   }
 }

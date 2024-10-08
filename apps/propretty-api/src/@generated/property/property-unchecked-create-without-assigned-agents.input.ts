@@ -12,6 +12,8 @@ import { FileUncheckedCreateNestedManyWithoutPropertyInput } from '../file/file-
 import { PriceUncheckedCreateNestedManyWithoutPropertyInput } from '../price/price-unchecked-create-nested-many-without-property.input';
 import { PropertyAmenityUncheckedCreateNestedManyWithoutPropertiesInput } from '../property-amenity/property-amenity-unchecked-create-nested-many-without-properties.input';
 import { PropertyListingUncheckedCreateNestedManyWithoutPropertyInput } from '../property-listing/property-listing-unchecked-create-nested-many-without-property.input';
+import { LeaseUncheckedCreateNestedManyWithoutPropertyInput } from '../lease/lease-unchecked-create-nested-many-without-property.input';
+import { PropertyMaintenanceRequestUncheckedCreateNestedManyWithoutPropertyInput } from '../property-maintenance-request/property-maintenance-request-unchecked-create-nested-many-without-property.input';
 
 @InputType()
 export class PropertyUncheckedCreateWithoutAssignedAgentsInput {
@@ -77,4 +79,12 @@ export class PropertyUncheckedCreateWithoutAssignedAgentsInput {
     @Field(() => PropertyListingUncheckedCreateNestedManyWithoutPropertyInput, {nullable:true})
     @Type(() => PropertyListingUncheckedCreateNestedManyWithoutPropertyInput)
     PropertyListing?: PropertyListingUncheckedCreateNestedManyWithoutPropertyInput;
+
+    @Field(() => LeaseUncheckedCreateNestedManyWithoutPropertyInput, {nullable:true})
+    @Type(() => LeaseUncheckedCreateNestedManyWithoutPropertyInput)
+    leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput;
+
+    @Field(() => PropertyMaintenanceRequestUncheckedCreateNestedManyWithoutPropertyInput, {nullable:true})
+    @Type(() => PropertyMaintenanceRequestUncheckedCreateNestedManyWithoutPropertyInput)
+    maintenanceRequests?: PropertyMaintenanceRequestUncheckedCreateNestedManyWithoutPropertyInput;
 }

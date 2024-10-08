@@ -1,7 +1,6 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
 import { SortOrder } from '../prisma/sort-order.enum';
-import { HideField } from '@nestjs/graphql';
 import { SortOrderInput } from '../prisma/sort-order.input';
 import { PropertyTypeCountOrderByAggregateInput } from './property-type-count-order-by-aggregate.input';
 import { PropertyTypeMaxOrderByAggregateInput } from './property-type-max-order-by-aggregate.input';
@@ -10,7 +9,7 @@ import { PropertyTypeMinOrderByAggregateInput } from './property-type-min-order-
 @InputType()
 export class PropertyTypeOrderByWithAggregationInput {
 
-    @HideField()
+    @Field(() => SortOrder, {nullable:true})
     id?: keyof typeof SortOrder;
 
     @Field(() => SortOrder, {nullable:true})

@@ -29,6 +29,21 @@
     "Settings": "ตั้งค่า",
     "Media": "ไฟล์",
     "Contacts": "ผู้ติดต่อ",
-    "Agents": "นายหน้า"
+    "Agents": "นายหน้า",
+    "Tenants": "ผู้เช่า",
+    "Leases": "สัญญา"
+  },
+  "TenantsPage": {
+    "title": "รายการผู้เช่า"
+  },
+  "TenantListTable": {
+    "column": {
+      "firstName": "ชื่อจริง",
+      "lastName": "นามสกุล",
+      "gender": "เพศ",
+      "nationalId": "รหัสบัตรประชาชน",
+      "createdAt": "สร้างเมื่อ",
+      "updatedAt": "อัปเดตเมื่อ"
+    }
   }
 }

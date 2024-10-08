@@ -14,9 +14,11 @@ import { PropertyAmenity } from '../property-amenity/property-amenity.model';
 import { PropertyOwner } from '../property-owner/property-owner.model';
 import { PropertyListing } from '../property-listing/property-listing.model';
 import { User } from '../user/user.model';
+import { Lease } from '../lease/lease.model';
+import { PropertyMaintenanceRequest } from '../property-maintenance-request/property-maintenance-request.model';
 import { PropertyCount } from './property-count.output';
 
-@ObjectType()
+@ObjectType('PropertyGenerated', {})
 export class Property {
 
     @Field(() => ID, {nullable:false})
@@ -84,6 +86,12 @@ export class Property {
 
     @Field(() => [User], {nullable:true})
     assignedAgents?: Array<User>;
+
+    @Field(() => [Lease], {nullable:true})
+    leases?: Array<Lease>;
+
+    @Field(() => [PropertyMaintenanceRequest], {nullable:true})
+    maintenanceRequests?: Array<PropertyMaintenanceRequest>;
 
     @Field(() => PropertyCount, {nullable:false})
     _count?: PropertyCount;

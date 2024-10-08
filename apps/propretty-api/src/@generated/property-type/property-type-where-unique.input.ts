@@ -1,14 +1,14 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
-import { HideField } from '@nestjs/graphql';
 import { PropertyTypeWhereInput } from './property-type-where.input';
 import { StringNullableFilter } from '../prisma/string-nullable-filter.input';
 import { PropertyListRelationFilter } from '../property/property-list-relation-filter.input';
+import { HideField } from '@nestjs/graphql';
 
 @InputType()
 export class PropertyTypeWhereUniqueInput {
 
-    @HideField()
+    @Field(() => String, {nullable:true})
     id?: string;
 
     @Field(() => String, {nullable:true})

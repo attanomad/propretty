@@ -1,12 +1,12 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
-import { HideField } from '@nestjs/graphql';
 import { PropertyUncheckedCreateNestedManyWithoutTypeInput } from '../property/property-unchecked-create-nested-many-without-type.input';
+import { HideField } from '@nestjs/graphql';
 
 @InputType()
 export class PropertyTypeUncheckedCreateInput {
 
-    @HideField()
+    @Field(() => String, {nullable:true})
     id?: string;
 
     @Field(() => String, {nullable:false})

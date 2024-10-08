@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { InjectS3, S3 } from 'nestjs-s3';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { File } from './models/file.model';
+import { FileWithUrl } from './models/file.model';
 
 @Resolver()
 export class FilesResolver {
@@ -14,7 +14,7 @@ export class FilesResolver {
     private prismaService: PrismaService,
   ) {}
 
-  @Query((returns) => [File])
+  @Query((returns) => [FileWithUrl])
   async files() {
     const files = await this.prismaService.client.file.findMany();
 

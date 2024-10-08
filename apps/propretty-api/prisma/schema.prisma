@@ -10,10 +10,14 @@ generator client {
 }
 
 generator nestgraphql {
-  provider = "node node_modules/prisma-nestjs-graphql"
+  provider    = "node node_modules/prisma-nestjs-graphql"
   // for yarn monorepos
   // provider = "prisma-nestjs-graphql"
-  output   = "../src/@generated"
+  output      = "../src/@generated"
+  // requireSingleFieldsInWhereUniqueInput = true
+  // emitSingle                            = true
+  // emitCompiled                          = true
+  purgeOutput = true
 }
 
 datasource db {
@@ -102,6 +106,7 @@ enum PropertyCommercialStatus {
   PENDING
 }
 
+/// @ObjectType('PropertyGenerated')
 model Property {
   id               String                   @id @default(cuid())
   name             String
@@ -127,11 +132,13 @@ model Property {
 
   amenities PropertyAmenity[]
 
-  locationId      String?
-  PropertyOwner   PropertyOwner?    @relation(fields: [propertyOwnerId], references: [id])
-  propertyOwnerId String?
-  PropertyListing PropertyListing[]
-  assignedAgents  User[]            @relation(name: "AgentToProperty")
+  locationId          String?
+  PropertyOwner       PropertyOwner?               @relation(fields: [propertyOwnerId], references: [id])
+  propertyOwnerId     String?
+  PropertyListing     PropertyListing[]
+  assignedAgents      User[]                       @relation(name: "AgentToProperty")
+  leases              Lease[]
+  maintenanceRequests PropertyMaintenanceRequest[]
 }
 
 model PropertyListing {
@@ -181,7 +188,7 @@ model Location {
 }
 
 model PropertyType {
-  /// @HideField({ input: true })
+  /// @HideField({ match: 'PropertyTypeCreateInput' })
   id          String  @id @default(cuid())
   name        String  @unique
   description String?
@@ -221,4 +228,81 @@ model Contact {
   description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Tenant {
+  id          String    @id @default(cuid())
+  nationalId  String    @unique
+  firstName   String?
+  lastName    String?
+  email       String?
+  phoneNumber String?
+  dateOfBirth DateTime?
+  gender      String?
+  address     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  leases              Lease[]
+  maintenanceRequests PropertyMaintenanceRequest[]
+}
+
+model Lease {
+  id            String      @id @default(cuid())
+  propertyId    String
+  tenantId      String
+  startedDate   DateTime
+  endDate       DateTime
+  status        LeaseStatus
+  rentAmount    Decimal     @db.Decimal(10, 2)
+  depositAmount Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  property            Property                     @relation(fields: [propertyId], references: [id])
+  tenant              Tenant                       @relation(fields: [tenantId], references: [id])
+  maintenanceRequests PropertyMaintenanceRequest[]
+}
+
+enum LeaseStatus {
+  Active
+  Pending
+  Terminated
+  Expired
+}
+
+model PropertyMaintenanceRequest {
+  id          String                           @id @default(cuid())
+  propertyId  String
+  tenantId    String
+  leaseId     String
+  title       String
+  description String
+  requestedAt DateTime
+  status      PropertyMaintenanceRequestStatus @default(Pending)
+  createdAt   DateTime                         @default(now())
+  updatedAt   DateTime                         @updatedAt
+
+  property   Property                             @relation(fields: [propertyId], references: [id])
+  tenant     Tenant                               @relation(fields: [tenantId], references: [id])
+  lease      Lease                                @relation(fields: [leaseId], references: [id])
+  activities PropertyMaintenanceRequestActivity[]
+}
+
+model PropertyMaintenanceRequestActivity {
+  id          String                           @id @default(cuid())
+  requestId   String
+  status      PropertyMaintenanceRequestStatus @default(Pending)
+  description String
+  createdAt   DateTime                         @default(now())
+  updatedAt   DateTime                         @updatedAt
+
+  request PropertyMaintenanceRequest @relation(fields: [requestId], references: [id])
+}
+
+enum PropertyMaintenanceRequestStatus {
+  Pending
+  InProgress
+  Completed
+  Cancelled
 }

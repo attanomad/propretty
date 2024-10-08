@@ -1,5 +1,5 @@
-query FindPropertyById($id: String!) {
-  findProperty(id: $id) {
+query FindPropertyById($where: PropertyWhereUniqueInput!) {
+  findUniqueProperty(where: $where) {
     name
     description
     status
@@ -41,8 +41,8 @@ query FindPropertyById($id: String!) {
   }
 }
 
-query FindProperties {
-  properties {
+query FindProperties($where: PropertyWhereInput) {
+  findProperties(where: $where) {
     id
     name
     uniqueCode

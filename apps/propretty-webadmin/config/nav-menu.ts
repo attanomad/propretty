@@ -3,10 +3,12 @@ import {
   CircleUser,
   Contact,
   File,
+  Handshake,
   House,
   LandPlot,
   LayoutDashboard,
   Settings,
+  UserRound,
 } from "lucide-react";
 
 export const topMenuItemList: NavItemProps[] = [
@@ -16,6 +18,8 @@ export const topMenuItemList: NavItemProps[] = [
   { children: "Media", icon: File, path: "/media" },
   { children: "Contacts", icon: Contact, path: "/contacts" },
   { children: "Agents", icon: CircleUser, path: "/agents" },
+  { children: "Tenants", icon: UserRound, path: "/tenants" },
+  { children: "Leases", icon: Handshake, path: "/leases" },
 ];
 
 export const bottomMenuItemList: NavItemProps[] = [

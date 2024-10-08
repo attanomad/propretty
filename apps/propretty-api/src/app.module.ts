@@ -9,14 +9,15 @@ import { AmenitiesModule } from './amenities/amenities.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CaslModule } from './casl/casl.module';
 import configuration from './config/configuration';
 import { FilesModule } from './files/files.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PropertiesModule } from './properties/properties.module';
 import { PropertyTypesModule } from './property-types/property-types.module';
+import { TenantsModule } from './tenants/tenants.module';
 import { UnifiedResponseInterceptor } from './unified-response.interceptor';
 import { UsersModule } from './users/users.module';
-import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { CaslModule } from './casl/casl.module';
     FilesModule,
     PrismaModule,
     CaslModule,
+    TenantsModule,
   ],
   controllers: [AppController],
   providers: [

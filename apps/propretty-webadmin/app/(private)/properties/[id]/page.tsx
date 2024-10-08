@@ -7,7 +7,7 @@ export default async function ViewProperty({
 }: {
   params: { id: string };
 }) {
-  const property = (await findPropertyById({ id })) as Property;
+  const property = (await findPropertyById({ where: { id } })) as Property;
 
   if (!property) {
     return <h1>The property could not be found</h1>;

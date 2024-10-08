@@ -19,4 +19,10 @@ export class PropertyCount {
 
     @Field(() => Int, {nullable:false})
     assignedAgents?: number;
+
+    @Field(() => Int, {nullable:false})
+    leases?: number;
+
+    @Field(() => Int, {nullable:false})
+    maintenanceRequests?: number;
 }
