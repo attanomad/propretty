@@ -1,8 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { FindManyPropertyAmenityArgs } from 'src/@generated/property-amenity/find-many-property-amenity.args';
 import { PropertyAmenityCreateInput } from 'src/@generated/property-amenity/property-amenity-create.input';
-import { PropertyAmenityUpdateInput } from 'src/@generated/property-amenity/property-amenity-update.input';
+import { PropertyAmenityUpdateInput as PropertyAmenityUpdateInputGql } from 'src/@generated/property-amenity/property-amenity-update.input';
 import { Auth } from 'src/auth/auth.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'src/roles/role.enum';
@@ -39,12 +40,15 @@ export class AmenitiesResolver {
   @Auth(Role.Admin, Role.Root)
   async updateAmenity(
     @Args('id') id: string,
-    @Args('data') data: PropertyAmenityUpdateInput,
+    @Args('data') data: PropertyAmenityUpdateInputGql,
   ) {
     try {
       const result = await this.prismaService.client.propertyAmenity.update({
         where: { id },
-        data,
+        /**
+         * @note Cast the type to solve the excessive stack depth runtime TypeScript error
+         */
+        data: data as Prisma.PropertyAmenityUpdateInput,
       });
 
       return result;
