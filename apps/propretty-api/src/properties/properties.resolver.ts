@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateOnePropertyArgs } from 'src/@generated/property/create-one-property.args';
 import { FindManyPropertyArgs } from 'src/@generated/property/find-many-property.args';
@@ -46,7 +47,8 @@ export class PropertiesResolver {
     try {
       const result = await this.prismaService.client.property.update({
         where: { id },
-        data,
+        // Type cast to solve TypeScript execessive stack depth error
+        data: data as Prisma.PropertyUpdateInput,
       });
 
       return result;

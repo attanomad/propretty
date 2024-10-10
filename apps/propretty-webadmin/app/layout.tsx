@@ -1,3 +1,5 @@
+import { ApolloWrapper } from "@/lib/apollo-wrapper";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -17,16 +19,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
   return (
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <ApolloWrapper>
+            <AntdRegistry>{children}</AntdRegistry>
+          </ApolloWrapper>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -36,3 +36,7 @@ export async function createSession(jwt: string) {
     path: "/",
   });
 }
+
+export const getToken = (): string | undefined => {
+  return cookies().get("session")?.value;
+};
