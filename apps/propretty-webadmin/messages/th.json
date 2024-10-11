@@ -1,4 +1,10 @@
 {
+  "DashboardPage": {
+    "title": "แดชบอร์ด"
+  },
+  "PropertiesPage": {
+    "title": "รายการทรัพย์"
+  },
   "LoginPage": {
     "title": "เข้าสู่ระบบ",
     "form": {

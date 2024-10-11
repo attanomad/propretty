@@ -8,6 +8,7 @@ import { ServerActionBaseResponse } from "@/lib/server-actions.types";
 import { ApolloError } from "@apollo/client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { PageTitle } from "../../../components/dashboard/PageTitle";
 import TenantListTable from "./TenantListTable";
 import { searchParamsToPagination, toURLSearchParams } from "./utils";
 
@@ -35,14 +36,8 @@ export default async function TenantsPage({
   return (
     <div>
       <h1>{t("title")}</h1>
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent> */}
       <TenantListTable data={data!} />
-      {/* </CardContent>
-      </Card> */}
+      <PageTitle>{t("title")}</PageTitle>
     </div>
   );
 }

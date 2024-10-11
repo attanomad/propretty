@@ -1,7 +1,9 @@
+import { PageTitle } from "@/components/dashboard/PageTitle";
 import { Property } from "@/gql/graphql";
 import { findProperties } from "@/modules/property/actions/property.actions";
 import PropertyListTable from "@/modules/property/components/property-list-table";
 import { PlusCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -12,6 +14,8 @@ async function PropertyList() {
 }
 
 export default async function PropertiesPage() {
+  const t = await getTranslations("PropertiesPage");
+
   return (
     <div className="flex flex-col gap-4">
       <h1>Properties</h1>
@@ -29,6 +33,7 @@ export default async function PropertiesPage() {
       >
         <PropertyList />
       </Suspense>
+      <PageTitle>{t("title")}</PageTitle>
     </div>
   );
 }

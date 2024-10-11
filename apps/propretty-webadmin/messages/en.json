@@ -1,4 +1,10 @@
 {
+  "DashboardPage": {
+    "title": "Dashboard"
+  },
+  "PropertiesPage": {
+    "title": "Properties"
+  },
   "LoginPage": {
     "title": "Log in",
     "form": {
