@@ -1,59 +1,56 @@
 "use client";
 
-import { FindTenantsQuery, FindTenantsQueryVariables } from "@/gql/graphql";
-import { gql, useQuery } from "@apollo/client";
+import {
+  FindTenantsDocument,
+  FindTenantsQuery,
+  FindTenantsQueryVariables,
+} from "@/gql/graphql";
+import { useQuery } from "@apollo/client";
 import type { GetProp, TablePaginationConfig, TableProps } from "antd";
 import { Table } from "antd";
 import { SorterResult } from "antd/es/table/interface";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { searchParamsToPagination } from "./utils";
 
-type Tenant = FindTenantsQuery["findTenants"][0];
+type Tenant = FindTenantsQuery["findManyAndCountTenants"]["data"][0];
 
-export default function TenantListTable() {
+export default function TenantListTable({
+  data: _initialData,
+}: {
+  data?: FindTenantsQuery["findManyAndCountTenants"];
+}) {
+  const [tenants, setTenants] = useState<Tenant[]>(_initialData?.data || []);
   const columns = useColumns();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { current, take } = searchParamsToPagination(searchParams);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
-      current: 1,
-      pageSize: 10,
+      current,
+      pageSize: take,
+      showSizeChanger: true,
+      showQuickJumper: true,
+      total: _initialData?.count,
     },
   });
   const { loading, error, data, refetch } = useQuery<
     FindTenantsQuery,
     FindTenantsQueryVariables
-  >(gql`
-    query FindTenants(
-      $where: TenantWhereInput
-      $take: Int
-      $skip: Int
-      $cursor: TenantWhereUniqueInput
-    ) {
-      findTenants(where: $where, take: $take, skip: $skip, cursor: $cursor) {
-        id
-        nationalId
-        firstName
-        lastName
-        gender
-        createdAt
-        updatedAt
-      }
-    }
-  `);
-  const tenants = data?.findTenants ?? [];
+  >(FindTenantsDocument, {
+    initialFetchPolicy: _initialData?.data ? "standby" : "cache-first",
+  });
 
   useEffect(() => {
-    refetch({});
-  }, [
-    tableParams.pagination?.current,
-    tableParams.pagination?.pageSize,
-    tableParams?.sortOrder,
-    tableParams?.sortField,
-    JSON.stringify(tableParams.filters),
-  ]);
+    if (!data) return;
 
-  // const handleRowClick = (row: Row<Tenant>) =>
-  //   router.push(`/tenants/${row.original.id}`);
+    console.log("setTenants()");
+    setTenants(data.findManyAndCountTenants.data);
+  }, [data]);
+
   const handleTableChange: TableProps<Tenant>["onChange"] = (
     pagination,
     filters,
@@ -68,7 +65,34 @@ export default function TenantListTable() {
 
     // `dataSource` is useless since `pageSize` changed
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setTenants([]);
     }
+
+    const { pageSize, current } = pagination;
+
+    console.log("refetch()");
+    const take = pageSize;
+    const skip = pageSize && current ? (current - 1) * pageSize : undefined;
+    const newSearchParams = new URLSearchParams(
+      Array.from(searchParams.entries())
+    );
+
+    if (take) {
+      newSearchParams.set("take", String(take));
+    }
+
+    if (skip) {
+      newSearchParams.set("skip", String(skip));
+    }
+
+    const queryString = newSearchParams.toString();
+    const url = `${pathname}${queryString ? `?${queryString}` : ""}`;
+
+    router.replace(url);
+    refetch({
+      take,
+      skip,
+    }).then((res) => setTenants(res.data.findManyAndCountTenants.data));
   };
 
   return (
@@ -82,6 +106,42 @@ export default function TenantListTable() {
     />
   );
 }
+
+// const useUrlPagination = ({ pagination }: TableParams) => {
+//   const pathname = usePathname();
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const [skip, setSkip] = useState(pagination?.current)
+//   const update = () => {}
+
+//   useEffect(() => {
+//     if (!pagination) return;
+
+//     const { pageSize, current } = pagination;
+
+//     console.log("refetch()");
+//     const take = pageSize;
+//     const skip = pageSize && current ? (current - 1) * pageSize : undefined;
+//     const newSearchParams = new URLSearchParams(
+//       Array.from(searchParams.entries())
+//     );
+
+//     if (take) {
+//       newSearchParams.set("take", String(take));
+//     }
+
+//     if (skip) {
+//       newSearchParams.set("skip", String(skip));
+//     }
+
+//     const queryString = newSearchParams.toString();
+//     const url = `${pathname}${queryString ? `?${queryString}` : ""}`;
+
+//     router.replace(url);
+//   }, [pagination?.pageSize, pagination?.current]);
+
+//   return { update, skip, take }
+// };
 
 const useColumns = () => {
   const t = useTranslations("TenantListTable.column");

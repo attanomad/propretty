@@ -82,7 +82,7 @@ export async function findPropertyById(
       query: FindPropertyByIdDocument,
     });
 
-    return data.findProperty;
+    return data.findUniqueProperty;
   } catch (e) {
     console.log(`Failed to find property by ID: `, JSON.stringify(e));
 
@@ -117,7 +117,7 @@ export async function findProperties() {
       query: FindPropertiesDocument,
     });
 
-    return data.properties;
+    return data.findProperties;
   } catch (e) {
     console.log(`Failed to find properties: `, JSON.stringify(e));
 

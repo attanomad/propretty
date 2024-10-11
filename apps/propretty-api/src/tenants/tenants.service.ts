@@ -13,8 +13,12 @@ export class TenantsService {
     return this.prismaService.client.tenant.create(args);
   }
 
-  findAll(args: FindManyTenantArgs) {
+  findMany(args: FindManyTenantArgs) {
     return this.prismaService.client.tenant.findMany(args);
+  }
+
+  findManyAndCount(args: FindManyTenantArgs) {
+    return this.prismaService.client.tenant.findManyAndCount(args);
   }
 
   findOne(args: FindUniqueTenantArgs) {

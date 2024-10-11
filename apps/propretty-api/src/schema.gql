@@ -366,13 +366,18 @@ type Property {
   _count: PropertyCount!
 }
 
+type FindManyAndCountTenants {
+  count: Float!
+  data: [Tenant!]!
+}
+
 type Query {
   findUniqueProperty(where: PropertyWhereUniqueInput!): Property
   findProperties(where: PropertyWhereInput, orderBy: [PropertyOrderByWithRelationInput!], cursor: PropertyWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyScalarFieldEnum!]): [Property]!
   findPropertyTypes(where: PropertyTypeWhereInput, orderBy: [PropertyTypeOrderByWithRelationInput!], cursor: PropertyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyTypeScalarFieldEnum!]): [PropertyType!]!
   amenities(where: PropertyAmenityWhereInput, orderBy: [PropertyAmenityOrderByWithRelationInput!], cursor: PropertyAmenityWhereUniqueInput, take: Int, skip: Int, distinct: [PropertyAmenityScalarFieldEnum!]): [Amenity!]!
   files: [FileWithUrl!]!
-  findTenants(where: TenantWhereInput, orderBy: [TenantOrderByWithRelationInput!], cursor: TenantWhereUniqueInput, take: Int, skip: Int, distinct: [TenantScalarFieldEnum!]): [Tenant!]!
+  findManyAndCountTenants(where: TenantWhereInput, orderBy: [TenantOrderByWithRelationInput!], cursor: TenantWhereUniqueInput, take: Int, skip: Int, distinct: [TenantScalarFieldEnum!]): FindManyAndCountTenants!
   findUniqueTenant(where: TenantWhereUniqueInput!): Tenant!
 }
 

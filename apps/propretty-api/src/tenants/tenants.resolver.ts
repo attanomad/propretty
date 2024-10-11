@@ -4,6 +4,7 @@ import { FindManyTenantArgs } from 'src/@generated/tenant/find-many-tenant.args'
 import { FindUniqueTenantArgs } from 'src/@generated/tenant/find-unique-tenant.args';
 import { Tenant } from 'src/@generated/tenant/tenant.model';
 import { UpdateOneTenantArgs } from 'src/@generated/tenant/update-one-tenant.args';
+import { FindManyAndCountTenants } from './models/find-many-and-count-tenants.model';
 import { TenantsService } from './tenants.service';
 
 @Resolver(() => Tenant)
@@ -15,9 +16,11 @@ export class TenantsResolver {
     return this.tenantsService.create(args);
   }
 
-  @Query(() => [Tenant])
-  findTenants(@Args() args: FindManyTenantArgs) {
-    return this.tenantsService.findAll(args);
+  @Query(() => FindManyAndCountTenants)
+  async findManyAndCountTenants(@Args() args: FindManyTenantArgs) {
+    const [data, count] = await this.tenantsService.findManyAndCount(args);
+
+    return { data, count };
   }
 
   @Query(() => Tenant)
