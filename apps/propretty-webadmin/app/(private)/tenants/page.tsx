@@ -2,6 +2,8 @@ import {
   FindTenantsDocument,
   FindTenantsQuery,
   FindTenantsQueryVariables,
+  QueryMode,
+  TenantWhereInput,
 } from "@/gql/graphql";
 import { getClient } from "@/lib/apollo-client";
 import { ServerActionBaseResponse } from "@/lib/server-actions.types";
@@ -25,17 +27,22 @@ export default async function TenantsPage({
 }: {
   searchParams?: Record<string, string | string[]>;
 }) {
-  const { skip, take } = searchParamsToPagination(
-    toURLSearchParams(searchParams || {})
+  const variables = searchParamsToPagination<TenantWhereInput>(
+    toURLSearchParams(searchParams || {}),
+    (q) => ({
+      OR: [
+        { firstName: { contains: q, mode: QueryMode.Insensitive } },
+        { lastName: { contains: q, mode: QueryMode.Insensitive } },
+      ],
+    })
   );
   const t = await getTranslations("TenantsPage");
-  const { code, message, data } = await findTenants({ take, skip });
+  const { code, message, data } = await findTenants(variables);
 
   if (code !== 0) throw new Error(message);
 
   return (
-    <div>
-      <h1>{t("title")}</h1>
+    <div className="flex flex-col gap-4">
       <TenantListTable data={data!} />
       <PageTitle>{t("title")}</PageTitle>
     </div>

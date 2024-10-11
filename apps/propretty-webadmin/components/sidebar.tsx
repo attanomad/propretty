@@ -71,7 +71,7 @@ const useSidebar = () => {
 
   useEffect(() => {
     update({ sidebar: isOpen ? "1" : "0" });
-  }, [open]);
+  }, [isOpen]);
 
   return { isOpen, open, close, toggle };
 };

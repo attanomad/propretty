@@ -55,5 +55,12 @@
   "Sidebar": {
     "close": "ปิดเมนู",
     "open": "เปิดเมนู"
+  },
+  "SearchBox": {
+    "placeholder": "ค้นหา{name}..."
+  },
+  "generic": {
+    "Tenant": "ผู้เช่า",
+    "Tenants": "ผู้เช่า"
   }
 }

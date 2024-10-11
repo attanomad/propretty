@@ -1,4 +1,7 @@
-export const searchParamsToPagination = (searchParams: URLSearchParams) => {
+export const searchParamsToPagination = <T = any>(
+  searchParams: URLSearchParams,
+  resolveWhere?: (q: string) => T
+) => {
   const skip = searchParams.get("skip")
     ? parseInt(searchParams.get("skip")!)
     : 0;
@@ -6,8 +9,12 @@ export const searchParamsToPagination = (searchParams: URLSearchParams) => {
     ? parseInt(searchParams.get("take")!)
     : 10;
   const current = skip > 0 ? skip / take + 1 : 1;
+  const where: T | undefined =
+    searchParams.get("q") && typeof resolveWhere === "function"
+      ? resolveWhere(searchParams.get("q")!)
+      : undefined;
 
-  return { current, skip, take };
+  return { current, skip, take, where };
 };
 
 export function toURLSearchParams(

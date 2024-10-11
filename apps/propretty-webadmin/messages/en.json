@@ -55,5 +55,12 @@
   "Sidebar": {
     "close": "Close Sidebar",
     "open": "Open Sidebar"
+  },
+  "SearchBox": {
+    "placeholder": "Search {name}..."
+  },
+  "generic": {
+    "Tenant": "Tenant",
+    "Tenants": "Tenants"
   }
 }
