@@ -1,4 +1,4 @@
-import { HttpLink } from "@apollo/client";
+import { ApolloLink, HttpLink } from "@apollo/client";
 import {
   ApolloClient,
   InMemoryCache,
@@ -13,6 +13,6 @@ const httpLink = new HttpLink({
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: authLink.concat(httpLink),
+    link: ApolloLink.from([authLink, httpLink]),
   });
 });
