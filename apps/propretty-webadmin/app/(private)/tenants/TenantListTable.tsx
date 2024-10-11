@@ -30,6 +30,7 @@ export default function TenantListTable({
   const { current, take } = searchParamsToPagination(searchParams);
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
+      position: ["topRight", "bottomRight"],
       current,
       pageSize: take,
       showSizeChanger: true,
@@ -97,6 +98,7 @@ export default function TenantListTable({
 
   return (
     <Table<Tenant>
+      scroll={{ x: true, y: "500px" }}
       columns={columns}
       dataSource={tenants}
       rowKey="id"
