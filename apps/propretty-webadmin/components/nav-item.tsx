@@ -31,7 +31,7 @@ const NavItem = forwardRef<HTMLAnchorElement, NavItemProps>(
         ref={ref}
         {...rest}
         href={path}
-        className={`w-full flex items-center gap-4 transition-colors md:h-8 ${className || ""}${active ? " text-foreground" : " text-muted-foreground"}`}
+        className={`w-full flex items-center gap-4 transition-colors ${className || ""}${active ? " text-foreground" : " text-muted-foreground"}`}
       >
         {showIcon && (
           <div

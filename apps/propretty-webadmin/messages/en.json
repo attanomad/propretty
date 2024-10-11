@@ -45,5 +45,9 @@
       "createdAt": "Created At",
       "updatedAt": "Updated At"
     }
+  },
+  "Sidebar": {
+    "close": "Close Sidebar",
+    "open": "Open Sidebar"
   }
 }

@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FindTenantsDocument,
   FindTenantsQuery,
@@ -35,18 +34,15 @@ export default async function TenantsPage({
 
   return (
     <div>
-      <h1></h1>
-      <Card>
+      <h1>{t("title")}</h1>
+      {/* <Card>
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
-          {/* <CardDescription>
-            Images and/or videos of the property up to 50 files
-          </CardDescription> */}
         </CardHeader>
-        <CardContent>
-          <TenantListTable data={data!} />
-        </CardContent>
-      </Card>
+        <CardContent> */}
+      <TenantListTable data={data!} />
+      {/* </CardContent>
+      </Card> */}
     </div>
   );
 }

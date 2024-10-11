@@ -24,7 +24,7 @@ export default function NavBreadcrumb() {
   const pathList = pathname === "/" ? [""] : pathname.split("/");
 
   return (
-    <Breadcrumb className="hidden md:flex">
+    <Breadcrumb className="flex">
       <BreadcrumbList>
         {pathList.map((p, idx) => {
           if (!breadcrumbLabelByPath[p]) {
